@@ -339,7 +339,14 @@
             document.getElementById('lb-client').textContent = p.client || '-';
             document.getElementById('lb-project').textContent = p.project_name || '-';
             document.getElementById('lb-grain').textContent = p.grain || '-';
-            document.getElementById('lb-priority').textContent = p.priority ? p.priority.toUpperCase() : '-';
+            
+            // Traduction correcte du statut de priorité en anglais (Standard au lieu de Yellow)
+            let priorityText = '-';
+            if (p.priority === 'red') priorityText = 'CRITICAL';
+            else if (p.priority === 'green') priorityText = 'LOW';
+            else if (p.priority === 'yellow') priorityText = 'STANDARD';
+            
+            document.getElementById('lb-priority').textContent = priorityText;
             document.getElementById('lb-img').src = p.photo;
             resetImageTransform();
             document.getElementById('image-modal').classList.remove('hidden');
@@ -411,7 +418,6 @@
             html += `</tr></thead><tbody>`;
 
             Object.keys(machinesConfig).forEach(mach => {
-                // Find all projects overlapping this month for this machine
                 const machProjects = projects.filter(p => {
                     if (p.machine !== mach) return false;
                     const pStart = p.date_reception;
@@ -421,66 +427,6 @@
                     return pStart <= monthEnd && pEnd >= monthStart;
                 });
 
-                // Group/stack overlapping projects per day
-                const dayRows = [];
-                machProjects.forEach(proj => {
-                    const startD = Math.max(1, new Date(proj.date_reception) < new Date(year, month, 1) ? 1 : new Date(proj.date_reception).getDate());
-                    const endD = Math.min(daysInMonth, new Date(proj.date_reelle || proj.date_estimee) > new Date(year, month, daysInMonth) ? daysInMonth : new Date(proj.date_reelle || proj.date_estimee).getDate());
-                    
-                    let rowIndex = 0;
-                    while (true) {
-                        if (!dayRows[rowIndex]) dayRows[rowIndex] = new Array(daysInMonth + 1).fill(false);
-                        let canPlace = true;
-                        for (let d = startD; d <= endD; d++) {
-                            if (dayRows[rowIndex][d]) { canPlace = false; break; }
-                        }
-                        if (canPlace) {
-                            for (let d = startD; d <= endD; d++) dayRows[rowIndex][d] = true;
-                            proj._startD = startD;
-                            proj._endD = endD;
-                            proj._rowIdx = rowIndex;
-                            break;
-                        }
-                        rowIndex++;
-                    }
-                });
-
-                const rowCount = Math.max(1, dayRows.length);
-                const minRowHeight = rowCount * 36 + 12;
-
-                html += `<tr class="border-b border-slate-800/80" style="min-height: ${minRowHeight}px;">`;
-                html += `<td class="p-3 font-bold bg-slate-900 border border-slate-800 sticky left-0 z-20 align-top"><span class="px-2 py-1 rounded text-white text-xs bg-slate-800 border border-slate-700">${mach}</span></td>`;
-
-                // Render day cells grid background
-                for (let day = 1; day <= daysInMonth; day++) {
-                    html += `<td class="border border-slate-800/60 p-0 hover:bg-slate-900/50 w-10 relative align-top"></td>`;
-                }
-                html += `</tr>`;
-
-                // Inject absolute positioned bars over this machine row
-                // We will handle rendering via absolute positioning inside a container wrapper or directly overlaying. 
-                // To keep it simple and clean inside table layout, let's render the bars inside the machine row cells or overlay container.
-            });
-            
-            // Re-evaluating timeline rendering cleanly with absolute stacking inside rows or standard sub-rows
-            // Let's use a robust sub-row structure per machine so multiple molds on the same day stack properly without overlap issues.
-            
-            html = `<table class="w-full border-collapse text-xs relative"><thead><tr class="bg-black text-gray-300">`;
-            html += `<th class="p-3 border border-slate-800 w-36 sticky left-0 bg-black z-20 text-red-500 font-bold uppercase">Machine</th>`;
-            for (let d = 1; d <= daysInMonth; d++) html += `<th class="p-1 border border-slate-800 text-center w-10 text-gray-400">${d}</th>`;
-            html += `</tr></thead><tbody>`;
-
-            Object.keys(machinesConfig).forEach(mach => {
-                const machProjects = projects.filter(p => {
-                    if (p.machine !== mach) return false;
-                    const pStart = p.date_reception;
-                    const pEnd = p.date_reelle || p.date_estimee;
-                    const monthStart = `${year}-${String(month + 1).padStart(2, '0')}-01`;
-                    const monthEnd = `${year}-${String(month + 1).padStart(2, '0')}-${String(daysInMonth).padStart(2, '0')}`;
-                    return pStart <= monthEnd && pEnd >= monthStart;
-                });
-
-                // Calculate stacked rows for this machine
                 const rows = [];
                 machProjects.forEach(proj => {
                     const startD = Math.max(1, new Date(proj.date_reception) < new Date(year, month, 1) ? 1 : new Date(proj.date_reception).getDate());
