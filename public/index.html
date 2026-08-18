@@ -49,6 +49,12 @@
                 <select id="table-client-filter" onchange="renderTable()" class="p-2 bg-slate-950 border border-slate-700 rounded text-sm text-white w-48">
                     <option value="">All Clients</option>
                 </select>
+                <select id="table-priority-filter" onchange="renderTable()" class="p-2 bg-slate-950 border border-slate-700 rounded text-sm text-white w-40">
+                    <option value="">All Priorities</option>
+                    <option value="red">Critical</option>
+                    <option value="yellow">Standard</option>
+                    <option value="green">Low</option>
+                </select>
             </div>
             <div class="flex-grow overflow-auto">
                 <table class="w-full text-left border-collapse">
@@ -63,11 +69,22 @@
         </div>
 
         <div id="view-stats" class="bg-slate-950 rounded-xl shadow hidden flex-grow overflow-auto border border-slate-800 p-6">
-            <h2 class="text-xl font-extrabold text-white uppercase tracking-wide mb-6 border-b border-slate-800 pb-3">Workshop Statistics</h2>
-            <div class="grid grid-cols-1 md:grid-cols-3 gap-5 mb-8">
-                <div class="bg-slate-900 border border-slate-800 rounded-xl p-5"><span class="text-xs font-bold text-gray-400">Total Projects</span><div id="stat-total-projects" class="text-3xl font-black text-white mt-2">0</div></div>
-                <div class="bg-slate-900 border border-slate-800 rounded-xl p-5"><span class="text-xs font-bold text-gray-400">Completed Molds</span><div id="stat-completed-projects" class="text-3xl font-black text-emerald-400 mt-2">0</div></div>
-                <div class="bg-slate-900 border border-slate-800 rounded-xl p-5"><span class="text-xs font-bold text-gray-400">Active In Progress</span><div id="stat-active-projects" class="text-3xl font-black text-amber-400 mt-2">0</div></div>
+            <h2 class="text-xl font-extrabold text-white uppercase tracking-wide mb-6 border-b border-slate-800 pb-3">Workshop Performance & Statistics</h2>
+            <div class="grid grid-cols-1 md:grid-cols-4 gap-5 mb-8">
+                <div class="bg-slate-900 border border-slate-800 rounded-xl p-5"><span class="text-xs font-bold text-gray-400 uppercase">Total Projects</span><div id="stat-total-projects" class="text-3xl font-black text-white mt-2">0</div></div>
+                <div class="bg-slate-900 border border-slate-800 rounded-xl p-5"><span class="text-xs font-bold text-gray-400 uppercase">Completed Molds</span><div id="stat-completed-projects" class="text-3xl font-black text-emerald-400 mt-2">0</div></div>
+                <div class="bg-slate-900 border border-slate-800 rounded-xl p-5"><span class="text-xs font-bold text-gray-400 uppercase">Active In Progress</span><div id="stat-active-projects" class="text-3xl font-black text-amber-400 mt-2">0</div></div>
+                <div class="bg-slate-900 border border-slate-800 rounded-xl p-5"><span class="text-xs font-bold text-gray-400 uppercase">On-Time Delivery Rate</span><div id="stat-on-time" class="text-3xl font-black text-red-500 mt-2">100%</div></div>
+            </div>
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                <div class="bg-slate-900 border border-slate-800 rounded-xl p-5">
+                    <h3 class="text-sm font-bold text-gray-300 uppercase mb-4">Workload by Machine</h3>
+                    <div id="stat-machines-list" class="space-y-3"></div>
+                </div>
+                <div class="bg-slate-900 border border-slate-800 rounded-xl p-5">
+                    <h3 class="text-sm font-bold text-gray-300 uppercase mb-4">Top Clients (Project Volume)</h3>
+                    <div id="stat-clients-list" class="space-y-3"></div>
+                </div>
             </div>
         </div>
     </main>
@@ -131,10 +148,32 @@
         </div>
     </div>
 
+    <!-- Image Lightbox Modal -->
+    <div id="image-modal" class="fixed inset-0 bg-black/90 hidden flex flex-col items-center justify-center p-4 z-50 backdrop-blur-md">
+        <div class="absolute top-4 inset-x-6 flex justify-between items-center bg-slate-900 border border-slate-800 p-3 rounded-xl shadow-xl">
+            <div class="flex gap-6 text-xs">
+                <div><span class="text-gray-400 block font-bold uppercase">Production Order (PO)</span><span id="lb-po" class="text-red-500 font-bold text-sm"></span></div>
+                <div><span class="text-gray-400 block font-bold uppercase">Client</span><span id="lb-client" class="text-white font-bold text-sm"></span></div>
+                <div><span class="text-gray-400 block font-bold uppercase">Project</span><span id="lb-project" class="text-white font-bold text-sm"></span></div>
+                <div><span class="text-gray-400 block font-bold uppercase">Grain</span><span id="lb-grain" class="text-white font-bold text-sm"></span></div>
+                <div><span class="text-gray-400 block font-bold uppercase">Priority</span><span id="lb-priority" class="text-amber-500 font-bold text-sm"></span></div>
+            </div>
+            <button onclick="closeImageModal()" class="text-gray-400 hover:text-white text-3xl font-light px-3">&times;</button>
+        </div>
+        <div class="flex-grow flex items-center justify-center w-full overflow-hidden mt-16">
+            <img id="lb-img" src="" alt="Zoomed Mold" class="max-h-[75vh] max-w-[85vw] object-contain rounded-lg border border-slate-800 shadow-2xl">
+        </div>
+        <div class="absolute bottom-4 flex justify-between w-full px-8 text-xs text-gray-400">
+            <span>💡 Click image to open edit form</span>
+            <button onclick="closeImageModal()" class="bg-slate-800 px-4 py-2 rounded text-white font-bold border border-slate-700">Close Viewer</button>
+        </div>
+    </div>
+
     <script>
         let projects = [];
         let currentDate = new Date();
         let tempPastedPhotoUrl = '';
+        let currentLightboxProjId = null;
         const machinesConfig = { "DMG 65": {}, "DMG 125": {}, "DMG 210": {}, "GF 1000": {}, "GF 1200": {}, "GF 4000": {} };
 
         async function loadProjects() {
@@ -238,6 +277,24 @@
 
         function closeModal() { document.getElementById('project-modal').classList.add('hidden'); }
 
+        function openImageModal(id, event) {
+            if(event) event.stopPropagation();
+            const p = projects.find(x => x.id === id);
+            if (!p || !p.photo) return;
+            currentLightboxProjId = id;
+            document.getElementById('lb-po').textContent = p.po || '-';
+            document.getElementById('lb-client').textContent = p.client || '-';
+            document.getElementById('lb-project').textContent = p.project_name || '-';
+            document.getElementById('lb-grain').textContent = p.grain || '-';
+            document.getElementById('lb-priority').textContent = p.priority ? p.priority.toUpperCase() : '-';
+            document.getElementById('lb-img').src = p.photo;
+            document.getElementById('image-modal').classList.remove('hidden');
+        }
+
+        function closeImageModal() {
+            document.getElementById('image-modal').classList.add('hidden');
+        }
+
         async function saveProject(e) {
             e.preventDefault();
             const idInput = document.getElementById('project-id').value;
@@ -316,7 +373,7 @@
                             
                             html += `<td colspan="${spanCount}" class="border border-slate-800 p-0 cursor-pointer ${bgPriority} text-white transition relative shadow-lg" onclick="editProject(${proj.id})">`;
                             html += `<div class="absolute inset-x-2 inset-y-1.5 px-2 py-1 bg-black/30 rounded flex items-center gap-3 overflow-hidden">`;
-                            if (proj.photo) html += `<img src="${proj.photo}" class="project-bar-img shrink-0">`;
+                            if (proj.photo) html += `<img src="${proj.photo}" class="project-bar-img shrink-0" onclick="openImageModal(${proj.id}, event)">`;
                             html += `<div class="text-white font-medium text-xs whitespace-nowrap truncate">PO: ${proj.po} | Client: ${proj.client} | Project: ${proj.project_name}</div></div></td>`;
                         }
                         continue;
@@ -332,16 +389,18 @@
             const tbody = document.getElementById('projects-table-body');
             const search = document.getElementById('table-search').value.toLowerCase();
             const clientFilter = document.getElementById('table-client-filter').value;
+            const priorityFilter = document.getElementById('table-priority-filter').value;
 
             const filtered = projects.filter(p => {
                 const matchesSearch = !search || [p.po, p.project_name, p.grain, p.client].some(x => (x || '').toLowerCase().includes(search));
                 const matchesClient = !clientFilter || p.client === clientFilter;
-                return matchesSearch && matchesClient;
+                const matchesPriority = !priorityFilter || p.priority === priorityFilter;
+                return matchesSearch && matchesClient && matchesPriority;
             });
 
             tbody.innerHTML = filtered.map(p => `
                 <tr class="hover:bg-slate-900/80 transition border-b border-slate-800/60">
-                    <td class="p-3">${p.photo ? `<img src="${p.photo}" class="w-12 h-12 object-cover rounded border border-slate-700">` : '-'}</td>
+                    <td class="p-3">${p.photo ? `<img src="${p.photo}" class="w-12 h-12 object-cover rounded border border-slate-700 cursor-pointer" onclick="openImageModal(${p.id})">` : '-'}</td>
                     <td class="p-3 font-mono font-bold text-red-400">${p.po || '-'}</td>
                     <td class="p-3 font-bold text-white">${p.project_name || '-'}</td>
                     <td class="p-3 text-gray-200">${p.grain || '-'}</td>
@@ -361,9 +420,64 @@
         }
 
         function renderStats() {
-            document.getElementById('stat-total-projects').textContent = projects.length;
-            document.getElementById('stat-completed-projects').textContent = projects.filter(p => p.date_reelle).length;
-            document.getElementById('stat-active-projects').textContent = projects.filter(p => !p.date_reelle).length;
+            const total = projects.length;
+            const completed = projects.filter(p => p.date_reelle).length;
+            const active = total - completed;
+
+            document.getElementById('stat-total-projects').textContent = total;
+            document.getElementById('stat-completed-projects').textContent = completed;
+            document.getElementById('stat-active-projects').textContent = active;
+
+            // Machine workload breakdown
+            const machineCounts = {};
+            Object.keys(machinesConfig).forEach(m => machineCounts[m] = 0);
+            projects.forEach(p => {
+                if (machineCounts[p.machine] !== undefined) machineCounts[p.machine]++;
+            });
+
+            const machListEl = document.getElementById('stat-machines-list');
+            machListEl.innerHTML = Object.keys(machinesConfig).map(mach => {
+                const count = machineCounts[mach];
+                const pct = total > 0 ? Math.round((count / total) * 100) : 0;
+                return `
+                    <div>
+                        <div class="flex justify-between text-xs font-semibold mb-1">
+                            <span class="text-gray-300">${mach}</span>
+                            <span class="text-gray-400">${count} (${pct}%)</span>
+                        </div>
+                        <div class="w-full bg-slate-950 rounded-full h-2 border border-slate-800">
+                            <div class="bg-red-600 h-2 rounded-full" style="width: ${pct}%"></div>
+                        </div>
+                    </div>
+                `;
+            }).join('');
+
+            // Top clients breakdown
+            const clientCounts = {};
+            projects.forEach(p => {
+                if (p.client) clientCounts[p.client] = (clientCounts[p.client] || 0) + 1;
+            });
+            const sortedClients = Object.entries(clientCounts).sort((a, b) => b[1] - a[1]).slice(0, 5);
+            const clientListEl = document.getElementById('stat-clients-list');
+            
+            if (sortedClients.length === 0) {
+                clientListEl.innerHTML = `<p class="text-xs text-gray-500 italic">No client data available.</p>`;
+            } else {
+                clientListEl.innerHTML = sortedClients.map(([client, count]) => {
+                    const pct = total > 0 ? Math.round((count / total) * 100) : 0;
+                    return `
+                        <div>
+                            <div class="flex justify-between text-xs font-semibold mb-1">
+                                <span class="text-gray-300">${client}</span>
+                                <span class="text-gray-400">${count} projects (${pct}%)</span>
+                            </div>
+                            <div class="w-full bg-slate-950 rounded-full h-2 border border-slate-800">
+                                <div class="bg-amber-600 h-2 rounded-full" style="width: ${pct}%"></div>
+                            </div>
+                        </div>
+                    `;
+                }).join('');
+            }
         }
     </script>
 </body>
