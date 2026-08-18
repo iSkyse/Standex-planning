@@ -8,7 +8,7 @@
 </head>
 <body class="bg-slate-950 text-white font-sans">
 
-    <!-- 1. AUTH SCREEN -->
+    <!-- 1. AUTH SCREEN (RESTRICTED ACCESS) -->
     <div id="auth-screen" style="position:fixed; top:0; left:0; width:100%; height:100%; background:#0f172a; z-index:9999; display:flex; align-items:center; justify-content:center; text-align:center;">
         <div style="width: 300px; margin: auto;">
             <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/a/a2/Standex_International_logo.svg/1280px-Standex_International_logo.svg.png" style="width:150px; margin-bottom:20px; margin-left:auto; margin-right:auto;">
@@ -20,12 +20,13 @@
         </div>
     </div>
 
-    <!-- 2. MAIN CONTENT -->
+    <!-- 2. MAIN CONTENT (HIDDEN UNTIL AUTH) -->
     <div id="main-content" style="display:none;" class="p-6 max-w-7xl mx-auto">
         
         <header class="flex justify-between items-center mb-6 pb-4 border-b border-slate-800">
             <h1 class="text-2xl font-bold tracking-wide">Standex Engraving - Laser Schedule</h1>
             
+            <!-- Filter Bar for Mapping -->
             <div class="flex items-center gap-3">
                 <label class="text-xs font-bold text-gray-400 uppercase">Filter Mapping:</label>
                 <select id="filter-mapping" onchange="filterByMapping()" class="p-2 bg-slate-900 border border-slate-700 rounded text-white text-sm">
@@ -38,31 +39,37 @@
             </div>
         </header>
 
+        <!-- Form / Controls Section for Mold Entry -->
         <div class="grid grid-cols-1 md:grid-cols-3 gap-6 bg-slate-900 p-6 rounded-xl border border-slate-800 mb-8">
+            
+            <!-- Priority Selector -->
             <div>
                 <label class="block text-xs font-bold text-gray-400 uppercase">Priority</label>
                 <select id="priority" class="w-full mt-1 p-2.5 bg-slate-950 border border-slate-700 rounded text-white">
-                    <option value="yellow">🟡 Standard</option>
-                    <option value="red">🔴 Critical</option>
-                    <option value="green">🟢 Low</option>
+                    <option value="yellow" class="bg-slate-950 text-white">🟡 Standard</option>
+                    <option value="red" class="bg-slate-950 text-white">🔴 Critical</option>
+                    <option value="green" class="bg-slate-950 text-white">🟢 Low</option>
                 </select>
             </div>
 
+            <!-- Mapping Status Selector -->
             <div>
                 <label class="block text-xs font-bold text-gray-400 uppercase">Mapping Status</label>
                 <select id="mapping-status" class="w-full mt-1 p-2.5 bg-slate-950 border border-slate-700 rounded text-white">
-                    <option value="none">Not Done</option>
-                    <option value="pending">Done (Pending Validation)</option>
-                    <option value="valid">Done & Validated</option>
-                    <option value="invalid">Done & Invalid</option>
+                    <option value="none" class="bg-slate-950 text-slate-400">Not Done</option>
+                    <option value="pending" class="bg-slate-950 text-amber-500">Done (Pending Validation)</option>
+                    <option value="valid" class="bg-slate-950 text-green-500">Done & Validated</option>
+                    <option value="invalid" class="bg-slate-950 text-red-500">Done & Invalid</option>
                 </select>
             </div>
 
+            <!-- Action Button -->
             <div class="flex items-end">
                 <button onclick="updateMoldDetails()" class="w-full py-2.5 bg-red-600 hover:bg-red-700 text-white font-bold rounded transition">Update / Save Mold</button>
             </div>
         </div>
 
+        <!-- Display Card / Row Preview -->
         <div class="bg-slate-900 p-6 rounded-xl border border-slate-800">
             <h3 class="text-sm font-bold text-slate-400 uppercase mb-4">Mold Details Overview</h3>
             <div class="grid grid-cols-2 md:grid-cols-4 gap-4">
@@ -84,53 +91,95 @@
                 </div>
             </div>
         </div>
+
     </div>
 
+    <!-- 3. JAVASCRIPT LOGIC -->
     <script>
         const SITE_PASSWORD = "laser2026";
 
         function checkPassword() {
-            if (document.getElementById('site-password').value === SITE_PASSWORD) {
-                document.getElementById('auth-screen').style.display = 'none';
-                document.getElementById('main-content').style.display = 'block';
+            const input = document.getElementById('site-password').value;
+            const authScreen = document.getElementById('auth-screen');
+            const mainContent = document.getElementById('main-content');
+            const errorText = document.getElementById('auth-error');
+
+            if (input === SITE_PASSWORD) {
+                authScreen.style.display = 'none';
+                mainContent.style.display = 'block';
             } else {
-                document.getElementById('auth-error').style.display = 'block';
+                errorText.style.display = 'block';
                 document.getElementById('site-password').value = '';
             }
         }
 
         function updateMoldDetails() {
-            // 1. Priority Logic
-            const pVal = document.getElementById('priority').value;
-            const pSpan = document.getElementById('lb-priority');
-            
-            if (pVal === "yellow") { pSpan.textContent = "Standard"; pSpan.className = "font-bold text-sm text-amber-500"; }
-            else if (pVal === "red") { pSpan.textContent = "Critical"; pSpan.className = "font-bold text-sm text-red-500"; }
-            else { pSpan.textContent = "Low"; pSpan.className = "font-bold text-sm text-green-500"; }
+            // 1. Priority Processing
+            const priorityValue = document.getElementById('priority').value;
+            const prioritySpan = document.getElementById('lb-priority');
 
-            // 2. Mapping Logic
-            const mVal = document.getElementById('mapping-status').value;
-            const mSpan = document.getElementById('lb-mapping');
-            const badge = document.getElementById('calendar-badge-container');
+            let priorityDisplay = priorityValue;
+            let priorityColor = "text-white";
 
-            if (mVal === "valid") {
-                mSpan.textContent = "Validated"; mSpan.className = "font-bold text-sm text-green-500";
-                badge.innerHTML = '<span class="px-1.5 py-0.5 text-[10px] bg-green-500/20 text-green-400 rounded font-bold">Mapping: Valid</span>';
-            } else if (mVal === "invalid") {
-                mSpan.textContent = "Invalid"; mSpan.className = "font-bold text-sm text-red-500";
-                badge.innerHTML = '<span class="px-1.5 py-0.5 text-[10px] bg-red-500/20 text-red-400 rounded font-bold">Mapping: Invalid</span>';
-            } else if (mVal === "pending") {
-                mSpan.textContent = "Done (Pending)"; mSpan.className = "font-bold text-sm text-amber-500";
-                badge.innerHTML = '<span class="px-1.5 py-0.5 text-[10px] bg-amber-500/20 text-amber-400 rounded font-bold">Mapping: Pending</span>';
-            } else {
-                mSpan.textContent = "Not Done"; mSpan.className = "font-bold text-sm text-slate-400";
-                badge.innerHTML = '<span class="px-1.5 py-0.5 text-[10px] bg-slate-800 text-slate-400 rounded font-bold">Mapping: None</span>';
+            if (priorityValue === "yellow") {
+                priorityDisplay = "Standard";
+                priorityColor = "text-amber-500";
+            } else if (priorityValue === "red") {
+                priorityDisplay = "Critical";
+                priorityColor = "text-red-500";
+            } else if (priorityValue === "green") {
+                priorityDisplay = "Low";
+                priorityColor = "text-green-500";
             }
+
+            prioritySpan.textContent = priorityDisplay;
+            prioritySpan.className = "font-bold text-sm " + priorityColor;
+
+            // 2. Mapping Status Processing
+            const mappingValue = document.getElementById('mapping-status').value;
+            const mappingSpan = document.getElementById('lb-mapping');
+
+            let mappingDisplay = "Not Done";
+            let mappingColor = "text-slate-400";
+
+            if (mappingValue === "pending") {
+                mappingDisplay = "Done (Pending)";
+                mappingColor = "text-amber-500";
+            } else if (mappingValue === "valid") {
+                mappingDisplay = "Validated";
+                mappingColor = "text-green-500";
+            } else if (mappingValue === "invalid") {
+                mappingDisplay = "Invalid";
+                mappingColor = "text-red-500";
+            }
+
+            mappingSpan.textContent = mappingDisplay;
+            mappingSpan.className = "font-bold text-sm " + mappingColor;
+
+            // 3. Calendar Badge Simulation
+            const badgeContainer = document.getElementById('calendar-badge-container');
+            let mappingBadge = '';
+            if (mappingValue === 'valid') {
+                mappingBadge = '<span class="px-1.5 py-0.5 text-[10px] bg-green-500/20 text-green-400 rounded font-bold">Mapping: Valid</span>';
+            } else if (mappingValue === 'invalid') {
+                mappingBadge = '<span class="px-1.5 py-0.5 text-[10px] bg-red-500/20 text-red-400 rounded font-bold">Mapping: Invalid</span>';
+            } else if (mappingValue === 'pending') {
+                mappingBadge = '<span class="px-1.5 py-0.5 text-[10px] bg-amber-500/20 text-amber-400 rounded font-bold">Mapping: Pending</span>';
+            } else {
+                mappingBadge = '<span class="px-1.5 py-0.5 text-[10px] bg-slate-800 text-slate-400 rounded font-bold">Mapping: None</span>';
+            }
+            badgeContainer.innerHTML = mappingBadge;
         }
 
-        function filterByMapping() { /* Logique de filtre à lier à votre liste */ }
+        function filterByMapping() {
+            const selectedFilter = document.getElementById('filter-mapping').value;
+            console.log("Filtering list view by mapping status:", selectedFilter);
+        }
 
-        window.onload = updateMoldDetails;
+        // Run default update on page load to initialize text colors
+        window.onload = function() {
+            updateMoldDetails();
+        };
     </script>
 </body>
 </html>
