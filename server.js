@@ -1,69 +1,51 @@
 const express = require('express');
-const sqlite3 = require('sqlite3').verbose();
+const bodyParser = require('body-parser');
 const path = require('path');
 
 const app = express();
 const PORT = process.env.PORT || 3000;
 
-app.use(express.json({ limit: '10mb' }));
+app.use(bodyParser.json({ limit: '10mb' }));
 app.use(express.static(path.join(__dirname, 'public')));
 
-const dbFile = path.join(__dirname, '.sqlite');
-const db = new sqlite3.Database(dbFile, (err) => {
-    if (err) console.error('Erreur ouverture DB', err.message);
-    else console.log('Connecté à la base de données SQLite.');
-});
+// Stockage temporaire en mémoire vive (évite les pertes de données)
+let projects = [];
 
-db.run(`CREATE TABLE IF NOT EXISTS projects (
-    id INTEGER PRIMARY KEY,
-    po TEXT,
-    project_name TEXT,
-    grain TEXT,
-    client TEXT,
-    machine TEXT,
-    priority TEXT,
-    date_reception TEXT,
-    date_estimee TEXT,
-    date_reelle TEXT,
-    photo TEXT
-)`);
-
+// Route pour récupérer tous les projets
 app.get('/api/projects', (req, res) => {
-    db.all('SELECT * FROM projects', [], (err, rows) => {
-        if (err) return res.status(500).json({ error: err.message });
-        res.json(rows);
-    });
+    res.json(projects);
 });
 
+// Route pour ajouter ou modifier un projet
 app.post('/api/projects', (req, res) => {
-    const p = req.body;
-    db.get('SELECT id FROM projects WHERE id = ?', [p.id], (err, row) => {
-        if (err) return res.status(500).json({ error: err.message });
+    const projectData = req.body;
+    
+    if (!projectData.id) {
+        projectData.id = Date.now();
+    }
 
-        if (row) {
-            const query = `UPDATE projects SET po=?, project_name=?, grain=?, client=?, machine=?, priority=?, date_reception=?, date_estimee=?, date_reelle=?, photo=? WHERE id=?`;
-            db.run(query, [p.po, p.project_name, p.grain, p.client, p.machine, p.priority, p.date_reception, p.date_estimee, p.date_reelle, p.photo, p.id], function(err) {
-                if (err) return res.status(500).json({ error: err.message });
-                res.json({ success: true, id: p.id });
-            });
-        } else {
-            const query = `INSERT INTO projects (id, po, project_name, grain, client, machine, priority, date_reception, date_estimee, date_reelle, photo) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`;
-            db.run(query, [p.id, p.po, p.project_name, p.grain, p.client, p.machine, p.priority, p.date_reception, p.date_estimee, p.date_reelle, p.photo], function(err) {
-                if (err) return res.status(500).json({ error: err.message });
-                res.json({ success: true, id: p.id });
-            });
-        }
-    });
+    // Assurer des valeurs par défaut valides
+    projectData.priority = projectData.priority || 'yellow';
+    projectData.photo = projectData.photo || '';
+    projectData.date_reelle = projectData.date_reelle || null;
+
+    const index = projects.findIndex(p => p.id === Number(projectData.id));
+    if (index !== -1) {
+        projects[index] = { ...projects[index], ...projectData };
+    } else {
+        projects.push(projectData);
+    }
+
+    res.json({ success: true, project: projectData });
 });
 
+// Route pour supprimer un projet
 app.delete('/api/projects/:id', (req, res) => {
-    const id = req.params.id;
-    db.run('DELETE FROM projects WHERE id = ?', id, function(err) {
-        if (err) return res.status(500).json({ error: err.message });
-        res.json({ success: true, deletedID: id });
-    });
+    const id = Number(req.params.id);
+    projects = projects.filter(p => p.id !== id);
+    res.json({ success: true });
 });
 
 app.listen(PORT, () => {
-    console.log(`Serveur démarré sur le port ${PORT}`);
+    console.log(`Server running on port ${PORT}`);
 });
