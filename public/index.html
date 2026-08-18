@@ -27,16 +27,16 @@
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z" />
                 </svg>
             </div>
-            <h2 class="text-xl font-extrabold text-white uppercase tracking-wide mb-1">Accès Restreint</h2>
-            <p class="text-xs text-gray-400 mb-6">Entrez le mot de passe pour accéder au planning laser</p>
+            <h2 class="text-xl font-extrabold text-white uppercase tracking-wide mb-1">Restricted Access</h2>
+            <p class="text-xs text-gray-400 mb-6">Enter password to access the Laser Schedule</p>
             
             <form onsubmit="checkPassword(event)" class="space-y-4">
-                <input type="password" id="site-password" placeholder="Mot de passe..." required 
+                <input type="password" id="site-password" placeholder="Password..." required 
                     class="w-full p-3 bg-slate-950 border border-slate-700 rounded text-white text-center text-sm focus:outline-none focus:border-red-600">
                 <button type="submit" class="w-full bg-red-600 hover:bg-red-700 text-white p-3 rounded font-bold text-sm uppercase tracking-wider transition shadow-lg">
-                    Déverrouiller
+                    Unlock
                 </button>
-                <p id="auth-error" class="text-xs text-red-500 hidden font-semibold">Mot de passe incorrect.</p>
+                <p id="auth-error" class="text-xs text-red-500 hidden font-semibold">Incorrect password.</p>
             </form>
         </div>
     </div>
@@ -45,7 +45,7 @@
         <div class="flex items-center gap-3">
             <div class="border-l border-slate-800 pl-3">
                 <h1 class="text-lg font-extrabold tracking-wide uppercase text-white">Engraving <span class="text-red-600 font-light">| Master Schedule</span></h1>
-                <p class="text-[11px] text-gray-400">Laser Department Production Planning (Shared Server)</p>
+                <p class="text-[11px] text-gray-400">Laser Department Production Planning</p>
             </div>
         </div>
         <div class="flex items-center gap-3">
