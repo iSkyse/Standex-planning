@@ -40,7 +40,8 @@
             </form>
         </div>
     </div>
-
+<div id="main-content" style="display:none;">
+    </div>
     <header class="bg-black text-white p-3 shadow-xl flex justify-between items-center shrink-0 border-b-2 border-red-600">
         <div class="flex items-center gap-3">
             <div class="border-l border-slate-800 pl-3">
@@ -241,21 +242,24 @@
         </div>
     </div>
 
-    <script>
-        // MOT DE PASSE DU SITE (Changez "laser2026" par le mot de passe de votre choix)
-        const SITE_PASSWORD = "laser2026";
+<script>
+    const SITE_PASSWORD = "laser2026"; // Vérifiez bien que c'est celui-ci
 
-        function checkPassword(e) {
-            e.preventDefault();
-            const inputVal = document.getElementById('site-password').value;
-            if (inputVal === SITE_PASSWORD) {
-                sessionStorage.setItem('authenticated', 'true');
-                document.getElementById('auth-screen').classList.add('hidden');
-            } else {
-                const errEl = document.getElementById('auth-error');
-                errEl.classList.remove('hidden');
-            }
+    function checkPassword() {
+        const input = document.getElementById('site-password').value;
+        const authScreen = document.getElementById('auth-screen');
+        const mainContent = document.getElementById('main-content');
+        const errorText = document.getElementById('auth-error');
+
+        if (input === SITE_PASSWORD) {
+            authScreen.style.display = 'none';
+            mainContent.style.display = 'block';
+        } else {
+            errorText.style.display = 'block';
+            document.getElementById('site-password').value = '';
         }
+    }
+</script>
 
         // Vérification au chargement si l'utilisateur est déjà authentifié pendant sa session
         document.addEventListener('DOMContentLoaded', () => {
