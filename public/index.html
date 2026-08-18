@@ -227,8 +227,7 @@
                 <div><span class="text-gray-400 block font-bold uppercase">Project</span><span id="lb-project" class="text-white font-bold text-sm"></span></div>
                 <div><span class="text-gray-400 block font-bold uppercase">Grain</span><span id="lb-grain" class="text-white font-bold text-sm"></span></div>
                <div><span class="text-gray-400 block font-bold uppercase">Priority</span><span id="lb-priority" class="font-bold text-sm"></span></div>
-            </div>
-            <button onclick="closeImageModal()" class="text-gray-400 hover:text-white text-3xl font-light px-3">&times;</button>
+            </div>            <button onclick="closeImageModal()" class="text-gray-400 hover:text-white text-3xl font-light px-3">&times;</button>
         </div>
         <div id="lb-img-container" class="flex-grow flex items-center justify-center w-full overflow-hidden relative select-none mt-16">
             <img id="lb-img" src="" alt="Zoomed Mold" class="transition-transform duration-75 object-contain rounded-lg shadow-2xl max-h-[75vh] max-w-[85vw]" style="transform: scale(1) translate(0px, 0px);">
@@ -448,18 +447,22 @@
 const priorityValue = document.getElementById('priority').value;
 const prioritySpan = document.getElementById('lb-priority');
 
-// Remet les classes de base et enlève les anciennes couleurs
-prioritySpan.className = "font-bold text-sm uppercase ";
+let priorityDisplay = priorityValue;
+let priorityColor = "text-white";
 
 if (priorityValue === "yellow") {
-    prioritySpan.textContent = "Standard";
-    prioritySpan.classList.add("text-amber-500"); // Jaune
+    priorityDisplay = "Standard";
+    priorityColor = "text-amber-500";
 } else if (priorityValue === "red") {
-    prioritySpan.textContent = "Critical";
-    prioritySpan.classList.add("text-red-500");   // Rouge
+    priorityDisplay = "Critical";
+    priorityColor = "text-red-500";
 } else if (priorityValue === "green") {
-    prioritySpan.textContent = "Low";
-    prioritySpan.classList.add("text-green-500"); // Vert
+    priorityDisplay = "Low";
+    priorityColor = "text-green-500";
+}
+
+prioritySpan.textContent = priorityDisplay;
+prioritySpan.className = "font-bold text-sm " + priorityColor;
 }
                 document.getElementById('mapping_done').value = 'no';
                 document.getElementById('mapping_confirmed').value = 'no';
