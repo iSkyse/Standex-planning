@@ -18,6 +18,28 @@
 </head>
 <body class="bg-slate-950 font-sans h-screen flex flex-col overflow-hidden text-gray-100">
 
+    <!-- ÉCRAN DE VERROUILLAGE PAR MOT DE PASSE -->
+    <div id="auth-screen" class="fixed inset-0 bg-slate-950 z-50 flex items-center justify-center p-4">
+        <div class="bg-slate-900 border border-slate-800 rounded-2xl max-w-md w-full p-8 shadow-2xl text-center">
+            <div class="inline-flex p-3 bg-red-950/50 border border-red-800/50 rounded-full text-red-500 mb-4">
+                <svg xmlns="http://www.w3.org/2000/svg" class="h-8 w-8" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z" />
+                </svg>
+            </div>
+            <h2 class="text-xl font-extrabold text-white uppercase tracking-wide mb-1">Accès Restreint</h2>
+            <p class="text-xs text-gray-400 mb-6">Entrez le mot de passe pour accéder au planning laser</p>
+            
+            <form onsubmit="checkPassword(event)" class="space-y-4">
+                <input type="password" id="site-password" placeholder="Mot de passe..." required 
+                    class="w-full p-3 bg-slate-950 border border-slate-700 rounded text-white text-center text-sm focus:outline-none focus:border-red-600">
+                <button type="submit" class="w-full bg-red-600 hover:bg-red-700 text-white p-3 rounded font-bold text-sm uppercase tracking-wider transition shadow-lg">
+                    Déverrouiller
+                </button>
+                <p id="auth-error" class="text-xs text-red-500 hidden font-semibold">Mot de passe incorrect.</p>
+            </form>
+        </div>
+    </div>
+
     <header class="bg-black text-white p-3 shadow-xl flex justify-between items-center shrink-0 border-b-2 border-red-600">
         <div class="flex items-center gap-3">
             <div class="border-l border-slate-800 pl-3">
@@ -141,7 +163,7 @@
                     </div>
                 </div>
 
-                <!-- Mapping Section Added -->
+                <!-- Mapping Section -->
                 <div class="bg-slate-950 border border-slate-800 p-3 rounded-lg space-y-3">
                     <span class="block text-xs font-bold text-red-500 uppercase tracking-wide">Mapping Status</span>
                     <div class="grid grid-cols-2 gap-4">
@@ -214,28 +236,26 @@
     </div>
 
     <script>
-        let projects = [];
-        let currentDate = new Date();
-        let tempPastedPhotoUrl = '';
-        const machinesConfig = { "DMG 65": {}, "DMG 125": {}, "DMG 210": {}, "GF 1000": {}, "GF 1200": {}, "GF 4000": {} };
+        // MOT DE PASSE DU SITE (Changez "laser2026" par le mot de passe de votre choix)
+        const SITE_PASSWORD = "laser2026";
 
-        // Zoom & Pan variables
-        let scale = 1, panning = false, pointX = 0, pointY = 0, startX = 0, startY = 0;
-
-        async function loadProjects() {
-            try {
-                const res = await fetch('/api/projects');
-                projects = await res.json();
-                renderTimeline();
-                populateClientFilterDropdown();
-                renderTable();
-                renderStats();
-            } catch (err) {
-                console.error("Error loading projects", err);
+        function checkPassword(e) {
+            e.preventDefault();
+            const inputVal = document.getElementById('site-password').value;
+            if (inputVal === SITE_PASSWORD) {
+                sessionStorage.setItem('authenticated', 'true');
+                document.getElementById('auth-screen').classList.add('hidden');
+            } else {
+                const errEl = document.getElementById('auth-error');
+                errEl.classList.remove('hidden');
             }
         }
 
+        // Vérification au chargement si l'utilisateur est déjà authentifié pendant sa session
         document.addEventListener('DOMContentLoaded', () => {
+            if (sessionStorage.getItem('authenticated') === 'true') {
+                document.getElementById('auth-screen').classList.add('hidden');
+            }
             initYearDropdown();
             updateMonthYearSelectors();
             loadProjects();
@@ -288,6 +308,27 @@
                 updateImageTransform();
             });
         });
+
+        let projects = [];
+        let currentDate = new Date();
+        let tempPastedPhotoUrl = '';
+        const machinesConfig = { "DMG 65": {}, "DMG 125": {}, "DMG 210": {}, "GF 1000": {}, "GF 1200": {}, "GF 4000": {} };
+
+        // Zoom & Pan variables
+        let scale = 1, panning = false, pointX = 0, pointY = 0, startX = 0, startY = 0;
+
+        async function loadProjects() {
+            try {
+                const res = await fetch('/api/projects');
+                projects = await res.json();
+                renderTimeline();
+                populateClientFilterDropdown();
+                renderTable();
+                renderStats();
+            } catch (err) {
+                console.error("Error loading projects", err);
+            }
+        }
 
         function initYearDropdown() {
             const yearSelect = document.getElementById('year-select');
@@ -485,7 +526,6 @@
             const year = currentDate.getFullYear();
             const month = currentDate.getMonth();
             const daysInMonth = new Date(year, month + 1, 0).getDate();
-            const monthNames = ["January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"];
             
             updateMonthYearSelectors();
 
@@ -660,7 +700,7 @@
             const sortedClients = Object.entries(clientCounts).sort((a, b) => b[1] - a[1]).slice(0, 5);
             const clientListEl = document.getElementById('stat-clients-list');
             
-            if (sortedClients.length === 0) {
+            if (sortedClients.length ===0) {
                 clientListEl.innerHTML = `<p class="text-xs text-gray-500 italic">No client data available.</p>`;
             } else {
                 clientListEl.innerHTML = sortedClients.map(([client, count]) => {
