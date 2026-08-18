@@ -54,7 +54,7 @@
                 <select id="table-priority-filter" onchange="renderTable()" class="p-2 bg-slate-950 border border-slate-700 rounded text-sm text-white w-40">
                     <option value="">All Priorities</option>
                     <option value="red">Critical</option>
-                    <option value="yellow">Standard</option>
+                    <option value="yellow">Yellow</option>
                     <option value="green">Low</option>
                 </select>
             </div>
@@ -119,7 +119,7 @@
                     <div>
                         <label class="block text-xs font-bold text-gray-400 uppercase">Priority</label>
                         <select id="priority" class="w-full mt-1 p-2.5 bg-slate-950 border border-slate-700 rounded text-white">
-                            <option value="yellow">🟡 Standard</option><option value="red">🔴 Critical</option><option value="green">🟢 Low</option>
+                            <option value="yellow">🟡 Yellow</option><option value="red">🔴 Critical</option><option value="green">🟢 Low</option>
                         </select>
                     </div>
                 </div>
@@ -340,11 +340,10 @@
             document.getElementById('lb-project').textContent = p.project_name || '-';
             document.getElementById('lb-grain').textContent = p.grain || '-';
             
-            // Traduction correcte du statut de priorité en anglais (Standard au lieu de Yellow)
             let priorityText = '-';
             if (p.priority === 'red') priorityText = 'CRITICAL';
             else if (p.priority === 'green') priorityText = 'LOW';
-            else if (p.priority === 'yellow') priorityText = 'STANDARD';
+            else if (p.priority === 'yellow') priorityText = 'YELLOW';
             
             document.getElementById('lb-priority').textContent = priorityText;
             document.getElementById('lb-img').src = p.photo;
@@ -507,7 +506,7 @@
                         <td class="p-3"><span class="px-2 py-1 rounded text-xs bg-slate-800 border border-slate-700 text-gray-300">${p.machine}</span></td>
                         <td class="p-3">
                             <span class="px-2.5 py-1 rounded-full text-xs font-bold ${p.priority === 'red' ? 'bg-red-950 text-red-400' : (p.priority === 'green' ? 'bg-emerald-950 text-emerald-400' : 'bg-amber-950 text-amber-400')}">
-                                ${p.priority === 'red' ? 'CRITICAL' : (p.priority === 'green' ? 'LOW' : 'STANDARD')}
+                                ${p.priority === 'red' ? 'CRITICAL' : (p.priority === 'green' ? 'LOW' : 'YELLOW')}
                             </span>
                         </td>
                         <td class="p-3">
