@@ -317,6 +317,211 @@
                             html += `<td colspan="${spanCount}" class="border border-slate-800 p-0 cursor-pointer ${bgPriority} text-white transition relative shadow-lg" onclick="editProject(${proj.id})">`;
                             html += `<div class="absolute inset-x-2 inset-y-1.5 px-2 py-1 bg-black/30 rounded flex items-center gap-3 overflow-hidden">`;
                             if (proj.photo) html += `<img src="${proj.photo}" class="project-bar-img shrink-0">`;
+                            html += `<div class="text-white font-medium text-xs whitespace-nowrap truncate">PO: ${proj.po} | Client: ${proj.client} | Project: ${proj.project_name}</div></div></td>`;
+                        }
+                        continue;
+                    }
+                    html += `<td class="border border-slate-800/60 p-0 h-20 hover:bg-slate-900/50 w-10"></td>`;
+                }
+                html += `</tr>`;
+            });
+            container.innerHTML = html + `</tbody></table>`;
+        }
+
+        function renderTable() {
+            const tbody = document.getElementById('projects-table-body');
+            const search = document.getElementById('table-search').value.toLowerCase();
+            const clientFilter = document.getElementById('table-client-filter').value;
+
+            const filtered = projects.filter(p => {
+                const matchesSearch = !search || [p.po, p.project_name, p.grain, p.client].some(x => (x || '').toLowerCase().includes(search));
+                const matchesClient = !clientFilter || p.client === clientFilter;
+                return matchesSearch && matchesClient;
+            });
+
+            tbody.innerHTML = filtered.map(p => `
+                <tr class="hover:bg-slate-900/80 transition border-b border-slate-800/60">
+                    <td class="p-3">${p.photo ? `<img src="${p.photo}" class="w-12 h-12 object-cover rounded border border-slate-700">` : '-'}</td>
+                    <td class="p-3 font-mono font-bold text-red-400">${p.po || '-'}</td>
+                    <td class="p-3 font-bold text-white">${p.project_name || '-'}</td>
+                    <td class="p-3 text-gray-200">${p.grain || '-'}</td>
+                    <td class="p-3 text-gray-300">${p.client}</td>
+                    <td class="p-3"><span class="px-2 py-1 rounded text-xs bg-slate-800 border border-slate-700 text-gray-300">${p.machine}</span></td>
+                    <td class="p-3">
+                        <span class="px-2.5 py-1 rounded-full text-xs font-bold ${p.priority === 'red' ? 'bg-red-950 text-red-400' : (p.priority === 'green' ? 'bg-emerald-950 text-emerald-400' : 'bg-amber-950 text-amber-400')}">
+                            ${p.priority === 'red' ? 'CRITICAL' : (p.priority === 'green' ? 'LOW' : 'STANDARD')}
+                        </span>
+                    </td>
+                    <td class="p-3 text-xs text-gray-400">${p.date_reception}</td>
+                    <td class="p-3 text-xs text-gray-400">${p.date_estimee}</td>
+                    <td class="p-3 text-xs text-emerald-400 font-semibold">${p.date_reelle || '-'}</td>
+                    <td class="p-3 text-right"><button onclick="editProject(${p.id})" class="text-red-400 hover:text-red-300 text-xs font-bold uppercase">Edit</button></td>
+                </tr>
+            `).join('');
+        }
+
+        function renderStats() {
+            document.getElementById('stat-total-projects').textContent = projects.length;
+            document.getElementById('stat-completed-projects').textContent = projects.filter(p => p.date_reelle).length;
+            document.getElementById('stat-active-projects').textContent = projects.filter(p => !p.date_reelle).length;
+        }
+    </script>
+</body>
+</html>
+                    };
+                    reader.readAsDataURL(e.target.files[0]);
+                }
+            });
+        });
+
+        function handleImagePaste(e) {
+            const items = (e.clipboardData || e.originalEvent.clipboardData).items;
+            for (let i = 0; i < items.length; i++) {
+                if (items[i].type.indexOf('image') !== -1) {
+                    const blob = items[i].getAsFile();
+                    const reader = new FileReader();
+                    reader.onload = (event) => {
+                        tempPastedPhotoUrl = event.target.result;
+                        document.getElementById('photo-preview').src = tempPastedPhotoUrl;
+                        document.getElementById('photo-preview-container').classList.remove('hidden');
+                        document.getElementById('photo').value = '';
+                    };
+                    reader.readAsDataURL(blob);
+                    e.preventDefault();
+                    break;
+                }
+            }
+        }
+
+        function clearPhotoSelection() {
+            tempPastedPhotoUrl = '';
+            document.getElementById('photo').value = '';
+            document.getElementById('photo-preview').src = '';
+            document.getElementById('photo-preview-container').classList.add('hidden');
+        }
+
+        function changeMonth(dir) {
+            if (dir === 0) currentDate = new Date();
+            else currentDate.setMonth(currentDate.getMonth() + dir);
+            renderTimeline();
+        }
+
+        function switchView(view) {
+            ['grid', 'table', 'stats'].forEach(v => {
+                document.getElementById(`view-${v}`).classList.toggle('hidden', v !== view);
+                document.getElementById(`btn-${v}`).className = v === view 
+                    ? 'bg-red-600 text-white px-4 py-2 rounded font-bold text-xs shadow uppercase'
+                    : 'bg-slate-800 text-gray-300 px-4 py-2 rounded font-bold text-xs border border-slate-700 uppercase';
+            });
+            if (view === 'table') renderTable();
+            if (view === 'stats') renderStats();
+        }
+
+        function openModal(project = null) {
+            document.getElementById('project-form').reset();
+            tempPastedPhotoUrl = '';
+            document.getElementById('modal-title').textContent = project ? 'Edit Project' : 'Add New Project';
+            document.getElementById('project-id').value = project ? project.id : '';
+            document.getElementById('delete-btn').classList.toggle('hidden', !project);
+
+            if (project) {
+                ['po', 'project_name', 'grain', 'client', 'machine', 'priority', 'date_reception', 'date_estimee', 'date_reelle'].forEach(field => {
+                    if(document.getElementById(field)) document.getElementById(field).value = project[field] || '';
+                });
+                if (project.photo) {
+                    tempPastedPhotoUrl = project.photo;
+                    document.getElementById('photo-preview').src = project.photo;
+                    document.getElementById('photo-preview-container').classList.remove('hidden');
+                }
+            } else {
+                document.getElementById('date_reception').value = new Date().toISOString().split('T')[0];
+                document.getElementById('priority').value = 'yellow';
+                document.getElementById('photo-preview-container').classList.add('hidden');
+            }
+            document.getElementById('project-modal').classList.remove('hidden');
+        }
+
+        function closeModal() { document.getElementById('project-modal').classList.add('hidden'); }
+
+        async function saveProject(e) {
+            e.preventDefault();
+            const idInput = document.getElementById('project-id').value;
+            const id = idInput ? Number(idInput) : Date.now();
+            const existingProj = projects.find(x => x.id === id);
+
+            const pData = {
+                id,
+                po: document.getElementById('po').value.trim(),
+                project_name: document.getElementById('project_name').value.trim(),
+                grain: document.getElementById('grain').value.trim(),
+                client: document.getElementById('client').value.trim(),
+                machine: document.getElementById('machine').value,
+                priority: document.getElementById('priority').value,
+                date_reception: document.getElementById('date_reception').value,
+                date_estimee: document.getElementById('date_estimee').value,
+                date_reelle: document.getElementById('date_reelle').value || null,
+                photo: tempPastedPhotoUrl || (existingProj ? existingProj.photo : '')
+            };
+
+            await fetch('/api/projects', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(pData)
+            });
+
+            closeModal();
+            loadProjects();
+        }
+
+        function editProject(id) { const p = projects.find(x => x.id === id); if (p) openModal(p); }
+
+        async function confirmDeleteProject() {
+            const id = Number(document.getElementById('project-id').value);
+            if (confirm("Delete this project?")) {
+                await fetch(`/api/projects/${id}`, { method: 'DELETE' });
+                closeModal();
+                loadProjects();
+            }
+        }
+
+        function populateClientFilterDropdown() {
+            const select = document.getElementById('table-client-filter');
+            const clients = [...new Set(projects.map(p => p.client))].filter(Boolean).sort();
+            select.innerHTML = `<option value="">All Clients</option>` + clients.map(c => `<option value="${c}">${c}</option>`).join('');
+        }
+
+        function renderTimeline() {
+            const container = document.getElementById('timeline-container');
+            const year = currentDate.getFullYear();
+            const month = currentDate.getMonth();
+            const daysInMonth = new Date(year, month + 1, 0).getDate();
+            const monthNames = ["January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"];
+            
+            document.getElementById('current-month-label').textContent = `${monthNames[month]} ${year}`;
+
+            let html = `<table class="w-full border-collapse text-xs relative"><thead><tr class="bg-black text-gray-300">`;
+            html += `<th class="p-3 border border-slate-800 w-36 sticky left-0 bg-black z-20 text-red-500 font-bold uppercase">Machine</th>`;
+            for (let d = 1; d <= daysInMonth; d++) html += `<th class="p-1 border border-slate-800 text-center w-10 text-gray-400">${d}</th>`;
+            html += `</tr></thead><tbody>`;
+
+            Object.keys(machinesConfig).forEach(mach => {
+                html += `<tr class="border-b border-slate-800/80 h-20"><td class="p-3 font-bold bg-slate-900 border border-slate-800 sticky left-0 z-20"><span class="px-2 py-1 rounded text-white text-xs bg-slate-800 border border-slate-700">${mach}</span></td>`;
+
+                for (let day = 1; day <= daysInMonth; day++) {
+                    const currentCellDate = `${year}-${String(month + 1).padStart(2, '0')}-${String(day).padStart(2, '0')}`;
+                    const proj = projects.find(p => p.machine === mach && currentCellDate >= p.date_reception && currentCellDate <= (p.date_reelle || p.date_estimee));
+
+                    if (proj) {
+                        const startD = Math.max(1, new Date(proj.date_reception) < new Date(year, month, 1) ? 1 : new Date(proj.date_reception).getDate());
+                        const endD = Math.min(daysInMonth, new Date(proj.date_reelle || proj.date_estimee) > new Date(year, month, daysInMonth) ? daysInMonth : new Date(proj.date_reelle || proj.date_estimee).getDate());
+                        
+                        if (day === startD) {
+                            const spanCount = (endD - startD) + 1;
+                            const bgPriority = proj.priority === 'red' ? 'bg-red-600' : (proj.priority === 'green' ? 'bg-emerald-600' : 'bg-amber-600');
+                            
+                            html += `<td colspan="${spanCount}" class="border border-slate-800 p-0 cursor-pointer ${bgPriority} text-white transition relative shadow-lg" onclick="editProject(${proj.id})">`;
+                            html += `<div class="absolute inset-x-2 inset-y-1.5 px-2 py-1 bg-black/30 rounded flex items-center gap-3 overflow-hidden">`;
+                            if (proj.photo) html += `<img src="${proj.photo}" class="project-bar-img shrink-0">`;
                             html += `<div class="text-white font-medium text-xs whitespace-nowrap">PO: <strong class="text-amber-300">${proj.po || 'N/A'}</strong> | Client: <strong>${proj.client}</strong> | Project: <strong>${proj.project_name}</strong></div></div></td>`;
                         }
                         continue;
