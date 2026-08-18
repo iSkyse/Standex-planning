@@ -50,21 +50,21 @@
         <div class="flex items-center gap-3">
             <button onclick="changeMonth(-1)" class="bg-slate-800 px-3 py-1 rounded text-sm hover:bg-slate-700 font-medium border border-slate-700">◀ Prev</button>
             <div class="flex items-center gap-1 bg-slate-900 border border-slate-700 rounded px-2 py-1">
-                <select id="month-select" onchange="onMonthYearDropdownChange()" class="bg-transparent text-red-500 font-bold text-sm focus:outline-none cursor-pointer">
-                    <option value="0">January</option>
-                    <option value="1">February</option>
-                    <option value="2">March</option>
-                    <option value="3">April</option>
-                    <option value="4">May</option>
-                    <option value="5">June</option>
-                    <option value="6">July</option>
-                    <option value="7">August</option>
-                    <option value="8">September</option>
-                    <option value="9">October</option>
-                    <option value="10">November</option>
-                    <option value="11">December</option>
+                <select id="month-select" onchange="onMonthYearDropdownChange()" class="bg-slate-900 text-red-500 font-bold text-sm focus:outline-none cursor-pointer">
+                    <option value="0" class="bg-slate-900 text-white">January</option>
+                    <option value="1" class="bg-slate-900 text-white">February</option>
+                    <option value="2" class="bg-slate-900 text-white">March</option>
+                    <option value="3" class="bg-slate-900 text-white">April</option>
+                    <option value="4" class="bg-slate-900 text-white">May</option>
+                    <option value="5" class="bg-slate-900 text-white">June</option>
+                    <option value="6" class="bg-slate-900 text-white">July</option>
+                    <option value="7" class="bg-slate-900 text-white">August</option>
+                    <option value="8" class="bg-slate-900 text-white">September</option>
+                    <option value="9" class="bg-slate-900 text-white">October</option>
+                    <option value="10" class="bg-slate-900 text-white">November</option>
+                    <option value="11" class="bg-slate-900 text-white">December</option>
                 </select>
-                <select id="year-select" onchange="onMonthYearDropdownChange()" class="bg-transparent text-white font-bold text-sm focus:outline-none cursor-pointer">
+                <select id="year-select" onchange="onMonthYearDropdownChange()" class="bg-slate-900 text-white font-bold text-sm focus:outline-none cursor-pointer">
                 </select>
             </div>
             <button onclick="changeMonth(1)" class="bg-slate-800 px-3 py-1 rounded text-sm hover:bg-slate-700 font-medium border border-slate-700">Next ▶</button>
@@ -151,14 +151,20 @@
                     <div>
                         <label class="block text-xs font-bold text-gray-400 uppercase">Machine</label>
                         <select id="machine" class="w-full mt-1 p-2.5 bg-slate-950 border border-slate-700 rounded text-white">
-                            <option value="DMG 65">DMG 65</option><option value="DMG 125">DMG 125</option><option value="DMG 210">DMG 210</option>
-                            <option value="GF 1000">GF 1000</option><option value="GF 1200">GF 1200</option><option value="GF 4000">GF 4000</option>
+                            <option value="DMG 65" class="bg-slate-950 text-white">DMG 65</option>
+                            <option value="DMG 125" class="bg-slate-950 text-white">DMG 125</option>
+                            <option value="DMG 210" class="bg-slate-950 text-white">DMG 210</option>
+                            <option value="GF 1000" class="bg-slate-950 text-white">GF 1000</option>
+                            <option value="GF 1200" class="bg-slate-950 text-white">GF 1200</option>
+                            <option value="GF 4000" class="bg-slate-950 text-white">GF 4000</option>
                         </select>
                     </div>
                     <div>
                         <label class="block text-xs font-bold text-gray-400 uppercase">Priority</label>
                         <select id="priority" class="w-full mt-1 p-2.5 bg-slate-950 border border-slate-700 rounded text-white">
-                            <option value="yellow">🟡 Yellow</option><option value="red">🔴 Critical</option><option value="green">🟢 Low</option>
+                            <option value="yellow" class="bg-slate-950 text-white">🟡 Yellow</option>
+                            <option value="red" class="bg-slate-950 text-white">🔴 Critical</option>
+                            <option value="green" class="bg-slate-950 text-white">🟢 Low</option>
                         </select>
                     </div>
                 </div>
@@ -170,15 +176,15 @@
                         <div>
                             <label class="block text-[11px] font-bold text-gray-400 uppercase">Mapping Done?</label>
                             <select id="mapping_done" onchange="toggleMappingConfirmation()" class="w-full mt-1 p-2 bg-slate-900 border border-slate-700 rounded text-xs text-white">
-                                <option value="no">No</option>
-                                <option value="yes">Yes</option>
+                                <option value="no" class="bg-slate-900 text-white">No</option>
+                                <option value="yes" class="bg-slate-900 text-white">Yes</option>
                             </select>
                         </div>
                         <div id="mapping-confirmed-wrapper" class="hidden">
                             <label class="block text-[11px] font-bold text-gray-400 uppercase">Mapping Confirmed?</label>
                             <select id="mapping_confirmed" class="w-full mt-1 p-2 bg-slate-900 border border-slate-700 rounded text-xs text-white">
-                                <option value="no">No</option>
-                                <option value="yes">Yes</option>
+                                <option value="no" class="bg-slate-900 text-white">No</option>
+                                <option value="yes" class="bg-slate-900 text-white">Yes</option>
                             </select>
                         </div>
                     </div>
@@ -334,7 +340,7 @@
             const yearSelect = document.getElementById('year-select');
             let yearsHtml = '';
             for(let y = 2024; y <= 2035; y++) {
-                yearsHtml += `<option value="${y}">${y}</option>`;
+                yearsHtml += `<option value="${y}" class="bg-slate-900 text-white">${y}</option>`;
             }
             yearSelect.innerHTML = yearsHtml;
         }
@@ -518,7 +524,7 @@
         function populateClientFilterDropdown() {
             const select = document.getElementById('table-client-filter');
             const clients = [...new Set(projects.map(p => p.client))].filter(Boolean).sort();
-            select.innerHTML = `<option value="">All Clients</option>` + clients.map(c => `<option value="${c}">${c}</option>`).join('');
+            select.innerHTML = `<option value="" class="bg-slate-950 text-white">All Clients</option>` + clients.map(c => `<option value="${c}" class="bg-slate-950 text-white">${c}</option>`).join('');
         }
 
         function renderTimeline() {
@@ -700,7 +706,7 @@
             const sortedClients = Object.entries(clientCounts).sort((a, b) => b[1] - a[1]).slice(0, 5);
             const clientListEl = document.getElementById('stat-clients-list');
             
-            if (sortedClients.length ===0) {
+            if (sortedClients.length === 0) {
                 clientListEl.innerHTML = `<p class="text-xs text-gray-500 italic">No client data available.</p>`;
             } else {
                 clientListEl.innerHTML = sortedClients.map(([client, count]) => {
