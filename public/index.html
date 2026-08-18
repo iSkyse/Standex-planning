@@ -40,97 +40,99 @@
             </form>
         </div>
     </div>
-<div id="main-content" style="display:none;">
+
+    <!-- MAIN CONTENT (HIDDEN UNTIL AUTH) -->
+    <div id="main-content" style="display:none;" class="flex flex-col h-full overflow-hidden">
+        <header class="bg-black text-white p-3 shadow-xl flex justify-between items-center shrink-0 border-b-2 border-red-600">
+            <div class="flex items-center gap-3">
+                <div class="border-l border-slate-800 pl-3">
+                    <h1 class="text-lg font-extrabold tracking-wide uppercase text-white">Engraving <span class="text-red-600 font-light">| Master Schedule</span></h1>
+                    <p class="text-[11px] text-gray-400">Laser Department Production Planning</p>
+                </div>
+            </div>
+            <div class="flex items-center gap-3">
+                <button onclick="changeMonth(-1)" class="bg-slate-800 px-3 py-1 rounded text-sm hover:bg-slate-700 font-medium border border-slate-700">◀ Prev</button>
+                <div class="flex items-center gap-1 bg-slate-900 border border-slate-700 rounded px-2 py-1">
+                    <select id="month-select" onchange="onMonthYearDropdownChange()" class="bg-slate-900 text-red-500 font-bold text-sm focus:outline-none cursor-pointer">
+                        <option value="0" class="bg-slate-900 text-white">January</option>
+                        <option value="1" class="bg-slate-900 text-white">February</option>
+                        <option value="2" class="bg-slate-900 text-white">March</option>
+                        <option value="3" class="bg-slate-900 text-white">April</option>
+                        <option value="4" class="bg-slate-900 text-white">May</option>
+                        <option value="5" class="bg-slate-900 text-white">June</option>
+                        <option value="6" class="bg-slate-900 text-white">July</option>
+                        <option value="7" class="bg-slate-900 text-white">August</option>
+                        <option value="8" class="bg-slate-900 text-white">September</option>
+                        <option value="9" class="bg-slate-900 text-white">October</option>
+                        <option value="10" class="bg-slate-900 text-white">November</option>
+                        <option value="11" class="bg-slate-900 text-white">December</option>
+                    </select>
+                    <select id="year-select" onchange="onMonthYearDropdownChange()" class="bg-slate-900 text-white font-bold text-sm focus:outline-none cursor-pointer">
+                    </select>
+                </div>
+                <button onclick="changeMonth(1)" class="bg-slate-800 px-3 py-1 rounded text-sm hover:bg-slate-700 font-medium border border-slate-700">Next ▶</button>
+                <button onclick="changeMonth(0)" class="bg-slate-900 px-3 py-1 rounded text-sm hover:bg-slate-800 ml-2 font-medium border border-slate-700">Today</button>
+                <button onclick="openModal()" class="bg-red-600 hover:bg-red-700 text-white px-5 py-2 rounded font-bold transition text-sm ml-6 shadow-lg uppercase tracking-wider">+ New Project</button>
+            </div>
+        </header>
+
+        <main class="flex-grow p-4 flex flex-col overflow-hidden bg-slate-900">
+            <div class="flex gap-3 mb-3 shrink-0">
+                <button onclick="switchView('grid')" id="btn-grid" class="bg-red-600 text-white px-4 py-2 rounded font-bold text-xs shadow tracking-wide uppercase">Timeline Schedule</button>
+                <button onclick="switchView('table')" id="btn-table" class="bg-slate-800 text-gray-300 px-4 py-2 rounded font-bold text-xs border border-slate-700 shadow-sm uppercase">Projects List View</button>
+                <button onclick="switchView('stats')" id="btn-stats" class="bg-slate-800 text-gray-300 px-4 py-2 rounded font-bold text-xs border border-slate-700 shadow-sm uppercase">Statistics</button>
+            </div>
+
+            <div id="view-grid" class="bg-slate-950 rounded-xl shadow-inner flex-grow overflow-auto border border-slate-800 relative">
+                <div id="timeline-container" class="min-w-[1600px] p-2"></div>
+            </div>
+
+            <div id="view-table" class="bg-slate-950 rounded-xl shadow flex flex-col hidden flex-grow overflow-hidden border border-slate-800">
+                <div class="p-4 bg-black/60 border-b border-slate-800 flex gap-4 items-center shrink-0 flex-wrap">
+                    <input type="text" id="table-search" oninput="renderTable()" placeholder="Search PO, Project, Grain..." class="p-2 bg-slate-950 border border-slate-700 rounded text-sm text-white w-64">
+                    <select id="table-client-filter" onchange="renderTable()" class="p-2 bg-slate-950 border border-slate-700 rounded text-sm text-white w-48">
+                        <option value="">All Clients</option>
+                    </select>
+                    <select id="table-priority-filter" onchange="renderTable()" class="p-2 bg-slate-950 border border-slate-700 rounded text-sm text-white w-40">
+                        <option value="">All Priorities</option>
+                        <option value="red">Critical</option>
+                        <option value="yellow">Standard</option>
+                        <option value="green">Low</option>
+                    </select>
+                </div>
+                <div class="flex-grow overflow-auto">
+                    <table class="w-full text-left border-collapse">
+                        <thead class="bg-black text-red-500 text-xs uppercase sticky top-0 z-10 border-b border-slate-800">
+                            <tr>
+                                <th class="p-3">Photo</th><th class="p-3">PO</th><th class="p-3">Project Name</th><th class="p-3">Grain</th><th class="p-3">Client</th><th class="p-3">Machine</th><th class="p-3">Priority</th><th class="p-3">Mapping</th><th class="p-3">Status</th><th class="p-3">Reception</th><th class="p-3">Est. End</th><th class="p-3">Real End</th><th class="p-3 text-right">Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody id="projects-table-body" class="text-sm divide-y divide-slate-800/60 text-gray-300"></tbody>
+                    </table>
+                </div>
+            </div>
+
+            <div id="view-stats" class="bg-slate-950 rounded-xl shadow hidden flex-grow overflow-auto border border-slate-800 p-6">
+                <h2 class="text-xl font-extrabold text-white uppercase tracking-wide mb-6 border-b border-slate-800 pb-3">Workshop Performance & Statistics</h2>
+                <div class="grid grid-cols-1 md:grid-cols-4 gap-5 mb-8">
+                    <div class="bg-slate-900 border border-slate-800 rounded-xl p-5"><span class="text-xs font-bold text-gray-400 uppercase">Total Projects</span><div id="stat-total-projects" class="text-3xl font-black text-white mt-2">0</div></div>
+                    <div class="bg-slate-900 border border-slate-800 rounded-xl p-5"><span class="text-xs font-bold text-gray-400 uppercase">Completed Molds (Finished)</span><div id="stat-completed-projects" class="text-3xl font-black text-emerald-400 mt-2">0</div></div>
+                    <div class="bg-slate-900 border border-slate-800 rounded-xl p-5"><span class="text-xs font-bold text-gray-400 uppercase">Active In Progress</span><div id="stat-active-projects" class="text-3xl font-black text-amber-400 mt-2">0</div></div>
+                    <div class="bg-slate-900 border border-slate-800 rounded-xl p-5"><span class="text-xs font-bold text-gray-400 uppercase">On-Time Delivery Rate</span><div id="stat-on-time" class="text-3xl font-black text-red-500 mt-2">0%</div></div>
+                </div>
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    <div class="bg-slate-900 border border-slate-800 rounded-xl p-5">
+                        <h3 class="text-sm font-bold text-gray-300 uppercase mb-4">Workload by Machine</h3>
+                        <div id="stat-machines-list" class="space-y-3"></div>
+                    </div>
+                    <div class="bg-slate-900 border border-slate-800 rounded-xl p-5">
+                        <h3 class="text-sm font-bold text-gray-300 uppercase mb-4">Top Clients (Project Volume)</h3>
+                        <div id="stat-clients-list" class="space-y-3"></div>
+                    </div>
+                </div>
+            </div>
+        </main>
     </div>
-    <header class="bg-black text-white p-3 shadow-xl flex justify-between items-center shrink-0 border-b-2 border-red-600">
-        <div class="flex items-center gap-3">
-            <div class="border-l border-slate-800 pl-3">
-                <h1 class="text-lg font-extrabold tracking-wide uppercase text-white">Engraving <span class="text-red-600 font-light">| Master Schedule</span></h1>
-                <p class="text-[11px] text-gray-400">Laser Department Production Planning</p>
-            </div>
-        </div>
-        <div class="flex items-center gap-3">
-            <button onclick="changeMonth(-1)" class="bg-slate-800 px-3 py-1 rounded text-sm hover:bg-slate-700 font-medium border border-slate-700">◀ Prev</button>
-            <div class="flex items-center gap-1 bg-slate-900 border border-slate-700 rounded px-2 py-1">
-                <select id="month-select" onchange="onMonthYearDropdownChange()" class="bg-slate-900 text-red-500 font-bold text-sm focus:outline-none cursor-pointer">
-                    <option value="0" class="bg-slate-900 text-white">January</option>
-                    <option value="1" class="bg-slate-900 text-white">February</option>
-                    <option value="2" class="bg-slate-900 text-white">March</option>
-                    <option value="3" class="bg-slate-900 text-white">April</option>
-                    <option value="4" class="bg-slate-900 text-white">May</option>
-                    <option value="5" class="bg-slate-900 text-white">June</option>
-                    <option value="6" class="bg-slate-900 text-white">July</option>
-                    <option value="7" class="bg-slate-900 text-white">August</option>
-                    <option value="8" class="bg-slate-900 text-white">September</option>
-                    <option value="9" class="bg-slate-900 text-white">October</option>
-                    <option value="10" class="bg-slate-900 text-white">November</option>
-                    <option value="11" class="bg-slate-900 text-white">December</option>
-                </select>
-                <select id="year-select" onchange="onMonthYearDropdownChange()" class="bg-slate-900 text-white font-bold text-sm focus:outline-none cursor-pointer">
-                </select>
-            </div>
-            <button onclick="changeMonth(1)" class="bg-slate-800 px-3 py-1 rounded text-sm hover:bg-slate-700 font-medium border border-slate-700">Next ▶</button>
-            <button onclick="changeMonth(0)" class="bg-slate-900 px-3 py-1 rounded text-sm hover:bg-slate-800 ml-2 font-medium border border-slate-700">Today</button>
-            <button onclick="openModal()" class="bg-red-600 hover:bg-red-700 text-white px-5 py-2 rounded font-bold transition text-sm ml-6 shadow-lg uppercase tracking-wider">+ New Project</button>
-        </div>
-    </header>
-
-    <main class="flex-grow p-4 flex flex-col overflow-hidden bg-slate-900">
-        <div class="flex gap-3 mb-3 shrink-0">
-            <button onclick="switchView('grid')" id="btn-grid" class="bg-red-600 text-white px-4 py-2 rounded font-bold text-xs shadow tracking-wide uppercase">Timeline Schedule</button>
-            <button onclick="switchView('table')" id="btn-table" class="bg-slate-800 text-gray-300 px-4 py-2 rounded font-bold text-xs border border-slate-700 shadow-sm uppercase">Projects List View</button>
-            <button onclick="switchView('stats')" id="btn-stats" class="bg-slate-800 text-gray-300 px-4 py-2 rounded font-bold text-xs border border-slate-700 shadow-sm uppercase">Statistics</button>
-        </div>
-
-        <div id="view-grid" class="bg-slate-950 rounded-xl shadow-inner flex-grow overflow-auto border border-slate-800 relative">
-            <div id="timeline-container" class="min-w-[1600px] p-2"></div>
-        </div>
-
-        <div id="view-table" class="bg-slate-950 rounded-xl shadow flex flex-col hidden flex-grow overflow-hidden border border-slate-800">
-            <div class="p-4 bg-black/60 border-b border-slate-800 flex gap-4 items-center shrink-0 flex-wrap">
-                <input type="text" id="table-search" oninput="renderTable()" placeholder="Search PO, Project, Grain..." class="p-2 bg-slate-950 border border-slate-700 rounded text-sm text-white w-64">
-                <select id="table-client-filter" onchange="renderTable()" class="p-2 bg-slate-950 border border-slate-700 rounded text-sm text-white w-48">
-                    <option value="">All Clients</option>
-                </select>
-                <select id="table-priority-filter" onchange="renderTable()" class="p-2 bg-slate-950 border border-slate-700 rounded text-sm text-white w-40">
-                    <option value="">All Priorities</option>
-                    <option value="red">Critical</option>
-                    <option value="yellow">Standart</option>
-                    <option value="green">Low</option>
-                </select>
-            </div>
-            <div class="flex-grow overflow-auto">
-                <table class="w-full text-left border-collapse">
-                    <thead class="bg-black text-red-500 text-xs uppercase sticky top-0 z-10 border-b border-slate-800">
-                        <tr>
-                            <th class="p-3">Photo</th><th class="p-3">PO</th><th class="p-3">Project Name</th><th class="p-3">Grain</th><th class="p-3">Client</th><th class="p-3">Machine</th><th class="p-3">Priority</th><th class="p-3">Mapping</th><th class="p-3">Status</th><th class="p-3">Reception</th><th class="p-3">Est. End</th><th class="p-3">Real End</th><th class="p-3 text-right">Actions</th>
-                        </tr>
-                    </thead>
-                    <tbody id="projects-table-body" class="text-sm divide-y divide-slate-800/60 text-gray-300"></tbody>
-                </table>
-            </div>
-        </div>
-
-        <div id="view-stats" class="bg-slate-950 rounded-xl shadow hidden flex-grow overflow-auto border border-slate-800 p-6">
-            <h2 class="text-xl font-extrabold text-white uppercase tracking-wide mb-6 border-b border-slate-800 pb-3">Workshop Performance & Statistics</h2>
-            <div class="grid grid-cols-1 md:grid-cols-4 gap-5 mb-8">
-                <div class="bg-slate-900 border border-slate-800 rounded-xl p-5"><span class="text-xs font-bold text-gray-400 uppercase">Total Projects</span><div id="stat-total-projects" class="text-3xl font-black text-white mt-2">0</div></div>
-                <div class="bg-slate-900 border border-slate-800 rounded-xl p-5"><span class="text-xs font-bold text-gray-400 uppercase">Completed Molds (Finished)</span><div id="stat-completed-projects" class="text-3xl font-black text-emerald-400 mt-2">0</div></div>
-                <div class="bg-slate-900 border border-slate-800 rounded-xl p-5"><span class="text-xs font-bold text-gray-400 uppercase">Active In Progress</span><div id="stat-active-projects" class="text-3xl font-black text-amber-400 mt-2">0</div></div>
-                <div class="bg-slate-900 border border-slate-800 rounded-xl p-5"><span class="text-xs font-bold text-gray-400 uppercase">On-Time Delivery Rate</span><div id="stat-on-time" class="text-3xl font-black text-red-500 mt-2">0%</div></div>
-            </div>
-            <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-                <div class="bg-slate-900 border border-slate-800 rounded-xl p-5">
-                    <h3 class="text-sm font-bold text-gray-300 uppercase mb-4">Workload by Machine</h3>
-                    <div id="stat-machines-list" class="space-y-3"></div>
-                </div>
-                <div class="bg-slate-900 border border-slate-800 rounded-xl p-5">
-                    <h3 class="text-sm font-bold text-gray-300 uppercase mb-4">Top Clients (Project Volume)</h3>
-                    <div id="stat-clients-list" class="space-y-3"></div>
-                </div>
-            </div>
-        </div>
-    </main>
 
     <!-- Modal Form -->
     <div id="project-modal" class="fixed inset-0 bg-black/80 hidden flex items-center justify-center p-4 z-50 backdrop-blur-sm">
@@ -227,8 +229,9 @@
                 <div><span class="text-gray-400 block font-bold uppercase">Client</span><span id="lb-client" class="text-white font-bold text-sm"></span></div>
                 <div><span class="text-gray-400 block font-bold uppercase">Project</span><span id="lb-project" class="text-white font-bold text-sm"></span></div>
                 <div><span class="text-gray-400 block font-bold uppercase">Grain</span><span id="lb-grain" class="text-white font-bold text-sm"></span></div>
-               <div><span class="text-gray-400 block font-bold uppercase">Priority</span><span id="lb-priority" class="font-bold text-sm"></span></div>
-            </div>            <button onclick="closeImageModal()" class="text-gray-400 hover:text-white text-3xl font-light px-3">&times;</button>
+                <div><span class="text-gray-400 block font-bold uppercase">Priority</span><span id="lb-priority" class="font-bold text-sm"></span></div>
+            </div>
+            <button onclick="closeImageModal()" class="text-gray-400 hover:text-white text-3xl font-light px-3">&times;</button>
         </div>
         <div id="lb-img-container" class="flex-grow flex items-center justify-center w-full overflow-hidden relative select-none mt-16">
             <img id="lb-img" src="" alt="Zoomed Mold" class="transition-transform duration-75 object-contain rounded-lg shadow-2xl max-h-[75vh] max-w-[85vw]" style="transform: scale(1) translate(0px, 0px);">
@@ -242,81 +245,92 @@
         </div>
     </div>
 
-<script>
-    const SITE_PASSWORD = "laser2026"; // Vérifiez bien que c'est celui-ci
+    <!-- SCRIPT UNIQUE ET CORRECT -->
+    <script>
+        const SITE_PASSWORD = "laser2026";
 
-    function checkPassword() {
-        const input = document.getElementById('site-password').value;
-        const authScreen = document.getElementById('auth-screen');
-        const mainContent = document.getElementById('main-content');
-        const errorText = document.getElementById('auth-error');
+        function checkPassword(event) {
+            if (event) event.preventDefault();
+            const input = document.getElementById('site-password').value;
+            const authScreen = document.getElementById('auth-screen');
+            const mainContent = document.getElementById('main-content');
+            const errorText = document.getElementById('auth-error');
 
-        if (input === SITE_PASSWORD) {
-            authScreen.style.display = 'none';
-            mainContent.style.display = 'block';
-        } else {
-            errorText.style.display = 'block';
-            document.getElementById('site-password').value = '';
+            if (input === SITE_PASSWORD) {
+                authScreen.style.display = 'none';
+                mainContent.style.display = 'flex';
+                sessionStorage.setItem('authenticated', 'true');
+            } else {
+                errorText.classList.remove('hidden');
+                document.getElementById('site-password').value = '';
+            }
         }
-    }
-</script>
 
-        // Vérification au chargement si l'utilisateur est déjà authentifié pendant sa session
         document.addEventListener('DOMContentLoaded', () => {
             if (sessionStorage.getItem('authenticated') === 'true') {
-                document.getElementById('auth-screen').classList.add('hidden');
+                document.getElementById('auth-screen').style.display = 'none';
+                document.getElementById('main-content').style.display = 'flex';
             }
             initYearDropdown();
             updateMonthYearSelectors();
             loadProjects();
 
             const pasteDropZone = document.getElementById('paste-drop-zone');
-            pasteDropZone.addEventListener('paste', handleImagePaste);
-            document.getElementById('project-modal').addEventListener('paste', handleImagePaste);
+            if (pasteDropZone) {
+                pasteDropZone.addEventListener('paste', handleImagePaste);
+            }
+            const projectModal = document.getElementById('project-modal');
+            if (projectModal) {
+                projectModal.addEventListener('paste', handleImagePaste);
+            }
 
-            document.getElementById('photo').addEventListener('change', (e) => {
-                if (e.target.files && e.target.files[0]) {
-                    const reader = new FileReader();
-                    reader.onload = (e2) => {
-                        tempPastedPhotoUrl = e2.target.result;
-                        document.getElementById('photo-preview').src = tempPastedPhotoUrl;
-                        document.getElementById('photo-preview-container').classList.remove('hidden');
-                    };
-                    reader.readAsDataURL(e.target.files[0]);
-                }
-            });
+            const photoInput = document.getElementById('photo');
+            if (photoInput) {
+                photoInput.addEventListener('change', (e) => {
+                    if (e.target.files && e.target.files[0]) {
+                        const reader = new FileReader();
+                        reader.onload = (e2) => {
+                            tempPastedPhotoUrl = e2.target.result;
+                            document.getElementById('photo-preview').src = tempPastedPhotoUrl;
+                            document.getElementById('photo-preview-container').classList.remove('hidden');
+                        };
+                        reader.readAsDataURL(e.target.files[0]);
+                    }
+                });
+            }
 
             // Lightbox Pan & Zoom Listeners
             const container = document.getElementById('lb-img-container');
+            if (container) {
+                container.addEventListener('mousedown', (e) => {
+                    e.preventDefault();
+                    startX = e.clientX - pointX;
+                    startY = e.clientY - pointY;
+                    panning = true;
+                });
 
-            container.addEventListener('mousedown', (e) => {
-                e.preventDefault();
-                startX = e.clientX - pointX;
-                startY = e.clientY - pointY;
-                panning = true;
-            });
+                container.addEventListener('mouseup', () => panning = false);
+                container.addEventListener('mouseleave', () => panning = false);
 
-            container.addEventListener('mouseup', () => panning = false);
-            container.addEventListener('mouseleave', () => panning = false);
+                container.addEventListener('mousemove', (e) => {
+                    if (!panning) return;
+                    e.preventDefault();
+                    pointX = e.clientX - startX;
+                    pointY = e.clientY - startY;
+                    updateImageTransform();
+                });
 
-            container.addEventListener('mousemove', (e) => {
-                if (!panning) return;
-                e.preventDefault();
-                pointX = e.clientX - startX;
-                pointY = e.clientY - startY;
-                updateImageTransform();
-            });
-
-            container.addEventListener('wheel', (e) => {
-                e.preventDefault();
-                if (e.deltaY < 0) {
-                    scale *= 1.1;
-                } else {
-                    scale /= 1.1;
-                    if (scale < 1) scale = 1;
-                }
-                updateImageTransform();
-            });
+                container.addEventListener('wheel', (e) => {
+                    e.preventDefault();
+                    if (e.deltaY < 0) {
+                        scale *= 1.1;
+                    } else {
+                        scale /= 1.1;
+                        if (scale < 1) scale = 1;
+                    }
+                    updateImageTransform();
+                });
+            }
         });
 
         let projects = [];
@@ -342,6 +356,7 @@
 
         function initYearDropdown() {
             const yearSelect = document.getElementById('year-select');
+            if (!yearSelect) return;
             let yearsHtml = '';
             for(let y = 2024; y <= 2035; y++) {
                 yearsHtml += `<option value="${y}" class="bg-slate-900 text-white">${y}</option>`;
@@ -350,8 +365,10 @@
         }
 
         function updateMonthYearSelectors() {
-            document.getElementById('month-select').value = currentDate.getMonth();
-            document.getElementById('year-select').value = currentDate.getFullYear();
+            const mSelect = document.getElementById('month-select');
+            const ySelect = document.getElementById('year-select');
+            if (mSelect) mSelect.value = currentDate.getMonth();
+            if (ySelect) ySelect.value = currentDate.getFullYear();
         }
 
         function onMonthYearDropdownChange() {
@@ -363,7 +380,9 @@
 
         function updateImageTransform() {
             const img = document.getElementById('lb-img');
-            img.style.transform = `translate(${pointX}px, ${pointY}px) scale(${scale})`;
+            if (img) {
+                img.style.transform = `translate(${pointX}px, ${pointY}px) scale(${scale})`;
+            }
         }
 
         function resetImageTransform() {
@@ -408,10 +427,14 @@
 
         function switchView(view) {
             ['grid', 'table', 'stats'].forEach(v => {
-                document.getElementById(`view-${v}`).classList.toggle('hidden', v !== view);
-                document.getElementById(`btn-${v}`).className = v === view 
-                    ? 'bg-red-600 text-white px-4 py-2 rounded font-bold text-xs shadow uppercase'
-                    : 'bg-slate-800 text-gray-300 px-4 py-2 rounded font-bold text-xs border border-slate-700 uppercase';
+                const viewEl = document.getElementById(`view-${v}`);
+                const btnEl = document.getElementById(`btn-${v}`);
+                if (viewEl) viewEl.classList.toggle('hidden', v !== view);
+                if (btnEl) {
+                    btnEl.className = v === view 
+                        ? 'bg-red-600 text-white px-4 py-2 rounded font-bold text-xs shadow uppercase'
+                        : 'bg-slate-800 text-gray-300 px-4 py-2 rounded font-bold text-xs border border-slate-700 uppercase';
+                }
             });
             if (view === 'table') renderTable();
             if (view === 'stats') renderStats();
@@ -420,6 +443,7 @@
         function toggleMappingConfirmation() {
             const mappingDone = document.getElementById('mapping_done').value;
             const wrapper = document.getElementById('mapping-confirmed-wrapper');
+            if (!wrapper) return;
             if (mappingDone === 'yes') {
                 wrapper.classList.remove('hidden');
             } else {
@@ -447,27 +471,6 @@
                 }
             } else {
                 document.getElementById('date_reception').value = new Date().toISOString().split('T')[0];
-                // Récupère la valeur sélectionnée (ex: "yellow", "red", "green")
-const priorityValue = document.getElementById('priority').value;
-const prioritySpan = document.getElementById('lb-priority');
-
-let priorityDisplay = priorityValue;
-let priorityColor = "text-white";
-
-if (priorityValue === "yellow") {
-    priorityDisplay = "Standard";
-    priorityColor = "text-amber-500";
-} else if (priorityValue === "red") {
-    priorityDisplay = "Critical";
-    priorityColor = "text-red-500";
-} else if (priorityValue === "green") {
-    priorityDisplay = "Low";
-    priorityColor = "text-green-500";
-}
-
-prioritySpan.textContent = priorityDisplay;
-prioritySpan.className = "font-bold text-sm " + priorityColor;
-}
                 document.getElementById('mapping_done').value = 'no';
                 document.getElementById('mapping_confirmed').value = 'no';
                 toggleMappingConfirmation();
@@ -488,11 +491,24 @@ prioritySpan.className = "font-bold text-sm " + priorityColor;
             document.getElementById('lb-grain').textContent = p.grain || '-';
             
             let priorityText = '-';
-            if (p.priority === 'red') priorityText = 'CRITICAL';
-            else if (p.priority === 'green') priorityText = 'LOW';
-            else if (p.priority === 'yellow') priorityText = 'YELLOW';
+            let priorityColor = 'text-white';
+            if (p.priority === 'red') {
+                priorityText = 'Critical';
+                priorityColor = 'text-red-500';
+            } else if (p.priority === 'green') {
+                priorityText = 'Low';
+                priorityColor = 'text-green-500';
+            } else if (p.priority === 'yellow') {
+                priorityText = 'Standard';
+                priorityColor = 'text-amber-500';
+            }
             
-            document.getElementById('lb-priority').textContent = priorityText;
+            const pSpan = document.getElementById('lb-priority');
+            if (pSpan) {
+                pSpan.textContent = priorityText;
+                pSpan.className = "font-bold text-sm " + priorityColor;
+            }
+
             document.getElementById('lb-img').src = p.photo;
             resetImageTransform();
             document.getElementById('image-modal').classList.remove('hidden');
@@ -547,12 +563,14 @@ prioritySpan.className = "font-bold text-sm " + priorityColor;
 
         function populateClientFilterDropdown() {
             const select = document.getElementById('table-client-filter');
+            if (!select) return;
             const clients = [...new Set(projects.map(p => p.client))].filter(Boolean).sort();
             select.innerHTML = `<option value="" class="bg-slate-950 text-white">All Clients</option>` + clients.map(c => `<option value="${c}" class="bg-slate-950 text-white">${c}</option>`).join('');
         }
 
         function renderTimeline() {
             const container = document.getElementById('timeline-container');
+            if (!container) return;
             const year = currentDate.getFullYear();
             const month = currentDate.getMonth();
             const daysInMonth = new Date(year, month + 1, 0).getDate();
@@ -631,9 +649,14 @@ prioritySpan.className = "font-bold text-sm " + priorityColor;
 
         function renderTable() {
             const tbody = document.getElementById('projects-table-body');
-            const search = document.getElementById('table-search').value.toLowerCase();
-            const clientFilter = document.getElementById('table-client-filter').value;
-            const priorityFilter = document.getElementById('table-priority-filter').value;
+            if (!tbody) return;
+            const searchInput = document.getElementById('table-search');
+            const clientFilterSelect = document.getElementById('table-client-filter');
+            const priorityFilterSelect = document.getElementById('table-priority-filter');
+
+            const search = searchInput ? searchInput.value.toLowerCase() : '';
+            const clientFilter = clientFilterSelect ? clientFilterSelect.value : '';
+            const priorityFilter = priorityFilterSelect ? priorityFilterSelect.value : '';
 
             const filtered = projects.filter(p => {
                 const matchesSearch = !search || [p.po, p.project_name, p.grain, p.client].some(x => (x || '').toLowerCase().includes(search));
@@ -663,7 +686,7 @@ prioritySpan.className = "font-bold text-sm " + priorityColor;
                         <td class="p-3"><span class="px-2 py-1 rounded text-xs bg-slate-800 border border-slate-700 text-gray-300">${p.machine}</span></td>
                         <td class="p-3">
                             <span class="px-2.5 py-1 rounded-full text-xs font-bold ${p.priority === 'red' ? 'bg-red-950 text-red-400' : (p.priority === 'green' ? 'bg-emerald-950 text-emerald-400' : 'bg-amber-950 text-amber-400')}">
-                                ${p.priority === 'red' ? 'CRITICAL' : (p.priority === 'green' ? 'LOW' : 'YELLOW')}
+                                ${p.priority === 'red' ? 'CRITICAL' : (p.priority === 'green' ? 'LOW' : 'STANDARD')}
                             </span>
                         </td>
                         <td class="p-3 text-xs">${mappingLabel}</td>
@@ -695,10 +718,15 @@ prioritySpan.className = "font-bold text-sm " + priorityColor;
             });
             const onTimeRate = completed > 0 ? Math.round((onTimeCount / completed) * 100) : (total === 0 ? 0 : 100);
 
-            document.getElementById('stat-total-projects').textContent = total;
-            document.getElementById('stat-completed-projects').textContent = completed;
-            document.getElementById('stat-active-projects').textContent = active;
-            document.getElementById('stat-on-time').textContent = `${onTimeRate}%`;
+            const statTotal = document.getElementById('stat-total-projects');
+            const statComp = document.getElementById('stat-completed-projects');
+            const statActive = document.getElementById('stat-active-projects');
+            const statOnTime = document.getElementById('stat-on-time');
+
+            if (statTotal) statTotal.textContent = total;
+            if (statComp) statComp.textContent = completed;
+            if (statActive) statActive.textContent = active;
+            if (statOnTime) statOnTime.textContent = `${onTimeRate}%`;
 
             const machineCounts = {};
             Object.keys(machinesConfig).forEach(m => machineCounts[m] = 0);
@@ -707,21 +735,23 @@ prioritySpan.className = "font-bold text-sm " + priorityColor;
             });
 
             const machListEl = document.getElementById('stat-machines-list');
-            machListEl.innerHTML = Object.keys(machinesConfig).map(mach => {
-                const count = machineCounts[mach];
-                const pct = total > 0 ? Math.round((count / total) * 100) : 0;
-                return `
-                    <div>
-                        <div class="flex justify-between text-xs font-semibold mb-1">
-                            <span class="text-gray-300">${mach}</span>
-                            <span class="text-gray-400">${count} (${pct}%)</span>
+            if (machListEl) {
+                machListEl.innerHTML = Object.keys(machinesConfig).map(mach => {
+                    const count = machineCounts[mach];
+                    const pct = total > 0 ? Math.round((count / total) * 100) : 0;
+                    return `
+                        <div>
+                            <div class="flex justify-between text-xs font-semibold mb-1">
+                                <span class="text-gray-300">${mach}</span>
+                                <span class="text-gray-400">${count} (${pct}%)</span>
+                            </div>
+                            <div class="w-full bg-slate-950 rounded-full h-2 border border-slate-800">
+                                <div class="bg-red-600 h-2 rounded-full" style="width: ${pct}%"></div>
+                            </div>
                         </div>
-                        <div class="w-full bg-slate-950 rounded-full h-2 border border-slate-800">
-                            <div class="bg-red-600 h-2 rounded-full" style="width: ${pct}%"></div>
-                        </div>
-                    </div>
-                `;
-            }).join('');
+                    `;
+                }).join('');
+            }
 
             const clientCounts = {};
             projects.forEach(p => {
@@ -730,25 +760,28 @@ prioritySpan.className = "font-bold text-sm " + priorityColor;
             const sortedClients = Object.entries(clientCounts).sort((a, b) => b[1] - a[1]).slice(0, 5);
             const clientListEl = document.getElementById('stat-clients-list');
             
-            if (sortedClients.length === 0) {
-                clientListEl.innerHTML = `<p class="text-xs text-gray-500 italic">No client data available.</p>`;
-            } else {
-                clientListEl.innerHTML = sortedClients.map(([client, count]) => {
-                    const pct = total > 0 ? Math.round((count / total) * 100) : 0;
-                    return `
-                        <div>
-                            <div class="flex justify-between text-xs font-semibold mb-1">
-                                <span class="text-gray-300">${client}</span>
-                                <span class="text-gray-400">${count} projects (${pct}%)</span>
+            if (clientListEl) {
+                if (sortedClients.length === 0) {
+                    clientListEl.innerHTML = `<p class="text-xs text-gray-500 italic">No client data available.</p>`;
+                } else {
+                    clientListEl.innerHTML = sortedClients.map(([client, count]) => {
+                        const pct = total > 0 ? Math.round((count / total) * 100) : 0;
+                        return `
+                            <div>
+                                <div class="flex justify-between text-xs font-semibold mb-1">
+                                    <span class="text-gray-300">${client}</span>
+                                    <span class="text-gray-400">${count} projects (${pct}%)</span>
+                                </div>
+                                <div class="w-full bg-slate-950 rounded-full h-2 border border-slate-800">
+                                    <div class="bg-amber-600 h-2 rounded-full" style="width: ${pct}%"></div>
+                                </div>
                             </div>
-                            <div class="w-full bg-slate-950 rounded-full h-2 border border-slate-800">
-                                <div class="bg-amber-600 h-2 rounded-full" style="width: ${pct}%"></div>
-                            </div>
-                        </div>
-                    `;
-                }).join('');
+                        `;
+                    }).join('');
+                }
             }
         }
     </script>
 </body>
 </html>
+```[cite: 2]
