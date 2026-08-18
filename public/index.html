@@ -444,7 +444,23 @@
                 }
             } else {
                 document.getElementById('date_reception').value = new Date().toISOString().split('T')[0];
-                document.getElementById('priority').value = 'yellow';
+                // Récupère la valeur sélectionnée (ex: "yellow", "red", "green")
+const priorityValue = document.getElementById('priority').value;
+const prioritySpan = document.getElementById('lb-priority');
+
+// Remet les classes de base et enlève les anciennes couleurs
+prioritySpan.className = "font-bold text-sm uppercase ";
+
+if (priorityValue === "yellow") {
+    prioritySpan.textContent = "Standard";
+    prioritySpan.classList.add("text-amber-500"); // Jaune
+} else if (priorityValue === "red") {
+    prioritySpan.textContent = "Critical";
+    prioritySpan.classList.add("text-red-500");   // Rouge
+} else if (priorityValue === "green") {
+    prioritySpan.textContent = "Low";
+    prioritySpan.classList.add("text-green-500"); // Vert
+}
                 document.getElementById('mapping_done').value = 'no';
                 document.getElementById('mapping_confirmed').value = 'no';
                 toggleMappingConfirmation();
