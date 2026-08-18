@@ -27,7 +27,24 @@
         </div>
         <div class="flex items-center gap-3">
             <button onclick="changeMonth(-1)" class="bg-slate-800 px-3 py-1 rounded text-sm hover:bg-slate-700 font-medium border border-slate-700">◀ Prev</button>
-            <span id="current-month-label" class="font-bold text-base w-44 text-center text-red-500 tracking-wide select-none"></span>
+            <div class="flex items-center gap-1 bg-slate-900 border border-slate-700 rounded px-2 py-1">
+                <select id="month-select" onchange="onMonthYearDropdownChange()" class="bg-transparent text-red-500 font-bold text-sm focus:outline-none cursor-pointer">
+                    <option value="0">January</option>
+                    <option value="1">February</option>
+                    <option value="2">March</option>
+                    <option value="3">April</option>
+                    <option value="4">May</option>
+                    <option value="5">June</option>
+                    <option value="6">July</option>
+                    <option value="7">August</option>
+                    <option value="8">September</option>
+                    <option value="9">October</option>
+                    <option value="10">November</option>
+                    <option value="11">December</option>
+                </select>
+                <select id="year-select" onchange="onMonthYearDropdownChange()" class="bg-transparent text-white font-bold text-sm focus:outline-none cursor-pointer">
+                </select>
+            </div>
             <button onclick="changeMonth(1)" class="bg-slate-800 px-3 py-1 rounded text-sm hover:bg-slate-700 font-medium border border-slate-700">Next ▶</button>
             <button onclick="changeMonth(0)" class="bg-slate-900 px-3 py-1 rounded text-sm hover:bg-slate-800 ml-2 font-medium border border-slate-700">Today</button>
             <button onclick="openModal()" class="bg-red-600 hover:bg-red-700 text-white px-5 py-2 rounded font-bold transition text-sm ml-6 shadow-lg uppercase tracking-wider">+ New Project</button>
@@ -62,7 +79,7 @@
                 <table class="w-full text-left border-collapse">
                     <thead class="bg-black text-red-500 text-xs uppercase sticky top-0 z-10 border-b border-slate-800">
                         <tr>
-                            <th class="p-3">Photo</th><th class="p-3">PO</th><th class="p-3">Project Name</th><th class="p-3">Grain</th><th class="p-3">Client</th><th class="p-3">Machine</th><th class="p-3">Priority</th><th class="p-3">Status</th><th class="p-3">Reception</th><th class="p-3">Est. End</th><th class="p-3">Real End</th><th class="p-3 text-right">Actions</th>
+                            <th class="p-3">Photo</th><th class="p-3">PO</th><th class="p-3">Project Name</th><th class="p-3">Grain</th><th class="p-3">Client</th><th class="p-3">Machine</th><th class="p-3">Priority</th><th class="p-3">Mapping</th><th class="p-3">Status</th><th class="p-3">Reception</th><th class="p-3">Est. End</th><th class="p-3">Real End</th><th class="p-3 text-right">Actions</th>
                         </tr>
                     </thead>
                     <tbody id="projects-table-body" class="text-sm divide-y divide-slate-800/60 text-gray-300"></tbody>
@@ -123,6 +140,28 @@
                         </select>
                     </div>
                 </div>
+
+                <!-- Mapping Section Added -->
+                <div class="bg-slate-950 border border-slate-800 p-3 rounded-lg space-y-3">
+                    <span class="block text-xs font-bold text-red-500 uppercase tracking-wide">Mapping Status</span>
+                    <div class="grid grid-cols-2 gap-4">
+                        <div>
+                            <label class="block text-[11px] font-bold text-gray-400 uppercase">Mapping Done?</label>
+                            <select id="mapping_done" onchange="toggleMappingConfirmation()" class="w-full mt-1 p-2 bg-slate-900 border border-slate-700 rounded text-xs text-white">
+                                <option value="no">No</option>
+                                <option value="yes">Yes</option>
+                            </select>
+                        </div>
+                        <div id="mapping-confirmed-wrapper" class="hidden">
+                            <label class="block text-[11px] font-bold text-gray-400 uppercase">Mapping Confirmed?</label>
+                            <select id="mapping_confirmed" class="w-full mt-1 p-2 bg-slate-900 border border-slate-700 rounded text-xs text-white">
+                                <option value="no">No</option>
+                                <option value="yes">Yes</option>
+                            </select>
+                        </div>
+                    </div>
+                </div>
+
                 <div class="grid grid-cols-3 gap-3">
                     <div><label class="block text-xs font-bold text-gray-400 uppercase">Reception</label><input type="date" id="date_reception" required class="w-full mt-1 p-2.5 bg-slate-950 border border-slate-700 rounded text-white"></div>
                     <div><label class="block text-xs font-bold text-gray-400 uppercase">Est. End</label><input type="date" id="date_estimee" required class="w-full mt-1 p-2.5 bg-slate-950 border border-slate-700 rounded text-white"></div>
@@ -197,7 +236,10 @@
         }
 
         document.addEventListener('DOMContentLoaded', () => {
+            initYearDropdown();
+            updateMonthYearSelectors();
             loadProjects();
+
             const pasteDropZone = document.getElementById('paste-drop-zone');
             pasteDropZone.addEventListener('paste', handleImagePaste);
             document.getElementById('project-modal').addEventListener('paste', handleImagePaste);
@@ -216,7 +258,6 @@
 
             // Lightbox Pan & Zoom Listeners
             const container = document.getElementById('lb-img-container');
-            const img = document.getElementById('lb-img');
 
             container.addEventListener('mousedown', (e) => {
                 e.preventDefault();
@@ -238,8 +279,6 @@
 
             container.addEventListener('wheel', (e) => {
                 e.preventDefault();
-                const xs = (e.clientX - pointX) / scale;
-                const ys = (e.clientY - pointY) / scale;
                 if (e.deltaY < 0) {
                     scale *= 1.1;
                 } else {
@@ -249,6 +288,27 @@
                 updateImageTransform();
             });
         });
+
+        function initYearDropdown() {
+            const yearSelect = document.getElementById('year-select');
+            let yearsHtml = '';
+            for(let y = 2024; y <= 2035; y++) {
+                yearsHtml += `<option value="${y}">${y}</option>`;
+            }
+            yearSelect.innerHTML = yearsHtml;
+        }
+
+        function updateMonthYearSelectors() {
+            document.getElementById('month-select').value = currentDate.getMonth();
+            document.getElementById('year-select').value = currentDate.getFullYear();
+        }
+
+        function onMonthYearDropdownChange() {
+            const m = parseInt(document.getElementById('month-select').value);
+            const y = parseInt(document.getElementById('year-select').value);
+            currentDate = new Date(y, m, 1);
+            renderTimeline();
+        }
 
         function updateImageTransform() {
             const img = document.getElementById('lb-img');
@@ -291,6 +351,7 @@
         function changeMonth(dir) {
             if (dir === 0) currentDate = new Date();
             else currentDate.setMonth(currentDate.getMonth() + dir);
+            updateMonthYearSelectors();
             renderTimeline();
         }
 
@@ -305,6 +366,17 @@
             if (view === 'stats') renderStats();
         }
 
+        function toggleMappingConfirmation() {
+            const mappingDone = document.getElementById('mapping_done').value;
+            const wrapper = document.getElementById('mapping-confirmed-wrapper');
+            if (mappingDone === 'yes') {
+                wrapper.classList.remove('hidden');
+            } else {
+                wrapper.classList.add('hidden');
+                document.getElementById('mapping_confirmed').value = 'no';
+            }
+        }
+
         function openModal(project = null) {
             document.getElementById('project-form').reset();
             tempPastedPhotoUrl = '';
@@ -313,9 +385,10 @@
             document.getElementById('delete-btn').classList.toggle('hidden', !project);
 
             if (project) {
-                ['po', 'project_name', 'grain', 'client', 'machine', 'priority', 'date_reception', 'date_estimee', 'date_reelle'].forEach(field => {
+                ['po', 'project_name', 'grain', 'client', 'machine', 'priority', 'mapping_done', 'mapping_confirmed', 'date_reception', 'date_estimee', 'date_reelle'].forEach(field => {
                     if(document.getElementById(field)) document.getElementById(field).value = project[field] || '';
                 });
+                toggleMappingConfirmation();
                 if (project.photo) {
                     tempPastedPhotoUrl = project.photo;
                     document.getElementById('photo-preview').src = project.photo;
@@ -324,6 +397,9 @@
             } else {
                 document.getElementById('date_reception').value = new Date().toISOString().split('T')[0];
                 document.getElementById('priority').value = 'yellow';
+                document.getElementById('mapping_done').value = 'no';
+                document.getElementById('mapping_confirmed').value = 'no';
+                toggleMappingConfirmation();
                 document.getElementById('photo-preview-container').classList.add('hidden');
             }
             document.getElementById('project-modal').classList.remove('hidden');
@@ -369,6 +445,8 @@
                 client: document.getElementById('client').value.trim(),
                 machine: document.getElementById('machine').value,
                 priority: document.getElementById('priority').value,
+                mapping_done: document.getElementById('mapping_done').value,
+                mapping_confirmed: document.getElementById('mapping_done').value === 'yes' ? document.getElementById('mapping_confirmed').value : 'no',
                 date_reception: document.getElementById('date_reception').value,
                 date_estimee: document.getElementById('date_estimee').value,
                 date_reelle: document.getElementById('date_reelle').value || null,
@@ -409,7 +487,7 @@
             const daysInMonth = new Date(year, month + 1, 0).getDate();
             const monthNames = ["January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"];
             
-            document.getElementById('current-month-label').textContent = `${monthNames[month]} ${year}`;
+            updateMonthYearSelectors();
 
             let html = `<table class="w-full border-collapse text-xs relative"><thead><tr class="bg-black text-gray-300">`;
             html += `<th class="p-3 border border-slate-800 w-36 sticky left-0 bg-black z-20 text-red-500 font-bold uppercase">Machine</th>`;
@@ -496,6 +574,15 @@
 
             tbody.innerHTML = filtered.map(p => {
                 const isFinished = Boolean(p.date_reelle);
+                let mappingLabel = '<span class="text-gray-500">No</span>';
+                if (p.mapping_done === 'yes') {
+                    if (p.mapping_confirmed === 'yes') {
+                        mappingLabel = '<span class="text-emerald-400 font-semibold">Done & Confirmed</span>';
+                    } else {
+                        mappingLabel = '<span class="text-amber-400 font-semibold">Done (Not Confirmed)</span>';
+                    }
+                }
+
                 return `
                     <tr class="hover:bg-slate-900/80 transition border-b border-slate-800/60">
                         <td class="p-3">${p.photo ? `<img src="${p.photo}" class="w-12 h-12 object-cover rounded border border-slate-700 cursor-pointer" onclick="openImageModal(${p.id}, event)">` : '-'}</td>
@@ -509,6 +596,7 @@
                                 ${p.priority === 'red' ? 'CRITICAL' : (p.priority === 'green' ? 'LOW' : 'YELLOW')}
                             </span>
                         </td>
+                        <td class="p-3 text-xs">${mappingLabel}</td>
                         <td class="p-3">
                             <span class="px-2 py-1 rounded text-xs font-bold ${isFinished ? 'bg-emerald-950 text-emerald-400 border border-emerald-800' : 'bg-amber-950 text-amber-400 border border-amber-800'}">
                                 ${isFinished ? 'FINISHED' : 'IN PROGRESS'}
