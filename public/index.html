@@ -10,7 +10,7 @@
         #view-grid::-webkit-scrollbar-track, #view-table::-webkit-scrollbar-track, #view-stats::-webkit-scrollbar-track { background: #1e2229; }
         #view-grid::-webkit-scrollbar-thumb, #view-table::-webkit-scrollbar-thumb, #view-stats::-webkit-scrollbar-thumb { background: #e31b23; border-radius: 4px; }
         input[type="date"] { color-scheme: dark; cursor: pointer; }
-        .project-bar-img { width: 40px; height: 40px; object-fit: cover; border-radius: 6px; border: 1px solid rgba(255, 255, 255, 0.6); cursor: pointer; transition: transform 0.2s; }
+        .project-bar-img { width: 32px; height: 32px; object-fit: cover; border-radius: 4px; border: 1px solid rgba(255, 255, 255, 0.6); cursor: pointer; transition: transform 0.2s; }
         .project-bar-img:hover { transform: scale(1.1); }
         #lb-img-container { cursor: grab; }
         #lb-img-container:active { cursor: grabbing; }
@@ -22,7 +22,7 @@
         <div class="flex items-center gap-3">
             <div class="border-l border-slate-800 pl-3">
                 <h1 class="text-lg font-extrabold tracking-wide uppercase text-white">Engraving <span class="text-red-600 font-light">| Master Schedule</span></h1>
-                <p class="text-[11px] text-gray-400">Laser Department Production Planning </p>
+                <p class="text-[11px] text-gray-400">Laser Department Production Planning (Shared Server)</p>
             </div>
         </div>
         <div class="flex items-center gap-3">
@@ -74,8 +74,8 @@
             <h2 class="text-xl font-extrabold text-white uppercase tracking-wide mb-6 border-b border-slate-800 pb-3">Workshop Performance & Statistics</h2>
             <div class="grid grid-cols-1 md:grid-cols-4 gap-5 mb-8">
                 <div class="bg-slate-900 border border-slate-800 rounded-xl p-5"><span class="text-xs font-bold text-gray-400 uppercase">Total Projects</span><div id="stat-total-projects" class="text-3xl font-black text-white mt-2">0</div></div>
-                <div class="bg-slate-900 border border-slate-800 rounded-xl p-5"><span class="text-xs font-bold text-gray-400 uppercase">Completed Molds (Fini)</span><div id="stat-completed-projects" class="text-3xl font-black text-emerald-400 mt-2">0</div></div>
-                <div class="bg-slate-900 border border-slate-800 rounded-xl p-5"><span class="text-xs font-bold text-gray-400 uppercase">Active In Progress (En cours)</span><div id="stat-active-projects" class="text-3xl font-black text-amber-400 mt-2">0</div></div>
+                <div class="bg-slate-900 border border-slate-800 rounded-xl p-5"><span class="text-xs font-bold text-gray-400 uppercase">Completed Molds (Finished)</span><div id="stat-completed-projects" class="text-3xl font-black text-emerald-400 mt-2">0</div></div>
+                <div class="bg-slate-900 border border-slate-800 rounded-xl p-5"><span class="text-xs font-bold text-gray-400 uppercase">Active In Progress</span><div id="stat-active-projects" class="text-3xl font-black text-amber-400 mt-2">0</div></div>
                 <div class="bg-slate-900 border border-slate-800 rounded-xl p-5"><span class="text-xs font-bold text-gray-400 uppercase">On-Time Delivery Rate</span><div id="stat-on-time" class="text-3xl font-black text-red-500 mt-2">0%</div></div>
             </div>
             <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
@@ -192,7 +192,7 @@
                 renderTable();
                 renderStats();
             } catch (err) {
-                console.error("Erreur de chargement", err);
+                console.error("Error loading projects", err);
             }
         }
 
@@ -411,30 +411,127 @@
             html += `</tr></thead><tbody>`;
 
             Object.keys(machinesConfig).forEach(mach => {
-                html += `<tr class="border-b border-slate-800/80 h-20"><td class="p-3 font-bold bg-slate-900 border border-slate-800 sticky left-0 z-20"><span class="px-2 py-1 rounded text-white text-xs bg-slate-800 border border-slate-700">${mach}</span></td>`;
+                // Find all projects overlapping this month for this machine
+                const machProjects = projects.filter(p => {
+                    if (p.machine !== mach) return false;
+                    const pStart = p.date_reception;
+                    const pEnd = p.date_reelle || p.date_estimee;
+                    const monthStart = `${year}-${String(month + 1).padStart(2, '0')}-01`;
+                    const monthEnd = `${year}-${String(month + 1).padStart(2, '0')}-${String(daysInMonth).padStart(2, '0')}`;
+                    return pStart <= monthEnd && pEnd >= monthStart;
+                });
 
-                for (let day = 1; day <= daysInMonth; day++) {
-                    const currentCellDate = `${year}-${String(month + 1).padStart(2, '0')}-${String(day).padStart(2, '0')}`;
-                    const proj = projects.find(p => p.machine === mach && currentCellDate >= p.date_reception && currentCellDate <= (p.date_reelle || p.date_estimee));
-
-                    if (proj) {
-                        const startD = Math.max(1, new Date(proj.date_reception) < new Date(year, month, 1) ? 1 : new Date(proj.date_reception).getDate());
-                        const endD = Math.min(daysInMonth, new Date(proj.date_reelle || proj.date_estimee) > new Date(year, month, daysInMonth) ? daysInMonth : new Date(proj.date_reelle || proj.date_estimee).getDate());
-                        
-                        if (day === startD) {
-                            const spanCount = (endD - startD) + 1;
-                            const bgPriority = proj.priority === 'red' ? 'bg-red-600' : (proj.priority === 'green' ? 'bg-emerald-600' : 'bg-amber-600');
-                            
-                            html += `<td colspan="${spanCount}" class="border border-slate-800 p-0 cursor-pointer ${bgPriority} text-white transition relative shadow-lg" onclick="editProject(${proj.id})">`;
-                            html += `<div class="absolute inset-x-2 inset-y-1.5 px-2 py-1 bg-black/30 rounded flex items-center gap-3 overflow-hidden">`;
-                            if (proj.photo) html += `<img src="${proj.photo}" class="project-bar-img shrink-0" onclick="openImageModal(${proj.id}, event)">`;
-                            html += `<div class="text-white font-medium text-xs whitespace-nowrap truncate">PO: ${proj.po} | Client: ${proj.client} | Project: ${proj.project_name}</div></div></td>`;
+                // Group/stack overlapping projects per day
+                const dayRows = [];
+                machProjects.forEach(proj => {
+                    const startD = Math.max(1, new Date(proj.date_reception) < new Date(year, month, 1) ? 1 : new Date(proj.date_reception).getDate());
+                    const endD = Math.min(daysInMonth, new Date(proj.date_reelle || proj.date_estimee) > new Date(year, month, daysInMonth) ? daysInMonth : new Date(proj.date_reelle || proj.date_estimee).getDate());
+                    
+                    let rowIndex = 0;
+                    while (true) {
+                        if (!dayRows[rowIndex]) dayRows[rowIndex] = new Array(daysInMonth + 1).fill(false);
+                        let canPlace = true;
+                        for (let d = startD; d <= endD; d++) {
+                            if (dayRows[rowIndex][d]) { canPlace = false; break; }
                         }
-                        continue;
+                        if (canPlace) {
+                            for (let d = startD; d <= endD; d++) dayRows[rowIndex][d] = true;
+                            proj._startD = startD;
+                            proj._endD = endD;
+                            proj._rowIdx = rowIndex;
+                            break;
+                        }
+                        rowIndex++;
                     }
-                    html += `<td class="border border-slate-800/60 p-0 h-20 hover:bg-slate-900/50 w-10"></td>`;
+                });
+
+                const rowCount = Math.max(1, dayRows.length);
+                const minRowHeight = rowCount * 36 + 12;
+
+                html += `<tr class="border-b border-slate-800/80" style="min-height: ${minRowHeight}px;">`;
+                html += `<td class="p-3 font-bold bg-slate-900 border border-slate-800 sticky left-0 z-20 align-top"><span class="px-2 py-1 rounded text-white text-xs bg-slate-800 border border-slate-700">${mach}</span></td>`;
+
+                // Render day cells grid background
+                for (let day = 1; day <= daysInMonth; day++) {
+                    html += `<td class="border border-slate-800/60 p-0 hover:bg-slate-900/50 w-10 relative align-top"></td>`;
                 }
                 html += `</tr>`;
+
+                // Inject absolute positioned bars over this machine row
+                // We will handle rendering via absolute positioning inside a container wrapper or directly overlaying. 
+                // To keep it simple and clean inside table layout, let's render the bars inside the machine row cells or overlay container.
+            });
+            
+            // Re-evaluating timeline rendering cleanly with absolute stacking inside rows or standard sub-rows
+            // Let's use a robust sub-row structure per machine so multiple molds on the same day stack properly without overlap issues.
+            
+            html = `<table class="w-full border-collapse text-xs relative"><thead><tr class="bg-black text-gray-300">`;
+            html += `<th class="p-3 border border-slate-800 w-36 sticky left-0 bg-black z-20 text-red-500 font-bold uppercase">Machine</th>`;
+            for (let d = 1; d <= daysInMonth; d++) html += `<th class="p-1 border border-slate-800 text-center w-10 text-gray-400">${d}</th>`;
+            html += `</tr></thead><tbody>`;
+
+            Object.keys(machinesConfig).forEach(mach => {
+                const machProjects = projects.filter(p => {
+                    if (p.machine !== mach) return false;
+                    const pStart = p.date_reception;
+                    const pEnd = p.date_reelle || p.date_estimee;
+                    const monthStart = `${year}-${String(month + 1).padStart(2, '0')}-01`;
+                    const monthEnd = `${year}-${String(month + 1).padStart(2, '0')}-${String(daysInMonth).padStart(2, '0')}`;
+                    return pStart <= monthEnd && pEnd >= monthStart;
+                });
+
+                // Calculate stacked rows for this machine
+                const rows = [];
+                machProjects.forEach(proj => {
+                    const startD = Math.max(1, new Date(proj.date_reception) < new Date(year, month, 1) ? 1 : new Date(proj.date_reception).getDate());
+                    const endD = Math.min(daysInMonth, new Date(proj.date_reelle || proj.date_estimee) > new Date(year, month, daysInMonth) ? daysInMonth : new Date(proj.date_reelle || proj.date_estimee).getDate());
+                    
+                    let rIdx = 0;
+                    while(true) {
+                        if(!rows[rIdx]) rows[rIdx] = new Array(daysInMonth + 1).fill(false);
+                        let clash = false;
+                        for(let d = startD; d <= endD; d++) {
+                            if(rows[rIdx][d]) { clash = true; break; }
+                        }
+                        if(!clash) {
+                            for(let d = startD; d <= endD; d++) rows[rIdx][d] = true;
+                            proj._startD = startD;
+                            proj._endD = endD;
+                            proj._rowIdx = rIdx;
+                            break;
+                        }
+                        rIdx++;
+                    }
+                });
+
+                const totalSubRows = Math.max(1, rows.length);
+
+                for (let r = 0; r < totalSubRows; r++) {
+                    html += `<tr class="border-b border-slate-800/80 h-10">`;
+                    if (r === 0) {
+                        html += `<td rowspan="${totalSubRows}" class="p-3 font-bold bg-slate-900 border border-slate-800 sticky left-0 z-20 align-middle"><span class="px-2 py-1 rounded text-white text-xs bg-slate-800 border border-slate-700">${mach}</span></td>`;
+                    }
+
+                    for (let day = 1; day <= daysInMonth; day++) {
+                        const currentCellDate = `${year}-${String(month + 1).padStart(2, '0')}-${String(day).padStart(2, '0')}`;
+                        const proj = machProjects.find(p => p._rowIdx === r && currentCellDate >= p.date_reception && currentCellDate <= (p.date_reelle || p.date_estimee));
+
+                        if (proj && day === proj._startD) {
+                            const spanCount = (proj._endD - proj._startD) + 1;
+                            const bgPriority = proj.priority === 'red' ? 'bg-red-600' : (proj.priority === 'green' ? 'bg-emerald-600' : 'bg-amber-600');
+                            
+                            html += `<td colspan="${spanCount}" class="border border-slate-800 p-0 cursor-pointer ${bgPriority} text-white transition relative shadow-md h-10" onclick="editProject(${proj.id})">`;
+                            html += `<div class="absolute inset-x-1 inset-y-1 px-2 bg-black/30 rounded flex items-center gap-2 overflow-hidden">`;
+                            if (proj.photo) html += `<img src="${proj.photo}" class="project-bar-img shrink-0" onclick="openImageModal(${proj.id}, event)">`;
+                            html += `<div class="text-white font-medium text-[11px] whitespace-nowrap truncate">PO: ${proj.po} | Client: ${proj.client} | Project: ${proj.project_name}</div></div></td>`;
+                            day += spanCount - 1;
+                            continue;
+                        } else if (!proj) {
+                            html += `<td class="border border-slate-800/60 p-0 h-10 hover:bg-slate-900/50 w-10"></td>`;
+                        }
+                    }
+                    html += `</tr>`;
+                }
             });
             container.innerHTML = html + `</tbody></table>`;
         }
@@ -469,7 +566,7 @@
                         </td>
                         <td class="p-3">
                             <span class="px-2 py-1 rounded text-xs font-bold ${isFinished ? 'bg-emerald-950 text-emerald-400 border border-emerald-800' : 'bg-amber-950 text-amber-400 border border-amber-800'}">
-                                ${isFinished ? 'FINI' : 'EN COURS'}
+                                ${isFinished ? 'FINISHED' : 'IN PROGRESS'}
                             </span>
                         </td>
                         <td class="p-3 text-xs text-gray-400">${p.date_reception}</td>
@@ -487,7 +584,6 @@
             const completed = completedProjects.length;
             const active = total - completed;
 
-            // Calcul du taux de livraison à l'heure (On-Time Delivery Rate)
             let onTimeCount = 0;
             completedProjects.forEach(p => {
                 if (p.date_reelle <= p.date_estimee) {
@@ -501,7 +597,6 @@
             document.getElementById('stat-active-projects').textContent = active;
             document.getElementById('stat-on-time').textContent = `${onTimeRate}%`;
 
-            // Machine workload breakdown
             const machineCounts = {};
             Object.keys(machinesConfig).forEach(m => machineCounts[m] = 0);
             projects.forEach(p => {
@@ -525,7 +620,6 @@
                 `;
             }).join('');
 
-            // Top clients breakdown
             const clientCounts = {};
             projects.forEach(p => {
                 if (p.client) clientCounts[p.client] = (clientCounts[p.client] || 0) + 1;
