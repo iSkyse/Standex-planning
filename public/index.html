@@ -1,0 +1,366 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Standex Engraving - Laser Master Schedule</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        #view-grid::-webkit-scrollbar, #view-table::-webkit-scrollbar, #view-stats::-webkit-scrollbar { height: 8px; width: 8px; }
+        #view-grid::-webkit-scrollbar-track, #view-table::-webkit-scrollbar-track, #view-stats::-webkit-scrollbar-track { background: #1e2229; }
+        #view-grid::-webkit-scrollbar-thumb, #view-table::-webkit-scrollbar-thumb, #view-stats::-webkit-scrollbar-thumb { background: #e31b23; border-radius: 4px; }
+        input[type="date"] { color-scheme: dark; cursor: pointer; }
+        .project-bar-img { width: 40px; height: 40px; object-fit: cover; border-radius: 6px; border: 1px solid rgba(255, 255, 255, 0.6); cursor: pointer; transition: transform 0.2s; }
+        .project-bar-img:hover { transform: scale(1.1); }
+    </style>
+</head>
+<body class="bg-slate-950 font-sans h-screen flex flex-col overflow-hidden text-gray-100">
+
+    <header class="bg-black text-white p-3 shadow-xl flex justify-between items-center shrink-0 border-b-2 border-red-600">
+        <div class="flex items-center gap-3">
+            <div class="border-l border-slate-800 pl-3">
+                <h1 class="text-lg font-extrabold tracking-wide uppercase text-white">Engraving <span class="text-red-600 font-light">| Master Schedule</span></h1>
+                <p class="text-[11px] text-gray-400">Laser Department Production Planning (Shared Server)</p>
+            </div>
+        </div>
+        <div class="flex items-center gap-3">
+            <button onclick="changeMonth(-1)" class="bg-slate-800 px-3 py-1 rounded text-sm hover:bg-slate-700 font-medium border border-slate-700">◀ Prev</button>
+            <span id="current-month-label" class="font-bold text-base w-44 text-center text-red-500 tracking-wide select-none"></span>
+            <button onclick="changeMonth(1)" class="bg-slate-800 px-3 py-1 rounded text-sm hover:bg-slate-700 font-medium border border-slate-700">Next ▶</button>
+            <button onclick="changeMonth(0)" class="bg-slate-900 px-3 py-1 rounded text-sm hover:bg-slate-800 ml-2 font-medium border border-slate-700">Today</button>
+            <button onclick="openModal()" class="bg-red-600 hover:bg-red-700 text-white px-5 py-2 rounded font-bold transition text-sm ml-6 shadow-lg uppercase tracking-wider">+ New Project</button>
+        </div>
+    </header>
+
+    <main class="flex-grow p-4 flex flex-col overflow-hidden bg-slate-900">
+        <div class="flex gap-3 mb-3 shrink-0">
+            <button onclick="switchView('grid')" id="btn-grid" class="bg-red-600 text-white px-4 py-2 rounded font-bold text-xs shadow tracking-wide uppercase">Timeline Schedule</button>
+            <button onclick="switchView('table')" id="btn-table" class="bg-slate-800 text-gray-300 px-4 py-2 rounded font-bold text-xs border border-slate-700 shadow-sm uppercase">Projects List View</button>
+            <button onclick="switchView('stats')" id="btn-stats" class="bg-slate-800 text-gray-300 px-4 py-2 rounded font-bold text-xs border border-slate-700 shadow-sm uppercase">Statistics</button>
+        </div>
+
+        <div id="view-grid" class="bg-slate-950 rounded-xl shadow-inner flex-grow overflow-auto border border-slate-800 relative">
+            <div id="timeline-container" class="min-w-[1600px] p-2"></div>
+        </div>
+
+        <div id="view-table" class="bg-slate-950 rounded-xl shadow flex flex-col hidden flex-grow overflow-hidden border border-slate-800">
+            <div class="p-4 bg-black/60 border-b border-slate-800 flex gap-4 items-center shrink-0 flex-wrap">
+                <input type="text" id="table-search" oninput="renderTable()" placeholder="Search PO, Project, Grain..." class="p-2 bg-slate-950 border border-slate-700 rounded text-sm text-white w-64">
+                <select id="table-client-filter" onchange="renderTable()" class="p-2 bg-slate-950 border border-slate-700 rounded text-sm text-white w-48">
+                    <option value="">All Clients</option>
+                </select>
+            </div>
+            <div class="flex-grow overflow-auto">
+                <table class="w-full text-left border-collapse">
+                    <thead class="bg-black text-red-500 text-xs uppercase sticky top-0 z-10 border-b border-slate-800">
+                        <tr>
+                            <th class="p-3">Photo</th><th class="p-3">PO</th><th class="p-3">Project Name</th><th class="p-3">Grain</th><th class="p-3">Client</th><th class="p-3">Machine</th><th class="p-3">Priority</th><th class="p-3">Reception</th><th class="p-3">Est. End</th><th class="p-3">Real End</th><th class="p-3 text-right">Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody id="projects-table-body" class="text-sm divide-y divide-slate-800/60 text-gray-300"></tbody>
+                </table>
+            </div>
+        </div>
+
+        <div id="view-stats" class="bg-slate-950 rounded-xl shadow hidden flex-grow overflow-auto border border-slate-800 p-6">
+            <h2 class="text-xl font-extrabold text-white uppercase tracking-wide mb-6 border-b border-slate-800 pb-3">Workshop Statistics</h2>
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-5 mb-8">
+                <div class="bg-slate-900 border border-slate-800 rounded-xl p-5"><span class="text-xs font-bold text-gray-400">Total Projects</span><div id="stat-total-projects" class="text-3xl font-black text-white mt-2">0</div></div>
+                <div class="bg-slate-900 border border-slate-800 rounded-xl p-5"><span class="text-xs font-bold text-gray-400">Completed Molds</span><div id="stat-completed-projects" class="text-3xl font-black text-emerald-400 mt-2">0</div></div>
+                <div class="bg-slate-900 border border-slate-800 rounded-xl p-5"><span class="text-xs font-bold text-gray-400">Active In Progress</span><div id="stat-active-projects" class="text-3xl font-black text-amber-400 mt-2">0</div></div>
+            </div>
+        </div>
+    </main>
+
+    <!-- Modal Form -->
+    <div id="project-modal" class="fixed inset-0 bg-black/80 hidden flex items-center justify-center p-4 z-50 backdrop-blur-sm">
+        <div class="bg-slate-900 border border-slate-800 rounded-2xl max-w-lg w-full p-7 shadow-2xl">
+            <div class="flex justify-between items-start mb-5 border-b border-slate-800 pb-3">
+                <h2 id="modal-title" class="text-xl font-extrabold text-white uppercase">Add Mold to Schedule</h2>
+                <button onclick="closeModal()" class="text-gray-400 hover:text-white text-2xl">&times;</button>
+            </div>
+            <form id="project-form" onsubmit="saveProject(event)" class="space-y-4">
+                <input type="hidden" id="project-id">
+                <div class="grid grid-cols-2 gap-4">
+                    <div><label class="block text-xs font-bold text-gray-400 uppercase">PO</label><input type="text" id="po" required class="w-full mt-1 p-2.5 bg-slate-950 border border-slate-700 rounded text-white"></div>
+                    <div><label class="block text-xs font-bold text-gray-400 uppercase">Project Name</label><input type="text" id="project_name" required class="w-full mt-1 p-2.5 bg-slate-950 border border-slate-700 rounded text-white"></div>
+                </div>
+                <div class="grid grid-cols-2 gap-4">
+                    <div><label class="block text-xs font-bold text-gray-400 uppercase">Grain</label><input type="text" id="grain" required class="w-full mt-1 p-2.5 bg-slate-950 border border-slate-700 rounded text-white"></div>
+                    <div><label class="block text-xs font-bold text-gray-400 uppercase">Client</label><input type="text" id="client" required class="w-full mt-1 p-2.5 bg-slate-950 border border-slate-700 rounded text-white"></div>
+                </div>
+                <div class="grid grid-cols-2 gap-4">
+                    <div>
+                        <label class="block text-xs font-bold text-gray-400 uppercase">Machine</label>
+                        <select id="machine" class="w-full mt-1 p-2.5 bg-slate-950 border border-slate-700 rounded text-white">
+                            <option value="DMG 65">DMG 65</option><option value="DMG 125">DMG 125</option><option value="DMG 210">DMG 210</option>
+                            <option value="GF 1000">GF 1000</option><option value="GF 1200">GF 1200</option><option value="GF 4000">GF 4000</option>
+                        </select>
+                    </div>
+                    <div>
+                        <label class="block text-xs font-bold text-gray-400 uppercase">Priority</label>
+                        <select id="priority" class="w-full mt-1 p-2.5 bg-slate-950 border border-slate-700 rounded text-white">
+                            <option value="yellow">🟡 Standard</option><option value="red">🔴 Critical</option><option value="green">🟢 Low</option>
+                        </select>
+                    </div>
+                </div>
+                <div class="grid grid-cols-3 gap-3">
+                    <div><label class="block text-xs font-bold text-gray-400 uppercase">Reception</label><input type="date" id="date_reception" required class="w-full mt-1 p-2.5 bg-slate-950 border border-slate-700 rounded text-white"></div>
+                    <div><label class="block text-xs font-bold text-gray-400 uppercase">Est. End</label><input type="date" id="date_estimee" required class="w-full mt-1 p-2.5 bg-slate-950 border border-slate-700 rounded text-white"></div>
+                    <div><label class="block text-xs font-bold text-gray-400 uppercase">Real End</label><input type="date" id="date_reelle" class="w-full mt-1 p-2.5 bg-slate-950 border border-slate-700 rounded text-white"></div>
+                </div>
+                <div>
+                    <label class="block text-xs font-bold text-gray-400 uppercase mb-1">Mold Photo <span class="text-gray-500 lowercase">(Click & press Ctrl+V)</span></label>
+                    <div id="paste-drop-zone" class="border-2 border-dashed border-slate-700 hover:border-red-600 rounded-lg p-4 bg-slate-950 text-center cursor-pointer" tabindex="0">
+                        <p class="text-xs text-gray-400 mb-2">Click here and press <strong class="text-white">Ctrl + V</strong> to paste screenshot</p>
+                        <input type="file" id="photo" accept="image/*" class="text-xs text-gray-400">
+                    </div>
+                </div>
+                <div id="photo-preview-container" class="hidden mt-2 text-center relative">
+                    <img id="photo-preview" src="" alt="Preview" class="max-h-28 rounded border border-slate-700 mx-auto">
+                    <button type="button" onclick="clearPhotoSelection()" class="absolute top-1 right-2 bg-red-950 text-red-400 px-2 py-0.5 rounded text-[10px]">Remove</button>
+                </div>
+                <div class="flex justify-between gap-3 mt-6 pt-4 border-t border-slate-800">
+                    <button type="button" onclick="confirmDeleteProject()" id="delete-btn" class="bg-red-950 text-red-400 px-4 py-2 rounded text-sm hidden">Delete</button>
+                    <div class="flex gap-3 ml-auto">
+                        <button type="button" onclick="closeModal()" class="bg-slate-800 text-gray-300 px-5 py-2 rounded text-sm">Cancel</button>
+                        <button type="submit" class="bg-red-600 text-white px-5 py-2 rounded text-sm font-bold shadow">Save Project</button>
+                    </div>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <script>
+        let projects = [];
+        let currentDate = new Date();
+        let tempPastedPhotoUrl = '';
+        const machinesConfig = { "DMG 65": {}, "DMG 125": {}, "DMG 210": {}, "GF 1000": {}, "GF 1200": {}, "GF 4000": {} };
+
+        async function loadProjects() {
+            try {
+                const res = await fetch('/api/projects');
+                projects = await res.json();
+                renderTimeline();
+                populateClientFilterDropdown();
+                renderTable();
+                renderStats();
+            } catch (err) {
+                console.error("Erreur de chargement", err);
+            }
+        }
+
+        document.addEventListener('DOMContentLoaded', () => {
+            loadProjects();
+            const pasteDropZone = document.getElementById('paste-drop-zone');
+            pasteDropZone.addEventListener('paste', handleImagePaste);
+            document.getElementById('project-modal').addEventListener('paste', handleImagePaste);
+
+            document.getElementById('photo').addEventListener('change', (e) => {
+                if (e.target.files && e.target.files[0]) {
+                    const reader = new FileReader();
+                    reader.onload = (e2) => {
+                        tempPastedPhotoUrl = e2.target.result;
+                        document.getElementById('photo-preview').src = tempPastedPhotoUrl;
+                        document.getElementById('photo-preview-container').classList.remove('hidden');
+                    };
+                    reader.readAsDataURL(e.target.files[0]);
+                }
+            });
+        });
+
+        function handleImagePaste(e) {
+            const items = (e.clipboardData || e.originalEvent.clipboardData).items;
+            for (let i = 0; i < items.length; i++) {
+                if (items[i].type.indexOf('image') !== -1) {
+                    const blob = items[i].getAsFile();
+                    const reader = new FileReader();
+                    reader.onload = (event) => {
+                        tempPastedPhotoUrl = event.target.result;
+                        document.getElementById('photo-preview').src = tempPastedPhotoUrl;
+                        document.getElementById('photo-preview-container').classList.remove('hidden');
+                        document.getElementById('photo').value = '';
+                    };
+                    reader.readAsDataURL(blob);
+                    e.preventDefault();
+                    break;
+                }
+            }
+        }
+
+        function clearPhotoSelection() {
+            tempPastedPhotoUrl = '';
+            document.getElementById('photo').value = '';
+            document.getElementById('photo-preview').src = '';
+            document.getElementById('photo-preview-container').classList.add('hidden');
+        }
+
+        function changeMonth(dir) {
+            if (dir === 0) currentDate = new Date();
+            else currentDate.setMonth(currentDate.getMonth() + dir);
+            renderTimeline();
+        }
+
+        function switchView(view) {
+            ['grid', 'table', 'stats'].forEach(v => {
+                document.getElementById(`view-${v}`).classList.toggle('hidden', v !== view);
+                document.getElementById(`btn-${v}`).className = v === view 
+                    ? 'bg-red-600 text-white px-4 py-2 rounded font-bold text-xs shadow uppercase'
+                    : 'bg-slate-800 text-gray-300 px-4 py-2 rounded font-bold text-xs border border-slate-700 uppercase';
+            });
+            if (view === 'table') renderTable();
+            if (view === 'stats') renderStats();
+        }
+
+        function openModal(project = null) {
+            document.getElementById('project-form').reset();
+            tempPastedPhotoUrl = '';
+            document.getElementById('modal-title').textContent = project ? 'Edit Project' : 'Add New Project';
+            document.getElementById('project-id').value = project ? project.id : '';
+            document.getElementById('delete-btn').classList.toggle('hidden', !project);
+
+            if (project) {
+                ['po', 'project_name', 'grain', 'client', 'machine', 'priority', 'date_reception', 'date_estimee', 'date_reelle'].forEach(field => {
+                    if(document.getElementById(field)) document.getElementById(field).value = project[field] || '';
+                });
+                if (project.photo) {
+                    tempPastedPhotoUrl = project.photo;
+                    document.getElementById('photo-preview').src = project.photo;
+                    document.getElementById('photo-preview-container').classList.remove('hidden');
+                }
+            } else {
+                document.getElementById('date_reception').value = new Date().toISOString().split('T')[0];
+                document.getElementById('priority').value = 'yellow';
+                document.getElementById('photo-preview-container').classList.add('hidden');
+            }
+            document.getElementById('project-modal').classList.remove('hidden');
+        }
+
+        function closeModal() { document.getElementById('project-modal').classList.add('hidden'); }
+
+        async function saveProject(e) {
+            e.preventDefault();
+            const idInput = document.getElementById('project-id').value;
+            const id = idInput ? Number(idInput) : Date.now();
+            const existingProj = projects.find(x => x.id === id);
+
+            const pData = {
+                id,
+                po: document.getElementById('po').value.trim(),
+                project_name: document.getElementById('project_name').value.trim(),
+                grain: document.getElementById('grain').value.trim(),
+                client: document.getElementById('client').value.trim(),
+                machine: document.getElementById('machine').value,
+                priority: document.getElementById('priority').value,
+                date_reception: document.getElementById('date_reception').value,
+                date_estimee: document.getElementById('date_estimee').value,
+                date_reelle: document.getElementById('date_reelle').value || null,
+                photo: tempPastedPhotoUrl || (existingProj ? existingProj.photo : '')
+            };
+
+            await fetch('/api/projects', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(pData)
+            });
+
+            closeModal();
+            loadProjects();
+        }
+
+        function editProject(id) { const p = projects.find(x => x.id === id); if (p) openModal(p); }
+
+        async function confirmDeleteProject() {
+            const id = Number(document.getElementById('project-id').value);
+            if (confirm("Delete this project?")) {
+                await fetch(`/api/projects/${id}`, { method: 'DELETE' });
+                closeModal();
+                loadProjects();
+            }
+        }
+
+        function populateClientFilterDropdown() {
+            const select = document.getElementById('table-client-filter');
+            const clients = [...new Set(projects.map(p => p.client))].filter(Boolean).sort();
+            select.innerHTML = `<option value="">All Clients</option>` + clients.map(c => `<option value="${c}">${c}</option>`).join('');
+        }
+
+        function renderTimeline() {
+            const container = document.getElementById('timeline-container');
+            const year = currentDate.getFullYear();
+            const month = currentDate.getMonth();
+            const daysInMonth = new Date(year, month + 1, 0).getDate();
+            const monthNames = ["January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"];
+            
+            document.getElementById('current-month-label').textContent = `${monthNames[month]} ${year}`;
+
+            let html = `<table class="w-full border-collapse text-xs relative"><thead><tr class="bg-black text-gray-300">`;
+            html += `<th class="p-3 border border-slate-800 w-36 sticky left-0 bg-black z-20 text-red-500 font-bold uppercase">Machine</th>`;
+            for (let d = 1; d <= daysInMonth; d++) html += `<th class="p-1 border border-slate-800 text-center w-10 text-gray-400">${d}</th>`;
+            html += `</tr></thead><tbody>`;
+
+            Object.keys(machinesConfig).forEach(mach => {
+                html += `<tr class="border-b border-slate-800/80 h-20"><td class="p-3 font-bold bg-slate-900 border border-slate-800 sticky left-0 z-20"><span class="px-2 py-1 rounded text-white text-xs bg-slate-800 border border-slate-700">${mach}</span></td>`;
+
+                for (let day = 1; day <= daysInMonth; day++) {
+                    const currentCellDate = `${year}-${String(month + 1).padStart(2, '0')}-${String(day).padStart(2, '0')}`;
+                    const proj = projects.find(p => p.machine === mach && currentCellDate >= p.date_reception && currentCellDate <= (p.date_reelle || p.date_estimee));
+
+                    if (proj) {
+                        const startD = Math.max(1, new Date(proj.date_reception) < new Date(year, month, 1) ? 1 : new Date(proj.date_reception).getDate());
+                        const endD = Math.min(daysInMonth, new Date(proj.date_reelle || proj.date_estimee) > new Date(year, month, daysInMonth) ? daysInMonth : new Date(proj.date_reelle || proj.date_estimee).getDate());
+                        
+                        if (day === startD) {
+                            const spanCount = (endD - startD) + 1;
+                            const bgPriority = proj.priority === 'red' ? 'bg-red-600' : (proj.priority === 'green' ? 'bg-emerald-600' : 'bg-amber-600');
+                            
+                            html += `<td colspan="${spanCount}" class="border border-slate-800 p-0 cursor-pointer ${bgPriority} text-white transition relative shadow-lg" onclick="editProject(${proj.id})">`;
+                            html += `<div class="absolute inset-x-2 inset-y-1.5 px-2 py-1 bg-black/30 rounded flex items-center gap-3 overflow-hidden">`;
+                            if (proj.photo) html += `<img src="${proj.photo}" class="project-bar-img shrink-0">`;
+                            html += `<div class="text-white font-medium text-xs whitespace-nowrap">PO: <strong class="text-amber-300">${proj.po || 'N/A'}</strong> | Client: <strong>${proj.client}</strong> | Project: <strong>${proj.project_name}</strong></div></div></td>`;
+                        }
+                        continue;
+                    }
+                    html += `<td class="border border-slate-800/60 p-0 h-20 hover:bg-slate-900/50 w-10"></td>`;
+                }
+                html += `</tr>`;
+            });
+            container.innerHTML = html + `</tbody></table>`;
+        }
+
+        function renderTable() {
+            const tbody = document.getElementById('projects-table-body');
+            const search = document.getElementById('table-search').value.toLowerCase();
+            const clientFilter = document.getElementById('table-client-filter').value;
+
+            const filtered = projects.filter(p => {
+                const matchesSearch = !search || [p.po, p.project_name, p.grain, p.client].some(x => (x || '').toLowerCase().includes(search));
+                const matchesClient = !clientFilter || p.client === clientFilter;
+                return matchesSearch && matchesClient;
+            });
+
+            tbody.innerHTML = filtered.map(p => `
+                <tr class="hover:bg-slate-900/80 transition border-b border-slate-800/60">
+                    <td class="p-3">${p.photo ? `<img src="${p.photo}" class="w-12 h-12 object-cover rounded border border-slate-700">` : '-'}</td>
+                    <td class="p-3 font-mono font-bold text-red-400">${p.po || '-'}</td>
+                    <td class="p-3 font-bold text-white">${p.project_name || '-'}</td>
+                    <td class="p-3 text-gray-200">${p.grain || '-'}</td>
+                    <td class="p-3 text-gray-300">${p.client}</td>
+                    <td class="p-3"><span class="px-2 py-1 rounded text-xs bg-slate-800 border border-slate-700 text-gray-300">${p.machine}</span></td>
+                    <td class="p-3"><span class="px-2.5 py-1 rounded-full text-xs font-bold ${p.priority === 'red' ? 'bg-red-950 text-red-400' : 'bg-amber-950 text-amber-400'}">${p.priority || 'yellow'}</span></td>
+                    <td class="p-3 text-xs text-gray-400">${p.date_reception}</td>
+                    <td class="p-3 text-xs text-gray-400">${p.date_estimee}</td>
+                    <td class="p-3 text-xs text-emerald-400 font-semibold">${p.date_reelle || '-'}</td>
+                    <td class="p-3 text-right"><button onclick="editProject(${p.id})" class="text-red-400 hover:text-red-300 text-xs font-bold uppercase">Edit</button></td>
+                </tr>
+            `).join('');
+        }
+
+        function renderStats() {
+            document.getElementById('stat-total-projects').textContent = projects.length;
+            document.getElementById('stat-completed-projects').textContent = projects.filter(p => p.date_reelle).length;
+            document.getElementById('stat-active-projects').textContent = projects.filter(p => !p.date_reelle).length;
+        }
+    </script>
+</body>
+</html>
