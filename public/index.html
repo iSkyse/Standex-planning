@@ -651,9 +651,7 @@
                             const bgPriority = proj.priority === 'red' ? 'bg-red-600' : (proj.priority === 'green' ? 'bg-emerald-600' : 'bg-amber-600');
                             
                             html += `<td colspan="${spanCount}" class="border border-slate-800 p-0 relative shadow-md h-10">`;
-                            // Corps de la barre déplaçable
                             html += `<div class="absolute inset-x-1 inset-y-1 px-2 bg-black/30 rounded flex items-center gap-2 overflow-hidden timeline-bar ${bgPriority} text-white" draggable="true" ondragstart="dragStartProject(event, ${proj.id})" ondblclick="editProject(${proj.id})">`;
-                            // Poignées de redimensionnement (resize)
                             html += `<div class="resize-handle resize-handle-left" onmousedown="initResize(event, ${proj.id}, 'left')"></div>`;
                             html += `<div class="resize-handle resize-handle-right" onmousedown="initResize(event, ${proj.id}, 'right')"></div>`;
                             
@@ -671,7 +669,6 @@
             container.innerHTML = html + `</tbody></table>`;
         }
 
-        // --- GESTION DRAG & DROP ET RESIZE DE LA FRISE ---
         let draggedProjectId = null;
 
         function dragStartProject(e, id) {
@@ -683,30 +680,45 @@
             e.preventDefault();
         }
 
+        // Fonction utilitaire pour parser une date YYYY-MM-DD en évitant les décalages de fuseau horaire
+        function parseLocalDate(dateStr) {
+            const parts = dateStr.split('-');
+            return new Date(parts[0], parts[1] - 1, parts[2]);
+        }
+
+        function formatLocalDate(dateObj) {
+            const y = dateObj.getFullYear();
+            const m = String(dateObj.getMonth() + 1).padStart(2, '0');
+            const d = String(dateObj.getDate()).padStart(2, '0');
+            return `${y}-${m}-${d}`;
+        }
+
         async function dropOnDate(e, targetDateStr, targetMachine) {
             e.preventDefault();
             if (!draggedProjectId) return;
             const proj = projects.find(p => p.id === draggedProjectId);
             if (!proj) return;
 
-            // Calculer le décalage de jours
-            const oldStart = new Date(proj.date_reception);
-            const newStart = new Date(targetDateStr);
+            const oldStart = parseLocalDate(proj.date_reception);
+            const newStart = parseLocalDate(targetDateStr);
             const diffTime = newStart - oldStart;
             const diffDays = Math.round(diffTime / (1000 * 60 * 60 * 24));
 
-            const oldEstEnd = new Date(proj.date_estimee);
-            const newEstEnd = new Date(oldEstEnd.getTime() + (diffDays * 24 * 60 * 60 * 1000));
+            const oldEstEnd = parseLocalDate(proj.date_estimee);
+            const newEstEnd = new Date(oldEstEnd);
+            newEstEnd.setDate(newEstEnd.getDate() + diffDays);
 
             let newRealEnd = proj.date_reelle;
             if (proj.date_reelle) {
-                const oldRealEnd = new Date(proj.date_reelle);
-                newRealEnd = new Date(oldRealEnd.getTime() + (diffDays * 24 * 60 * 60 * 1000)).toISOString().split('T')[0];
+                const oldRealEnd = parseLocalDate(proj.date_reelle);
+                const tempReal = new Date(oldRealEnd);
+                tempReal.setDate(tempReal.getDate() + diffDays);
+                newRealEnd = formatLocalDate(tempReal);
             }
 
             proj.machine = targetMachine;
-            proj.date_reception = newStart.toISOString().split('T')[0];
-            proj.date_estimee = newEstEnd.toISOString().split('T')[0];
+            proj.date_reception = formatLocalDate(newStart);
+            proj.date_estimee = formatLocalDate(newEstEnd);
             proj.date_reelle = newRealEnd;
 
             await saveProjectDirect(proj);
@@ -724,7 +736,6 @@
             draggedProjectId = null;
         }
 
-        // Redimensionnement par les bords (Resize)
         function initResize(e, projId, direction) {
             e.stopPropagation();
             e.preventDefault();
@@ -732,24 +743,21 @@
             if (!proj) return;
 
             const startX = e.clientX;
-            const year = currentDate.getFullYear();
-            const month = currentDate.getMonth();
-            const daysInMonth = new Date(year, month + 1, 0).getDate();
 
             function onMouseMove(moveEvent) {
                 const deltaX = moveEvent.clientX - startX;
-                const cellWidth = 40; // largeur approximative d'une colonne de jour en pixels
+                const cellWidth = 40; 
                 const dayShift = Math.round(deltaX / cellWidth);
 
                 if (dayShift !== 0) {
                     if (direction === 'left') {
-                        let d = new Date(proj.date_reception);
+                        let d = parseLocalDate(proj.date_reception);
                         d.setDate(d.getDate() + dayShift);
-                        proj.date_reception = d.toISOString().split('T')[0];
+                        proj.date_reception = formatLocalDate(d);
                     } else if (direction === 'right') {
-                        let d = new Date(proj.date_estimee);
+                        let d = parseLocalDate(proj.date_estimee);
                         d.setDate(d.getDate() + dayShift);
-                        proj.date_estimee = d.toISOString().split('T')[0];
+                        proj.date_estimee = formatLocalDate(d);
                     }
                 }
             }
