@@ -691,7 +691,7 @@
             container.innerHTML = html + `</tbody></table>`;
         }
 
-        // Fonction d'export Excel professionnelle avec mise en forme visuelle (couleurs et styles)
+        // Fonction d'export Excel optimisée : un seul texte par bloc fusionné et mise en forme propre
         function exportTimelineToExcel() {
             const year = currentDate.getFullYear();
             const month = currentDate.getMonth();
@@ -710,9 +710,10 @@
                 headerRow
             ];
 
-            let cellStylesMap = {}; // stockera les styles visuels par coordonnées (ex: "B4")
+            let cellStylesMap = {};
+            let mergesList = [];
 
-            let rowIndex = 3; // 0-based pour les lignes (après le titre et la ligne vide)
+            let rowIndex = 3; // Ligne 0-based pour les machines
             
             Object.keys(machinesConfig).forEach(mach => {
                 const machProjects = projects.filter(p => {
@@ -731,23 +732,42 @@
                     const startD = Math.max(1, new Date(proj.date_reception) < new Date(year, month, 1) ? 1 : new Date(proj.date_reception).getDate());
                     const endD = Math.min(daysInMonth, new Date(proj.date_reelle || proj.date_estimee) > new Date(year, month, daysInMonth) ? daysInMonth : new Date(proj.date_reelle || proj.date_estimee).getDate());
 
-                    // Détermination de la couleur d'arrière-plan selon la priorité (Hex styles Excel)
                     let bgHex = "D97706"; // Ambre / Standard par défaut
                     if (proj.priority === 'red') bgHex = "DC2626"; // Rouge critique
                     else if (proj.priority === 'green') bgHex = "059669"; // Vert low
 
+                    const startColIdx = startD; // Index 1-based des colonnes (col 0 = Machine)
+                    const endColIdx = endD;
+
+                    // Si le projet s'étale sur plusieurs jours, on définit une fusion Excel
+                    if (endColIdx > startColIdx) {
+                        mergesList.push({
+                            s: { r: rowIndex, c: startColIdx },
+                            e: { r: rowIndex, c: endColIdx }
+                        });
+                    }
+
+                    // On place le texte uniquement sur la première cellule de la fusion pour garder le visuel propre
                     for (let d = startD; d <= endD; d++) {
-                        const cellContent = `[PO: ${proj.po}] ${proj.project_name} (${proj.client})`;
-                        machineRowData[d - 1] = cellContent;
-                        machineRowStyles[d - 1] = {
+                        const colIdx = d;
+                        const colLetter = XLSX.utils.encode_col(colIdx);
+                        const cellRef = `${colLetter}${rowIndex + 1}`;
+
+                        if (d === startD) {
+                            machineRowData[d - 1] = `PO: ${proj.po} | ${proj.client} - ${proj.project_name}`;
+                        } else {
+                            machineRowData[d - 1] = ""; // Les cellules suivantes du bloc restent vides mais stylisées
+                        }
+
+                        machineRowStyles[cellRef] = {
                             fill: { fgColor: { rgb: bgHex } },
                             font: { color: { rgb: "FFFFFF" }, bold: true, sz: 10 },
-                            alignment: { horizontal: "center", vertical: "center" },
+                            alignment: { horizontal: "center", vertical: "center", wrapText: true },
                             border: {
-                                top: { style: "thin", color: { rgb: "333333" } },
-                                bottom: { style: "thin", color: { rgb: "333333" } },
-                                left: { style: "thin", color: { rgb: "333333" } },
-                                right: { style: "thin", color: { rgb: "333333" } }
+                                top: { style: "thin", color: { rgb: "222222" } },
+                                bottom: { style: "thin", color: { rgb: "222222" } },
+                                left: { style: "thin", color: { rgb: "222222" } },
+                                right: { style: "thin", color: { rgb: "222222" } }
                             }
                         };
                     }
@@ -756,10 +776,6 @@
                 let row = [mach];
                 for (let i = 0; i < daysInMonth; i++) {
                     row.push(machineRowData[i] || "");
-                    if (machineRowStyles[i]) {
-                        const colLetter = XLSX.utils.encode_col(i + 1);
-                        cellStylesMap[`${colLetter}${rowIndex + 1}`] = machineRowStyles[i];
-                    }
                 }
                 excelData.push(row);
                 rowIndex++;
@@ -767,29 +783,24 @@
 
             const worksheet = XLSX.utils.aoa_to_sheet(excelData);
 
-            // Appliquer les styles aux cellules si SheetJS les supporte, sinon structuration propre des largeurs
-            const wscols = [{wch: 18}];
+            // Appliquer les fusions de cellules
+            worksheet['!merges'] = mergesList;
+
+            // Définition des largeurs de colonnes
+            const wscols = [{wch: 16}];
             for(let i = 0; i < daysInMonth; i++) {
-                wscols.push({wch: 22});
+                wscols.push({wch: 18});
             }
             worksheet['!cols'] = wscols;
 
-            // Style de l'en-tête principal et des jours
-            const headerStyle = {
-                fill: { fgColor: { rgb: "111827" } },
-                font: { color: { rgb: "EF4444" }, bold: true, sz: 11 },
-                alignment: { horizontal: "center", vertical: "center" },
-                border: { bottom: { style: "medium", color: { rgb: "DC2626" } } }
-            };
-
+            // Style du titre principal
             const titleStyle = {
                 font: { color: { rgb: "FFFFFF" }, bold: true, sz: 14 },
                 fill: { fgColor: { rgb: "000000" } }
             };
-
             if(worksheet["A1"]) worksheet["A1"].s = titleStyle;
 
-            // Appliquer les styles des en-têtes de colonnes (ligne 3, soit index 2)
+            // Style des en-têtes de colonnes (Jours)
             for(let col = 0; col <= daysInMonth; col++) {
                 const cellRef = XLSX.utils.encode_cell({r: 2, c: col});
                 if(worksheet[cellRef]) {
@@ -801,7 +812,7 @@
                 }
             }
 
-            // Appliquer les styles des cellules de projets injectés
+            // Application des styles de blocs de projets
             Object.keys(cellStylesMap).forEach(ref => {
                 if(worksheet[ref]) {
                     worksheet[ref].s = cellStylesMap[ref];
