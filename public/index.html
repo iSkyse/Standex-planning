@@ -27,9 +27,9 @@
             position: absolute;
             top: 0;
             bottom: 0;
-            width: 8px;
+            width: 12px;
             cursor: ew-resize;
-            z-index: 10;
+            z-index: 20;
         }
         .resize-handle-left { left: 0; }
         .resize-handle-right { right: 0; }
@@ -264,7 +264,7 @@
         </div>
     </div>
 
-    <!-- SCRIPT UNIQUE ET CORRECT -->
+    <!-- SCRIPT CORRIGÉ -->
     <script>
         const SITE_PASSWORD = "laser2026";
 
@@ -648,10 +648,14 @@
 
                         if (proj && day === proj._startD) {
                             const spanCount = (proj._endD - proj._startD) + 1;
-                            const bgPriority = proj.priority === 'red' ? 'bg-red-600' : (proj.priority === 'green' ? 'bg-emerald-600' : 'bg-amber-600');
+                            
+                            // Restauration des couleurs de priorité explicites pour la frise
+                            let bgPriority = 'bg-amber-600';
+                            if (proj.priority === 'red') bgPriority = 'bg-red-600';
+                            else if (proj.priority === 'green') bgPriority = 'bg-emerald-600';
                             
                             html += `<td colspan="${spanCount}" class="border border-slate-800 p-0 relative shadow-md h-10">`;
-                            html += `<div class="absolute inset-x-1 inset-y-1 px-2 bg-black/30 rounded flex items-center gap-2 overflow-hidden timeline-bar ${bgPriority} text-white" draggable="true" ondragstart="dragStartProject(event, ${proj.id})" ondblclick="editProject(${proj.id})">`;
+                            html += `<div class="absolute inset-x-1 inset-y-1 px-2 rounded flex items-center gap-2 overflow-hidden timeline-bar ${bgPriority} text-white" draggable="true" ondragstart="dragStartProject(event, ${proj.id})" ondblclick="editProject(${proj.id})">`;
                             html += `<div class="resize-handle resize-handle-left" onmousedown="initResize(event, ${proj.id}, 'left')"></div>`;
                             html += `<div class="resize-handle resize-handle-right" onmousedown="initResize(event, ${proj.id}, 'right')"></div>`;
                             
@@ -680,7 +684,6 @@
             e.preventDefault();
         }
 
-        // Fonction utilitaire pour parser une date YYYY-MM-DD en évitant les décalages de fuseau horaire
         function parseLocalDate(dateStr) {
             const parts = dateStr.split('-');
             return new Date(parts[0], parts[1] - 1, parts[2]);
@@ -743,21 +746,31 @@
             if (!proj) return;
 
             const startX = e.clientX;
+            const cellWidth = 40; // Largeur d'une case jour sur la grille
 
             function onMouseMove(moveEvent) {
                 const deltaX = moveEvent.clientX - startX;
-                const cellWidth = 40; 
                 const dayShift = Math.round(deltaX / cellWidth);
 
                 if (dayShift !== 0) {
                     if (direction === 'left') {
                         let d = parseLocalDate(proj.date_reception);
                         d.setDate(d.getDate() + dayShift);
-                        proj.date_reception = formatLocalDate(d);
+                        // Empêcher de dépasser la date de fin estimée/réelle
+                        const currentEnd = parseLocalDate(proj.date_reelle || proj.date_estimee);
+                        if (d <= currentEnd) {
+                            proj.date_reception = formatLocalDate(d);
+                        }
                     } else if (direction === 'right') {
-                        let d = parseLocalDate(proj.date_estimee);
+                        // C'est ici qu'on peut réduire ou allonger la fin (date estimée ou date réelle si renseignée)
+                        const targetField = proj.date_reelle ? 'date_reelle' : 'date_estimee';
+                        let d = parseLocalDate(proj[targetField]);
                         d.setDate(d.getDate() + dayShift);
-                        proj.date_estimee = formatLocalDate(d);
+                        // Empêcher de passer avant la date de début
+                        const start = parseLocalDate(proj.date_reception);
+                        if (d >= start) {
+                            proj[targetField] = formatLocalDate(d);
+                        }
                     }
                 }
             }
