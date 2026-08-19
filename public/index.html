@@ -15,7 +15,6 @@
         #lb-img-container { cursor: grab; }
         #lb-img-container:active { cursor: grabbing; }
         
-        /* Styles pour le drag & drop et le resize interactif */
         .timeline-bar {
             cursor: grab;
             user-select: none;
@@ -50,7 +49,7 @@
             <p class="text-xs text-gray-400 mb-6">Enter password to access the Laser Schedule</p>
             
             <form onsubmit="checkPassword(event)" class="space-y-4">
-                <input type="password" id="site-password" placeholder="Password..." required 
+                <input type="password" id="site-password" placeholder="Password..." required autocomplete="current-password"
                     class="w-full p-3 bg-slate-950 border border-slate-700 rounded text-white text-center text-sm focus:outline-none focus:border-red-600">
                 <button type="submit" class="w-full bg-red-600 hover:bg-red-700 text-white p-3 rounded font-bold text-sm uppercase tracking-wider transition shadow-lg">
                     Unlock
@@ -92,6 +91,7 @@
                 <button onclick="changeMonth(1)" class="bg-slate-800 px-3 py-1 rounded text-sm hover:bg-slate-700 font-medium border border-slate-700">Next ▶</button>
                 <button onclick="changeMonth(0)" class="bg-slate-900 px-3 py-1 rounded text-sm hover:bg-slate-800 ml-2 font-medium border border-slate-700">Today</button>
                 <button onclick="openModal()" class="bg-red-600 hover:bg-red-700 text-white px-5 py-2 rounded font-bold transition text-sm ml-6 shadow-lg uppercase tracking-wider">+ New Project</button>
+                <button onclick="lockScreen()" title="Lock Screen" class="bg-slate-800 hover:bg-slate-700 text-gray-300 px-3 py-2 rounded text-sm border border-slate-700 ml-2">🔒</button>
             </div>
         </header>
 
@@ -270,26 +270,42 @@
 
         function checkPassword(event) {
             if (event) event.preventDefault();
-            const input = document.getElementById('site-password').value;
+            const inputField = document.getElementById('site-password');
             const authScreen = document.getElementById('auth-screen');
             const mainContent = document.getElementById('main-content');
             const errorText = document.getElementById('auth-error');
 
-            if (input === SITE_PASSWORD) {
+            if (inputField && inputField.value === SITE_PASSWORD) {
                 authScreen.style.display = 'none';
                 mainContent.style.display = 'flex';
                 sessionStorage.setItem('authenticated', 'true');
+                errorText.classList.add('hidden');
             } else {
-                errorText.classList.remove('hidden');
-                document.getElementById('site-password').value = '';
+                if (errorText) errorText.classList.remove('hidden');
+                if (inputField) inputField.value = '';
             }
         }
 
+        function lockScreen() {
+            sessionStorage.removeItem('authenticated');
+            document.getElementById('main-content').style.display = 'none';
+            document.getElementById('auth-screen').style.display = 'flex';
+            const inputField = document.getElementById('site-password');
+            if (inputField) inputField.value = '';
+        }
+
         document.addEventListener('DOMContentLoaded', () => {
+            const authScreen = document.getElementById('auth-screen');
+            const mainContent = document.getElementById('main-content');
+
             if (sessionStorage.getItem('authenticated') === 'true') {
-                document.getElementById('auth-screen').style.display = 'none';
-                document.getElementById('main-content').style.display = 'flex';
+                if (authScreen) authScreen.style.display = 'none';
+                if (mainContent) mainContent.style.display = 'flex';
+            } else {
+                if (authScreen) authScreen.style.display = 'flex';
+                if (mainContent) mainContent.style.display = 'none';
             }
+
             initYearDropdown();
             updateMonthYearSelectors();
             loadProjects();
@@ -357,7 +373,6 @@
         let tempPastedPhotoUrl = '';
         const machinesConfig = { "DMG 65": {}, "DMG 125": {}, "DMG 210": {}, "GF 1000": {}, "GF 1200": {}, "GF 4000": {} };
 
-        // Zoom & Pan variables
         let scale = 1, panning = false, pointX = 0, pointY = 0, startX = 0, startY = 0;
 
         async function loadProjects() {
@@ -649,7 +664,6 @@
                         if (proj && day === proj._startD) {
                             const spanCount = (proj._endD - proj._startD) + 1;
                             
-                            // Restauration des couleurs de priorité explicites pour la frise
                             let bgPriority = 'bg-amber-600';
                             if (proj.priority === 'red') bgPriority = 'bg-red-600';
                             else if (proj.priority === 'green') bgPriority = 'bg-emerald-600';
@@ -746,37 +760,33 @@
             if (!proj) return;
 
             const startX = e.clientX;
-            const cellWidth = 40; // Largeur exacte d'une case jour sur la grille (w-10 = 40px)[cite: 3]
+            const cellWidth = 40; 
             
-            // On mémorise les dates initiales au moment du clic[cite: 3]
             const initialReception = parseLocalDate(proj.date_reception);
             const targetField = proj.date_reelle ? 'date_reelle' : 'date_estimee';
             const initialTargetDate = parseLocalDate(proj[targetField]);
 
             function onMouseMove(moveEvent) {
                 const deltaX = moveEvent.clientX - startX;
-                // Utilisation de Math.trunc pour éviter l'accélération/emballement brutal des mouvements
-                const dayShift = Math.trunc(deltaX / cellWidth);[cite: 3]
+                const dayShift = Math.trunc(deltaX / cellWidth);
 
                 if (direction === 'left') {
                     let newDate = new Date(initialReception);
                     newDate.setDate(newDate.getDate() + dayShift);
                     
-                    // Empêcher de dépasser la date de fin[cite: 3]
                     const currentEnd = parseLocalDate(proj.date_reelle || proj.date_estimee);
                     if (newDate <= currentEnd) {
                         proj.date_reception = formatLocalDate(newDate);
-                        renderTimeline(); // Mise à jour fluide en direct[cite: 3]
+                        renderTimeline(); 
                     }
                 } else if (direction === 'right') {
                     let newDate = new Date(initialTargetDate);
                     newDate.setDate(newDate.getDate() + dayShift);
                     
-                    // Empêcher de passer avant la date de début[cite: 3]
                     const start = parseLocalDate(proj.date_reception);
                     if (newDate >= start) {
                         proj[targetField] = formatLocalDate(newDate);
-                        renderTimeline(); // Mise à jour fluide en direct[cite: 3]
+                        renderTimeline(); 
                     }
                 }
             }
@@ -784,7 +794,6 @@
             async function onMouseUp() {
                 window.removeEventListener('mousemove', onMouseMove);
                 window.removeEventListener('mouseup', onMouseUp);
-                // Sauvegarde finale en base une fois le glissé-déposé terminé[cite: 3]
                 await saveProjectDirect(proj);
             }
 
@@ -925,7 +934,7 @@
                                 <div class="flex justify-between text-xs font-semibold mb-1">
                                     <span class="text-gray-300">${client}</span>
                                     <span class="text-gray-400">${count} projects (${pct}%)</span>
-                                </div>
+                                »</div>
                                 <div class="w-full bg-slate-950 rounded-full h-2 border border-slate-800">
                                     <div class="bg-amber-600 h-2 rounded-full" style="width: ${pct}%"></div>
                                 </div>
