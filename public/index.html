@@ -14,6 +14,25 @@
         .project-bar-img:hover { transform: scale(1.1); }
         #lb-img-container { cursor: grab; }
         #lb-img-container:active { cursor: grabbing; }
+        
+        /* Styles pour le drag & drop et le resize interactif */
+        .timeline-bar {
+            cursor: grab;
+            user-select: none;
+        }
+        .timeline-bar:active {
+            cursor: grabbing;
+        }
+        .resize-handle {
+            position: absolute;
+            top: 0;
+            bottom: 0;
+            width: 8px;
+            cursor: ew-resize;
+            z-index: 10;
+        }
+        .resize-handle-left { left: 0; }
+        .resize-handle-right { right: 0; }
     </style>
     <meta name="robots" content="noindex, nofollow">
 </head>
@@ -519,7 +538,7 @@
         }
 
         async function saveProject(e) {
-            e.preventDefault();
+            if(e) e.preventDefault();
             const idInput = document.getElementById('project-id').value;
             const id = idInput ? Number(idInput) : Date.now();
             const existingProj = projects.find(x => x.id === id);
@@ -620,7 +639,7 @@
                 for (let r = 0; r < totalSubRows; r++) {
                     html += `<tr class="border-b border-slate-800/80 h-10">`;
                     if (r === 0) {
-                        html += `<td rowspan="${totalSubRows}" class="p-3 font-bold bg-slate-900 border border-slate-800 sticky left-0 z-20 align-middle"><span class="px-2 py-1 rounded text-white text-xs bg-slate-800 border border-slate-700">${mach}</span></td>`;
+                        html += `<td rowspan="${totalSubRows}" class="p-3 font-bold bg-slate-900 border border-slate-800 sticky left-0 z-20 align-middle" data-machine="${mach}" ondragover="allowDrop(event)" ondrop="dropOnMachine(event, '${mach}')"><span class="px-2 py-1 rounded text-white text-xs bg-slate-800 border border-slate-700 pointer-events-none">${mach}</span></td>`;
                     }
 
                     for (let day = 1; day <= daysInMonth; day++) {
@@ -631,20 +650,127 @@
                             const spanCount = (proj._endD - proj._startD) + 1;
                             const bgPriority = proj.priority === 'red' ? 'bg-red-600' : (proj.priority === 'green' ? 'bg-emerald-600' : 'bg-amber-600');
                             
-                            html += `<td colspan="${spanCount}" class="border border-slate-800 p-0 cursor-pointer ${bgPriority} text-white transition relative shadow-md h-10" onclick="editProject(${proj.id})">`;
-                            html += `<div class="absolute inset-x-1 inset-y-1 px-2 bg-black/30 rounded flex items-center gap-2 overflow-hidden">`;
+                            html += `<td colspan="${spanCount}" class="border border-slate-800 p-0 relative shadow-md h-10">`;
+                            // Corps de la barre déplaçable
+                            html += `<div class="absolute inset-x-1 inset-y-1 px-2 bg-black/30 rounded flex items-center gap-2 overflow-hidden timeline-bar ${bgPriority} text-white" draggable="true" ondragstart="dragStartProject(event, ${proj.id})" ondblclick="editProject(${proj.id})">`;
+                            // Poignées de redimensionnement (resize)
+                            html += `<div class="resize-handle resize-handle-left" onmousedown="initResize(event, ${proj.id}, 'left')"></div>`;
+                            html += `<div class="resize-handle resize-handle-right" onmousedown="initResize(event, ${proj.id}, 'right')"></div>`;
+                            
                             if (proj.photo) html += `<img src="${proj.photo}" class="project-bar-img shrink-0" onclick="openImageModal(${proj.id}, event)">`;
-                            html += `<div class="text-white font-medium text-[11px] whitespace-nowrap truncate">PO: ${proj.po} | Client: ${proj.client} | Project: ${proj.project_name}</div></div></td>`;
+                            html += `<div class="text-white font-medium text-[11px] whitespace-nowrap truncate pointer-events-none">PO: ${proj.po} | Client: ${proj.client} | Project: ${proj.project_name}</div></div></td>`;
                             day += spanCount - 1;
                             continue;
                         } else if (!proj) {
-                            html += `<td class="border border-slate-800/60 p-0 h-10 hover:bg-slate-900/50 w-10"></td>`;
+                            html += `<td class="border border-slate-800/60 p-0 h-10 hover:bg-slate-900/50 w-10" data-date="${currentCellDate}" data-machine="${mach}" ondragover="allowDrop(event)" ondrop="dropOnDate(event, '${currentCellDate}', '${mach}')"></td>`;
                         }
                     }
                     html += `</tr>`;
                 }
             });
             container.innerHTML = html + `</tbody></table>`;
+        }
+
+        // --- GESTION DRAG & DROP ET RESIZE DE LA FRISE ---
+        let draggedProjectId = null;
+
+        function dragStartProject(e, id) {
+            draggedProjectId = id;
+            e.dataTransfer.setData('text/plain', id);
+        }
+
+        function allowDrop(e) {
+            e.preventDefault();
+        }
+
+        async function dropOnDate(e, targetDateStr, targetMachine) {
+            e.preventDefault();
+            if (!draggedProjectId) return;
+            const proj = projects.find(p => p.id === draggedProjectId);
+            if (!proj) return;
+
+            // Calculer le décalage de jours
+            const oldStart = new Date(proj.date_reception);
+            const newStart = new Date(targetDateStr);
+            const diffTime = newStart - oldStart;
+            const diffDays = Math.round(diffTime / (1000 * 60 * 60 * 24));
+
+            const oldEstEnd = new Date(proj.date_estimee);
+            const newEstEnd = new Date(oldEstEnd.getTime() + (diffDays * 24 * 60 * 60 * 1000));
+
+            let newRealEnd = proj.date_reelle;
+            if (proj.date_reelle) {
+                const oldRealEnd = new Date(proj.date_reelle);
+                newRealEnd = new Date(oldRealEnd.getTime() + (diffDays * 24 * 60 * 60 * 1000)).toISOString().split('T')[0];
+            }
+
+            proj.machine = targetMachine;
+            proj.date_reception = newStart.toISOString().split('T')[0];
+            proj.date_estimee = newEstEnd.toISOString().split('T')[0];
+            proj.date_reelle = newRealEnd;
+
+            await saveProjectDirect(proj);
+            draggedProjectId = null;
+        }
+
+        async function dropOnMachine(e, targetMachine) {
+            e.preventDefault();
+            if (!draggedProjectId) return;
+            const proj = projects.find(p => p.id === draggedProjectId);
+            if (!proj) return;
+
+            proj.machine = targetMachine;
+            await saveProjectDirect(proj);
+            draggedProjectId = null;
+        }
+
+        // Redimensionnement par les bords (Resize)
+        function initResize(e, projId, direction) {
+            e.stopPropagation();
+            e.preventDefault();
+            const proj = projects.find(p => p.id === projId);
+            if (!proj) return;
+
+            const startX = e.clientX;
+            const year = currentDate.getFullYear();
+            const month = currentDate.getMonth();
+            const daysInMonth = new Date(year, month + 1, 0).getDate();
+
+            function onMouseMove(moveEvent) {
+                const deltaX = moveEvent.clientX - startX;
+                const cellWidth = 40; // largeur approximative d'une colonne de jour en pixels
+                const dayShift = Math.round(deltaX / cellWidth);
+
+                if (dayShift !== 0) {
+                    if (direction === 'left') {
+                        let d = new Date(proj.date_reception);
+                        d.setDate(d.getDate() + dayShift);
+                        proj.date_reception = d.toISOString().split('T')[0];
+                    } else if (direction === 'right') {
+                        let d = new Date(proj.date_estimee);
+                        d.setDate(d.getDate() + dayShift);
+                        proj.date_estimee = d.toISOString().split('T')[0];
+                    }
+                }
+            }
+
+            async function onMouseUp() {
+                window.removeEventListener('mousemove', onMouseMove);
+                window.removeEventListener('mouseup', onMouseUp);
+                await saveProjectDirect(proj);
+            }
+
+            window.addEventListener('mousemove', onMouseMove);
+            window.addEventListener('mouseup', onMouseUp);
+        }
+
+        async function saveProjectDirect(proj) {
+            await fetch('/api/projects', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(proj)
+            });
+            loadProjects();
         }
 
         function renderTable() {
