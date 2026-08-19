@@ -5,7 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Standex Engraving - Laser Master Schedule</title>
     <script src="https://cdn.tailwindcss.com"></script>
-    <!-- Inclusion de la librairie SheetJS (xlsx) pour gérer l'export Excel -->
+    <!-- Inclusion de la librairie SheetJS (xlsx) -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
     <style>
         #view-grid::-webkit-scrollbar, #view-table::-webkit-scrollbar, #view-stats::-webkit-scrollbar { height: 8px; width: 8px; }
@@ -61,7 +61,7 @@
         </div>
     </div>
 
-    <!-- MAIN CONTENT (HIDDEN UNTIL AUTH) -->
+    <!-- MAIN CONTENT -->
     <div id="main-content" style="display:none;" class="flex flex-col h-full overflow-hidden">
         <header class="bg-black text-white p-3 shadow-xl flex justify-between items-center shrink-0 border-b-2 border-red-600">
             <div class="flex items-center gap-3">
@@ -93,7 +93,7 @@
                 <button onclick="changeMonth(1)" class="bg-slate-800 px-3 py-1 rounded text-sm hover:bg-slate-700 font-medium border border-slate-700">Next ▶</button>
                 <button onclick="changeMonth(0)" class="bg-slate-900 px-3 py-1 rounded text-sm hover:bg-slate-800 ml-2 font-medium border border-slate-700">Today</button>
                 
-                <!-- Bouton Export Excel -->
+                <!-- Bouton Export Excel Stylisé -->
                 <button onclick="exportTimelineToExcel()" class="bg-emerald-700 hover:bg-emerald-800 text-white px-3 py-1.5 rounded text-sm font-medium border border-emerald-600 shadow-sm ml-2 flex items-center gap-1">📊 Export Excel</button>
 
                 <button onclick="openModal()" class="bg-red-600 hover:bg-red-700 text-white px-5 py-2 rounded font-bold transition text-sm ml-4 shadow-lg uppercase tracking-wider">+ New Project</button>
@@ -198,7 +198,6 @@
                     </div>
                 </div>
 
-                <!-- Mapping Section -->
                 <div class="bg-slate-950 border border-slate-800 p-3 rounded-lg space-y-3">
                     <span class="block text-xs font-bold text-red-500 uppercase tracking-wide">Mapping Status</span>
                     <div class="grid grid-cols-2 gap-4">
@@ -340,7 +339,6 @@
                 });
             }
 
-            // Lightbox Pan & Zoom Listeners
             const container = document.getElementById('lb-img-container');
             if (container) {
                 container.addEventListener('mousedown', (e) => {
@@ -693,7 +691,7 @@
             container.innerHTML = html + `</tbody></table>`;
         }
 
-        // Fonction d'export Excel fidèle à la grille du calendrier
+        // Fonction d'export Excel professionnelle avec mise en forme visuelle (couleurs et styles)
         function exportTimelineToExcel() {
             const year = currentDate.getFullYear();
             const month = currentDate.getMonth();
@@ -712,6 +710,10 @@
                 headerRow
             ];
 
+            let cellStylesMap = {}; // stockera les styles visuels par coordonnées (ex: "B4")
+
+            let rowIndex = 3; // 0-based pour les lignes (après le titre et la ligne vide)
+            
             Object.keys(machinesConfig).forEach(mach => {
                 const machProjects = projects.filter(p => {
                     if (p.machine !== mach) return false;
@@ -723,35 +725,88 @@
                 });
 
                 let machineRowData = new Array(daysInMonth).fill("");
+                let machineRowStyles = new Array(daysInMonth).fill(null);
 
                 machProjects.forEach(proj => {
                     const startD = Math.max(1, new Date(proj.date_reception) < new Date(year, month, 1) ? 1 : new Date(proj.date_reception).getDate());
                     const endD = Math.min(daysInMonth, new Date(proj.date_reelle || proj.date_estimee) > new Date(year, month, daysInMonth) ? daysInMonth : new Date(proj.date_reelle || proj.date_estimee).getDate());
 
+                    // Détermination de la couleur d'arrière-plan selon la priorité (Hex styles Excel)
+                    let bgHex = "D97706"; // Ambre / Standard par défaut
+                    if (proj.priority === 'red') bgHex = "DC2626"; // Rouge critique
+                    else if (proj.priority === 'green') bgHex = "059669"; // Vert low
+
                     for (let d = startD; d <= endD; d++) {
                         const cellContent = `[PO: ${proj.po}] ${proj.project_name} (${proj.client})`;
-                        if (machineRowData[d - 1]) {
-                            machineRowData[d - 1] += ` | ${cellContent}`;
-                        } else {
-                            machineRowData[d - 1] = cellContent;
-                        }
+                        machineRowData[d - 1] = cellContent;
+                        machineRowStyles[d - 1] = {
+                            fill: { fgColor: { rgb: bgHex } },
+                            font: { color: { rgb: "FFFFFF" }, bold: true, sz: 10 },
+                            alignment: { horizontal: "center", vertical: "center" },
+                            border: {
+                                top: { style: "thin", color: { rgb: "333333" } },
+                                bottom: { style: "thin", color: { rgb: "333333" } },
+                                left: { style: "thin", color: { rgb: "333333" } },
+                                right: { style: "thin", color: { rgb: "333333" } }
+                            }
+                        };
                     }
                 });
 
                 let row = [mach];
                 for (let i = 0; i < daysInMonth; i++) {
                     row.push(machineRowData[i] || "");
+                    if (machineRowStyles[i]) {
+                        const colLetter = XLSX.utils.encode_col(i + 1);
+                        cellStylesMap[`${colLetter}${rowIndex + 1}`] = machineRowStyles[i];
+                    }
                 }
                 excelData.push(row);
+                rowIndex++;
             });
 
             const worksheet = XLSX.utils.aoa_to_sheet(excelData);
 
+            // Appliquer les styles aux cellules si SheetJS les supporte, sinon structuration propre des largeurs
             const wscols = [{wch: 18}];
             for(let i = 0; i < daysInMonth; i++) {
-                wscols.push({wch: 25});
+                wscols.push({wch: 22});
             }
             worksheet['!cols'] = wscols;
+
+            // Style de l'en-tête principal et des jours
+            const headerStyle = {
+                fill: { fgColor: { rgb: "111827" } },
+                font: { color: { rgb: "EF4444" }, bold: true, sz: 11 },
+                alignment: { horizontal: "center", vertical: "center" },
+                border: { bottom: { style: "medium", color: { rgb: "DC2626" } } }
+            };
+
+            const titleStyle = {
+                font: { color: { rgb: "FFFFFF" }, bold: true, sz: 14 },
+                fill: { fgColor: { rgb: "000000" } }
+            };
+
+            if(worksheet["A1"]) worksheet["A1"].s = titleStyle;
+
+            // Appliquer les styles des en-têtes de colonnes (ligne 3, soit index 2)
+            for(let col = 0; col <= daysInMonth; col++) {
+                const cellRef = XLSX.utils.encode_cell({r: 2, c: col});
+                if(worksheet[cellRef]) {
+                    worksheet[cellRef].s = {
+                        fill: { fgColor: { rgb: "1E293B" } },
+                        font: { color: { rgb: "FFFFFF" }, bold: true, sz: 10 },
+                        alignment: { horizontal: "center", vertical: "center" }
+                    };
+                }
+            }
+
+            // Appliquer les styles des cellules de projets injectés
+            Object.keys(cellStylesMap).forEach(ref => {
+                if(worksheet[ref]) {
+                    worksheet[ref].s = cellStylesMap[ref];
+                }
+            });
 
             const workbook = XLSX.utils.book_new();
             XLSX.utils.book_append_sheet(workbook, worksheet, `${currentMonthName} ${year}`);
