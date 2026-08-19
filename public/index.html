@@ -92,9 +92,6 @@
                 </div>
                 <button onclick="changeMonth(1)" class="bg-slate-800 px-3 py-1 rounded text-sm hover:bg-slate-700 font-medium border border-slate-700">Next ▶</button>
                 <button onclick="changeMonth(0)" class="bg-slate-900 px-3 py-1 rounded text-sm hover:bg-slate-800 ml-2 font-medium border border-slate-700">Today</button>
-                
-                <!-- Bouton Export Excel Timeline -->
-                <button onclick="exportTimelineToExcel()" class="bg-emerald-700 hover:bg-emerald-800 text-white px-3 py-1.5 rounded text-sm font-medium border border-emerald-600 shadow-sm ml-2 flex items-center gap-1">📊 Export Timeline</button>
 
                 <button onclick="openModal()" class="bg-red-600 hover:bg-red-700 text-white px-5 py-2 rounded font-bold transition text-sm ml-4 shadow-lg uppercase tracking-wider">+ New Project</button>
                 <button onclick="lockScreen()" title="Lock Screen" class="bg-slate-800 hover:bg-slate-700 text-gray-300 px-3 py-2 rounded text-sm border border-slate-700 ml-2">🔒</button>
@@ -695,97 +692,7 @@
             container.innerHTML = html + `</tbody></table>`;
         }
 
-        // Export de la Timeline (existant)
-        function exportTimelineToExcel() {
-            const year = currentDate.getFullYear();
-            const month = currentDate.getMonth();
-            const daysInMonth = new Date(year, month + 1, 0).getDate();
-            const monthNames = ["January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"];
-            const currentMonthName = monthNames[month];
-
-            let headerRow = ["Machine / Days"];
-            for (let d = 1; d <= daysInMonth; d++) {
-                headerRow.push(d);
-            }
-
-            let excelData = [
-                [`Standex Engraving - Laser Master Schedule (${currentMonthName} ${year})`],
-                [],
-                headerRow
-            ];
-
-            let cellStylesMap = {};
-            let mergesList = [];
-            let rowIndex = 3;
-            
-            Object.keys(machinesConfig).forEach(mach => {
-                const machProjects = projects.filter(p => {
-                    if (p.machine !== mach) return false;
-                    const pStart = p.date_reception;
-                    const pEnd = p.date_reelle || p.date_estimee;
-                    const monthStart = `${year}-${String(month + 1).padStart(2, '0')}-01`;
-                    const monthEnd = `${year}-${String(month + 1).padStart(2, '0')}-${String(daysInMonth).padStart(2, '0')}`;
-                    return pStart <= monthEnd && pEnd >= monthStart;
-                });
-
-                let machineRowData = new Array(daysInMonth).fill("");
-
-                machProjects.forEach(proj => {
-                    const startD = Math.max(1, new Date(proj.date_reception) < new Date(year, month, 1) ? 1 : new Date(proj.date_reception).getDate());
-                    const endD = Math.min(daysInMonth, new Date(proj.date_reelle || proj.date_estimee) > new Date(year, month, daysInMonth) ? daysInMonth : new Date(proj.date_reelle || proj.date_estimee).getDate());
-
-                    let bgHex = "D97706";
-                    if (proj.priority === 'red') bgHex = "DC2626";
-                    else if (proj.priority === 'green') bgHex = "059669";
-
-                    const startColIdx = startD;
-                    const endColIdx = endD;
-
-                    if (endColIdx > startColIdx) {
-                        mergesList.push({
-                            s: { r: rowIndex, c: startColIdx },
-                            e: { r: rowIndex, c: endColIdx }
-                        });
-                    }
-
-                    for (let d = startD; d <= endD; d++) {
-                        const colIdx = d;
-                        const colLetter = XLSX.utils.encode_col(colIdx);
-                        const cellRef = `${colLetter}${rowIndex + 1}`;
-
-                        if (d === startD) {
-                            machineRowData[d - 1] = `PO: ${proj.po} | ${proj.client} - ${proj.project_name}`;
-                        } else {
-                            machineRowData[d - 1] = "";
-                        }
-                    }
-                });
-
-                let row = [mach];
-                for (let i = 0; i < daysInMonth; i++) {
-                    row.push(machineRowData[i] || "");
-                }
-                excelData.push(row);
-                rowIndex++;
-            });
-
-            const worksheet = XLSX.utils.aoa_to_sheet(excelData);
-            worksheet['!merges'] = mergesList;
-
-            const wscols = [{wch: 16}];
-            for(let i = 0; i < daysInMonth; i++) {
-                wscols.push({wch: 18});
-            }
-            worksheet['!cols'] = wscols;
-
-            if(worksheet["A1"]) worksheet["A1"].s = { font: { color: { rgb: "FFFFFF" }, bold: true, sz: 14 }, fill: { fgColor: { rgb: "000000" } } };
-
-            const workbook = XLSX.utils.book_new();
-            XLSX.utils.book_append_sheet(workbook, worksheet, `${currentMonthName} ${year}`);
-            XLSX.writeFile(workbook, `Laser_Schedule_${currentMonthName}_${year}.xlsx`);
-        }
-
-        // Nouvel Export : Exporte la liste filtrée telle qu'affichée dans Projects List View
+        // Export de la liste filtrée telle qu'affichée dans Projects List View
         function exportTableToExcel() {
             const searchInput = document.getElementById('table-search');
             const clientFilterSelect = document.getElementById('table-client-filter');
@@ -795,7 +702,6 @@
             const clientFilter = clientFilterSelect ? clientFilterSelect.value : '';
             const priorityFilter = priorityFilterSelect ? priorityFilterSelect.value : '';
 
-            // Appliquer exactement les mêmes filtres que la vue liste
             const filtered = projects.filter(p => {
                 const matchesSearch = !search || [p.po, p.project_name, p.grain, p.client].some(x => (x || '').toLowerCase().includes(search));
                 const matchesClient = !clientFilter || p.client === clientFilter;
@@ -832,7 +738,6 @@
 
             const worksheet = XLSX.utils.aoa_to_sheet(excelData);
 
-            // Largeurs confortables pour chaque colonne
             worksheet['!cols'] = [
                 {wch: 15}, {wch: 22}, {wch: 15}, {wch: 20}, {wch: 15}, 
                 {wch: 12}, {wch: 15}, {wch: 18}, {wch: 15}, {wch: 12}, {wch: 12}, {wch: 12}
