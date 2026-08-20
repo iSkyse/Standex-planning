@@ -692,7 +692,7 @@
             container.innerHTML = html + `</tbody></table>`;
         }
 
-        // Export de la liste filtrée avec inclinaison des photos en données / liens
+        // Export Excel stylisé et professionnel avec SheetJS
         function exportTableToExcel() {
             const searchInput = document.getElementById('table-search');
             const clientFilterSelect = document.getElementById('table-client-filter');
@@ -709,48 +709,86 @@
                 return matchesSearch && matchesClient && matchesPriority;
             });
 
-            let excelData = [
-                ["Standex Engraving - Projects List Export (with Photos)"],
-                [],
-                ["PO", "Project Name", "Grain", "Client", "Machine", "Priority", "Mapping Done", "Mapping Confirmed", "Status", "Reception", "Est. End", "Real End", "Photo Data (Base64)"]
-            ];
-
-            filtered.forEach(p => {
+            const dataToExport = filtered.map(p => {
                 const isFinished = Boolean(p.date_reelle);
                 let priorityText = p.priority === 'red' ? 'CRITICAL' : (p.priority === 'green' ? 'LOW' : 'STANDARD');
                 let statusText = isFinished ? 'FINISHED' : 'IN PROGRESS';
 
-                excelData.push([
-                    p.po || '',
-                    p.project_name || '',
-                    p.grain || '',
-                    p.client || '',
-                    p.machine || '',
-                    priorityText,
-                    p.mapping_done || 'no',
-                    p.mapping_confirmed || 'no',
-                    statusText,
-                    p.date_reception || '',
-                    p.date_estimee || '',
-                    p.date_reelle || '',
-                    p.photo ? p.photo : 'No Photo'
-                ]);
+                return {
+                    "PO": p.po || '',
+                    "Project Name": p.project_name || '',
+                    "Grain": p.grain || '',
+                    "Client": p.client || '',
+                    "Machine": p.machine || '',
+                    "Priority": priorityText,
+                    "Mapping Done": p.mapping_done || 'no',
+                    "Mapping Confirmed": p.mapping_confirmed || 'no',
+                    "Status": statusText,
+                    "Reception": p.date_reception || '',
+                    "Est. End": p.date_estimee || '',
+                    "Real End": p.date_reelle || '',
+                    "Photo Data": p.photo ? p.photo : 'No Photo'
+                };
             });
 
-            const worksheet = XLSX.utils.aoa_to_sheet(excelData);
+            const worksheet = XLSX.utils.json_to_sheet(dataToExport);
 
+            // Largeurs de colonnes ajustées
             worksheet['!cols'] = [
                 {wch: 15}, {wch: 22}, {wch: 15}, {wch: 20}, {wch: 15}, 
                 {wch: 12}, {wch: 15}, {wch: 18}, {wch: 15}, {wch: 12}, {wch: 12}, {wch: 12}, {wch: 30}
             ];
 
-            if(worksheet["A1"]) {
-                worksheet["A1"].s = { font: { color: { rgb: "FFFFFF" }, bold: true, sz: 14 }, fill: { fgColor: { rgb: "000000" } } };
+            const range = XLSX.utils.decode_range(worksheet['!ref']);
+
+            // Style de l'en-tête (Ligne 0) : Fond bleu foncé/noir pro, texte blanc gras
+            for (let C = range.s.c; C <= range.e.c; ++C) {
+                const headerCellRef = XLSX.utils.encode_cell({ r: 0, c: C });
+                if (!worksheet[headerCellRef]) continue;
+
+                worksheet[headerCellRef].s = {
+                    fill: { fgColor: { rgb: "1F4E78" } },
+                    font: { name: "Arial", sz: 11, bold: true, color: { rgb: "FFFFFF" } },
+                    alignment: { horizontal: "center", vertical: "center" },
+                    border: {
+                        top: { style: "thin", color: { rgb: "000000" } },
+                        bottom: { style: "medium", color: { rgb: "000000" } },
+                        left: { style: "thin", color: { rgb: "D9D9D9" } },
+                        right: { style: "thin", color: { rgb: "D9D9D9" } }
+                    }
+                };
+            }
+
+            // Style des cellules de données (alternance de couleur et bordures fines)
+            for (let R = range.s.r + 1; R <= range.e.r; ++R) {
+                for (let C = range.s.c; C <= range.e.c; ++C) {
+                    const cellRef = XLSX.utils.encode_cell({ r: R, c: C });
+                    if (!worksheet[cellRef]) continue;
+
+                    const fillColor = (R % 2 === 0) ? "F9FBFD" : "FFFFFF";
+
+                    worksheet[cellRef].s = {
+                        fill: { fgColor: { rgb: fillColor } },
+                        font: { name: "Arial", sz: 10 },
+                        alignment: { 
+                            horizontal: (C === 0 || C >= 9) ? "center" : "left", 
+                            vertical: "center" 
+                        },
+                        border: {
+                            top: { style: "thin", color: { rgb: "E0E0E0" } },
+                            bottom: { style: "thin", color: { rgb: "E0E0E0" } },
+                            left: { style: "thin", color: { rgb: "E0E0E0" } },
+                            right: { style: "thin", color: { rgb: "E0E0E0" } }
+                        }
+                    };
+                }
             }
 
             const workbook = XLSX.utils.book_new();
             XLSX.utils.book_append_sheet(workbook, worksheet, "Projects List");
-            XLSX.writeFile(workbook, `Standex_Projects_List_With_Photos.xlsx`);
+            
+            const today = new Date().toISOString().split('T')[0];
+            XLSX.writeFile(workbook, `Standex_Projects_List_${today}.xlsx`);
         }
 
         let draggedProjectId = null;
