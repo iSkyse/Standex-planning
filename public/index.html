@@ -692,7 +692,7 @@
             container.innerHTML = html + `</tbody></table>`;
         }
 
-        // Export Excel standard et robuste (SheetJS officiel)
+        // Export Excel moderne, coloré et visuel (SheetJS)
         function exportTableToExcel() {
             try {
                 if (typeof XLSX === 'undefined') {
@@ -720,12 +720,14 @@
                     return;
                 }
 
-                const dataToExport = filtered.map(p => {
+                // Construction des données tabulaires avec formatage propre
+                const rawData = filtered.map((p, index) => {
                     const isFinished = Boolean(p.date_reelle);
                     let priorityText = p.priority === 'red' ? 'CRITICAL' : (p.priority === 'green' ? 'LOW' : 'STANDARD');
                     let statusText = isFinished ? 'FINISHED' : 'IN PROGRESS';
 
                     return {
+                        "Photo": p.photo ? "[Image Attached]" : "-",
                         "PO": p.po || '',
                         "Project Name": p.project_name || '',
                         "Grain": p.grain || '',
@@ -737,26 +739,104 @@
                         "Status": statusText,
                         "Reception": p.date_reception || '',
                         "Est. End": p.date_estimee || '',
-                        "Real End": p.date_reelle || '',
-                        "Photo": p.photo ? "Yes (Attached)" : "No"
+                        "Real End": p.date_reelle || ''
                     };
                 });
 
-                const worksheet = XLSX.utils.json_to_sheet(dataToExport);
+                const worksheet = XLSX.utils.json_to_sheet(rawData);
 
-                // Largeur automatique des colonnes
+                // Style et design professionnel des cellules (en-têtes rouges Standex, bordures, alignements)
+                const range = XLSX.utils.decode_range(worksheet['!ref']);
+                
+                for (let C = range.s.c; C <= range.e.c; ++C) {
+                    const headerCell = XLSX.utils.encode_cell({ r: 0, c: C });
+                    if (!worksheet[headerCell]) continue;
+                    
+                    // Design de l'en-tête (Fond rouge foncé Standex, texte blanc gras)
+                    worksheet[headerCell].s = {
+                        fill: { fgColor: { rgb: "991B1B" } },
+                        font: { name: "Calibri", sz: 11, bold: true, color: { rgb: "FFFFFF" } },
+                        alignment: { horizontal: "center", vertical: "center" },
+                        border: {
+                            top: { style: "thin", color: { rgb: "000000" } },
+                            bottom: { style: "medium", color: { rgb: "000000" } },
+                            left: { style: "thin", color: { rgb: "333333" } },
+                            right: { style: "thin", color: { rgb: "333333" } }
+                        }
+                    };
+                }
+
+                // Hauteur de la ligne d'en-tête et des lignes de données
+                worksheet['!rows'] = [{ hpt: 28 }];
+
+                for (let R = range.s.r + 1; R <= range.e.r; ++R) {
+                    worksheet['!rows'][R] = { hpt: 24 }; // Lignes de données plus aérées
+                    const isEven = R % 2 === 0;
+                    const rowBgColor = isEven ? "F8FAFC" : "FFFFFF"; // Effet zébré subtil
+
+                    for (let C = range.s.c; C <= range.e.c; ++C) {
+                        const cellRef = XLSX.utils.encode_cell({ r: R, c: C });
+                        if (!worksheet[cellRef]) continue;
+
+                        const val = worksheet[cellRef].v;
+                        let cellAlignment = { horizontal: "left", vertical: "center" };
+                        let fontColor = "000000";
+                        let isBold = false;
+                        let cellBg = rowBgColor;
+
+                        // Centrer certaines colonnes clés
+                        if (C === 0 || C === 1 || C === 5 || C === 6 || C === 7 || C === 8 || C === 9 || C >= 10) {
+                            cellAlignment.horizontal = "center";
+                        }
+
+                        // Coloration conditionnelle intelligente des cellules
+                        if (C === 6) { // Priorité
+                            if (val === 'CRITICAL') { fontColor = "DC2626"; isBold = true; }
+                            else if (val === 'LOW') { fontColor = "059669"; isBold = true; }
+                            else { fontColor = "D97706"; isBold = true; }
+                        } else if (C === 9) { // Status
+                            if (val === 'FINISHED') { fontColor = "059669"; isBold = true; }
+                            else { fontColor = "D97706"; isBold = true; }
+                        }
+
+                        worksheet[cellRef].s = {
+                            fill: { fgColor: { rgb: cellBg } },
+                            font: { name: "Calibri", sz: 10, bold: isBold, color: { rgb: fontColor } },
+                            alignment: cellAlignment,
+                            border: {
+                                top: { style: "thin", color: { rgb: "E2E8F0" } },
+                                bottom: { style: "thin", color: { rgb: "E2E8F0" } },
+                                left: { style: "thin", color: { rgb: "E2E8F0" } },
+                                right: { style: "thin", color: { rgb: "E2E8F0" } }
+                            }
+                        };
+                    }
+                }
+
+                // Largeur ergonomique des colonnes pour éviter les textes coupés
                 worksheet['!cols'] = [
-                    {wch: 15}, {wch: 22}, {wch: 15}, {wch: 20}, {wch: 15}, 
-                    {wch: 12}, {wch: 15}, {wch: 18}, {wch: 15}, {wch: 12}, {wch: 12}, {wch: 12}, {wch: 15}
+                    {wch: 18}, // Photo
+                    {wch: 16}, // PO
+                    {wch: 24}, // Project Name
+                    {wch: 16}, // Grain
+                    {wch: 20}, // Client
+                    {wch: 14}, // Machine
+                    {wch: 14}, // Priority
+                    {wch: 15}, // Mapping Done
+                    {wch: 18}, // Mapping Confirmed
+                    {wch: 15}, // Status
+                    {wch: 13}, // Reception
+                    {wch: 13}, // Est. End
+                    {wch: 13}  // Real End
                 ];
 
                 const workbook = XLSX.utils.book_new();
-                XLSX.utils.book_append_sheet(workbook, worksheet, "Projects List");
+                XLSX.utils.book_append_sheet(workbook, worksheet, "Master Schedule");
                 
                 const today = new Date().toISOString().split('T')[0];
-                XLSX.writeFile(workbook, `Standex_Projects_List_${today}.xlsx`);
+                XLSX.writeFile(workbook, `Standex_Master_Schedule_${today}.xlsx`);
             } catch (error) {
-                console.error("Erreur lors de l'export Excel :", error);
+                console.error("Erreur lors de l'export Excel stylisé :", error);
                 alert("Une erreur est survenue lors de la génération du fichier Excel.");
             }
         }
