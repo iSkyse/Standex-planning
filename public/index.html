@@ -5,8 +5,8 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Standex Engraving - Laser Master Schedule</title>
     <script src="https://cdn.tailwindcss.com"></script>
-    <!-- Inclusion robuste de la librairie xlsx-js-style -->
-    <script src="https://cdn.jsdelivr.net/npm/xlsx-js-style@1.2.0/dist/xlsx.full.min.js"></script>
+    <!-- Inclusion de la librairie standard SheetJS (XLSX) ultra-fiable -->
+    <script src="https://cdn.sheetjs.com/xlsx-latest/package/dist/xlsx.full.min.js"></script>
     <style>
         #view-grid::-webkit-scrollbar, #view-table::-webkit-scrollbar, #view-stats::-webkit-scrollbar { height: 8px; width: 8px; }
         #view-grid::-webkit-scrollbar-track, #view-table::-webkit-scrollbar-track, #view-stats::-webkit-scrollbar-track { background: #1e2229; }
@@ -124,7 +124,7 @@
                         </select>
                     </div>
                     <!-- Bouton d'export Excel -->
-                    <button onclick="exportTableToExcel()" class="bg-emerald-700 hover:bg-emerald-800 text-white px-3 py-2 rounded text-sm font-medium border border-emerald-600 shadow-sm flex items-center gap-1">📊 Export Filtered List (Styled Excel)</button>
+                    <button onclick="exportTableToExcel()" class="bg-emerald-700 hover:bg-emerald-800 text-white px-3 py-2 rounded text-sm font-medium border border-emerald-600 shadow-sm flex items-center gap-1">📊 Export Filtered List (Excel)</button>
                 </div>
                 <div class="flex-grow overflow-auto">
                     <table class="w-full text-left border-collapse">
@@ -692,11 +692,11 @@
             container.innerHTML = html + `</tbody></table>`;
         }
 
-        // Export Excel sécurisé avec gestion d'erreur intégrée
+        // Export Excel standard et robuste (SheetJS officiel)
         function exportTableToExcel() {
             try {
                 if (typeof XLSX === 'undefined') {
-                    alert("La bibliothèque d'exportation Excel ne s'est pas chargée correctement. Vérifiez votre connexion Internet.");
+                    alert("La bibliothèque d'exportation Excel ne s'est pas chargée. Vérifiez votre connexion Internet.");
                     return;
                 }
 
@@ -744,55 +744,11 @@
 
                 const worksheet = XLSX.utils.json_to_sheet(dataToExport);
 
+                // Largeur automatique des colonnes
                 worksheet['!cols'] = [
                     {wch: 15}, {wch: 22}, {wch: 15}, {wch: 20}, {wch: 15}, 
                     {wch: 12}, {wch: 15}, {wch: 18}, {wch: 15}, {wch: 12}, {wch: 12}, {wch: 12}, {wch: 15}
                 ];
-
-                const range = XLSX.utils.decode_range(worksheet['!ref']);
-
-                // Style de l'en-tête
-                for (let C = range.s.c; C <= range.e.c; ++C) {
-                    const headerCellRef = XLSX.utils.encode_cell({ r: 0, c: C });
-                    if (!worksheet[headerCellRef]) continue;
-
-                    worksheet[headerCellRef].s = {
-                        fill: { patternType: "solid", fgColor: { rgb: "1F4E78" } },
-                        font: { name: "Arial", sz: 11, bold: true, color: { rgb: "FFFFFF" } },
-                        alignment: { horizontal: "center", vertical: "center" },
-                        border: {
-                            top: { style: "thin", color: { rgb: "000000" } },
-                            bottom: { style: "medium", color: { rgb: "000000" } },
-                            left: { style: "thin", color: { rgb: "D9D9D9" } },
-                            right: { style: "thin", color: { rgb: "D9D9D9" } }
-                        }
-                    };
-                }
-
-                // Style des cellules de données
-                for (let R = range.s.r + 1; R <= range.e.r; ++R) {
-                    for (let C = range.s.c; C <= range.e.c; ++C) {
-                        const cellRef = XLSX.utils.encode_cell({ r: R, c: C });
-                        if (!worksheet[cellRef]) continue;
-
-                        const fillColor = (R % 2 === 0) ? "F9FBFD" : "FFFFFF";
-
-                        worksheet[cellRef].s = {
-                            fill: { patternType: "solid", fgColor: { rgb: fillColor } },
-                            font: { name: "Arial", sz: 10 },
-                            alignment: { 
-                                horizontal: (C === 0 || C >= 9) ? "center" : "left", 
-                                vertical: "center" 
-                            },
-                            border: {
-                                top: { style: "thin", color: { rgb: "E0E0E0" } },
-                                bottom: { style: "thin", color: { rgb: "E0E0E0" } },
-                                left: { style: "thin", color: { rgb: "E0E0E0" } },
-                                right: { style: "thin", color: { rgb: "E0E0E0" } }
-                            }
-                        };
-                    }
-                }
 
                 const workbook = XLSX.utils.book_new();
                 XLSX.utils.book_append_sheet(workbook, worksheet, "Projects List");
@@ -801,7 +757,7 @@
                 XLSX.writeFile(workbook, `Standex_Projects_List_${today}.xlsx`);
             } catch (error) {
                 console.error("Erreur lors de l'export Excel :", error);
-                alert("Une erreur est survenue lors de la génération du fichier Excel. Consultez la console (F12) pour plus de détails.");
+                alert("Une erreur est survenue lors de la génération du fichier Excel.");
             }
         }
 
