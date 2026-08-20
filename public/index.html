@@ -5,8 +5,8 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Standex Engraving - Laser Master Schedule</title>
     <script src="https://cdn.tailwindcss.com"></script>
-    <!-- Inclusion de la librairie SheetJS (xlsx) -->
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
+    <!-- Inclusion de la librairie supportant les styles et couleurs -->
+    <script src="https://cdn.jsdelivr.net/npm/xlsx-js-style@1.2.0/dist/xlsx.full.min.js"></script>
     <style>
         #view-grid::-webkit-scrollbar, #view-table::-webkit-scrollbar, #view-stats::-webkit-scrollbar { height: 8px; width: 8px; }
         #view-grid::-webkit-scrollbar-track, #view-table::-webkit-scrollbar-track, #view-stats::-webkit-scrollbar-track { background: #1e2229; }
@@ -123,8 +123,8 @@
                             <option value="green">Low</option>
                         </select>
                     </div>
-                    <!-- Bouton d'export Excel avec photos de la liste filtrée -->
-                    <button onclick="exportTableToExcel()" class="bg-emerald-700 hover:bg-emerald-800 text-white px-3 py-2 rounded text-sm font-medium border border-emerald-600 shadow-sm flex items-center gap-1">📊 Export Filtered List (with Photos)</button>
+                    <!-- Bouton d'export Excel avec couleurs et en-tête stylisé -->
+                    <button onclick="exportTableToExcel()" class="bg-emerald-700 hover:bg-emerald-800 text-white px-3 py-2 rounded text-sm font-medium border border-emerald-600 shadow-sm flex items-center gap-1">📊 Export Filtered List (Styled Excel)</button>
                 </div>
                 <div class="flex-grow overflow-auto">
                     <table class="w-full text-left border-collapse">
@@ -692,7 +692,7 @@
             container.innerHTML = html + `</tbody></table>`;
         }
 
-        // Export Excel stylisé et professionnel avec SheetJS
+        // Export Excel avec xlsx-js-style (couleurs d'en-tête et alternance de lignes)
         function exportTableToExcel() {
             const searchInput = document.getElementById('table-search');
             const clientFilterSelect = document.getElementById('table-client-filter');
@@ -727,7 +727,7 @@
                     "Reception": p.date_reception || '',
                     "Est. End": p.date_estimee || '',
                     "Real End": p.date_reelle || '',
-                    "Photo Data": p.photo ? p.photo : 'No Photo'
+                    "Photo": p.photo ? "Yes (Attached)" : "No"
                 };
             });
 
@@ -736,18 +736,18 @@
             // Largeurs de colonnes ajustées
             worksheet['!cols'] = [
                 {wch: 15}, {wch: 22}, {wch: 15}, {wch: 20}, {wch: 15}, 
-                {wch: 12}, {wch: 15}, {wch: 18}, {wch: 15}, {wch: 12}, {wch: 12}, {wch: 12}, {wch: 30}
+                {wch: 12}, {wch: 15}, {wch: 18}, {wch: 15}, {wch: 12}, {wch: 12}, {wch: 12}, {wch: 15}
             ];
 
             const range = XLSX.utils.decode_range(worksheet['!ref']);
 
-            // Style de l'en-tête (Ligne 0) : Fond bleu foncé/noir pro, texte blanc gras
+            // Style de l'en-tête (Fond bleu foncé/gris professionnel, texte blanc gras)
             for (let C = range.s.c; C <= range.e.c; ++C) {
                 const headerCellRef = XLSX.utils.encode_cell({ r: 0, c: C });
                 if (!worksheet[headerCellRef]) continue;
 
                 worksheet[headerCellRef].s = {
-                    fill: { fgColor: { rgb: "1F4E78" } },
+                    fill: { patternType: "solid", fgColor: { rgb: "1F4E78" } },
                     font: { name: "Arial", sz: 11, bold: true, color: { rgb: "FFFFFF" } },
                     alignment: { horizontal: "center", vertical: "center" },
                     border: {
@@ -759,7 +759,7 @@
                 };
             }
 
-            // Style des cellules de données (alternance de couleur et bordures fines)
+            // Style des cellules de données (alternance de couleurs et bordures fines)
             for (let R = range.s.r + 1; R <= range.e.r; ++R) {
                 for (let C = range.s.c; C <= range.e.c; ++C) {
                     const cellRef = XLSX.utils.encode_cell({ r: R, c: C });
@@ -768,7 +768,7 @@
                     const fillColor = (R % 2 === 0) ? "F9FBFD" : "FFFFFF";
 
                     worksheet[cellRef].s = {
-                        fill: { fgColor: { rgb: fillColor } },
+                        fill: { patternType: "solid", fgColor: { rgb: fillColor } },
                         font: { name: "Arial", sz: 10 },
                         alignment: { 
                             horizontal: (C === 0 || C >= 9) ? "center" : "left", 
