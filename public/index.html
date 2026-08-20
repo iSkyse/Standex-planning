@@ -123,7 +123,7 @@
                             <option value="green">Low</option>
                         </select>
                     </div>
-                    <!-- Bouton d'export Excel basé sur le template -->
+                    <!-- Bouton d'export Excel basé sur le template situé dans public -->
                     <button onclick="exportTableToExcelTemplate()" class="bg-emerald-700 hover:bg-emerald-800 text-white px-3 py-2 rounded text-sm font-medium border border-emerald-600 shadow-sm flex items-center gap-1">📊 Export via Template (Excel)</button>
                 </div>
                 <div class="flex-grow overflow-auto">
@@ -692,7 +692,7 @@
             container.innerHTML = html + `</tbody></table>`;
         }
 
-        // Fonction d'export Excel basée sur un modèle template.xlsx pré-formaté
+        // Fonction d'export Excel basée sur le template situé dans le dossier public
         async function exportTableToExcelTemplate() {
             try {
                 if (typeof XLSX === 'undefined') {
@@ -700,7 +700,6 @@
                     return;
                 }
 
-                // Récupération des filtres actifs de l'interface
                 const searchInput = document.getElementById('table-search');
                 const clientFilterSelect = document.getElementById('table-client-filter');
                 const priorityFilterSelect = document.getElementById('table-priority-filter');
@@ -709,7 +708,6 @@
                 const clientFilter = clientFilterSelect ? clientFilterSelect.value : '';
                 const priorityFilter = priorityFilterSelect ? priorityFilterSelect.value : '';
 
-                // Filtrage des projets
                 const filtered = projects.filter(p => {
                     const matchesSearch = !search || [p.po, p.project_name, p.grain, p.client].some(x => (x || '').toLowerCase().includes(search));
                     const matchesClient = !clientFilter || p.client === clientFilter;
@@ -722,19 +720,17 @@
                     return;
                 }
 
-                // Chargement du fichier modèle distant template.xlsx
-                const response = await fetch('template.xlsx');
+                // Chargement du fichier template depuis le dossier public
+                const response = await fetch('/public/template.xlsx');
                 if (!response.ok) {
-                    throw new Error("Impossible de charger le fichier template.xlsx (Vérifiez qu'il se trouve bien à la racine du projet).");
+                    throw new Error("Impossible de charger le fichier /public/template.xlsx.");
                 }
                 const arrayBuffer = await response.arrayBuffer();
                 
-                // Lecture du classeur avec SheetJS
                 const workbook = XLSX.read(arrayBuffer, { type: 'array' });
                 const firstSheetName = workbook.SheetNames[0];
                 const worksheet = workbook.Sheets[firstSheetName];
 
-                // Insertion des données filtrées à partir de la ligne 5 (index 4)
                 let rowIndex = 5; 
 
                 filtered.forEach(p => {
@@ -760,13 +756,12 @@
                     rowIndex++;
                 });
 
-                // Génération et téléchargement automatique du fichier final
                 const today = new Date().toISOString().split('T')[0];
                 XLSX.writeFile(workbook, `Standex_Master_Schedule_${today}.xlsx`);
 
             } catch (error) {
                 console.error("Erreur lors de l'export avec template :", error);
-                alert("Impossible de charger le modèle Excel ou de générer le fichier. Assurez-vous que template.xlsx est accessible.");
+                alert("Impossible de charger le modèle Excel ou de générer le fichier. Assurez-vous que template.xlsx est bien dans le dossier public.");
             }
         }
 
