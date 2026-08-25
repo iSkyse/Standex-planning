@@ -138,22 +138,64 @@
                 </div>
             </div>
 
-            <div id="view-stats" class="bg-slate-950 rounded-xl shadow hidden flex-grow overflow-auto border border-slate-800 p-6">
-                <h2 class="text-xl font-extrabold text-white uppercase tracking-wide mb-6 border-b border-slate-800 pb-3">Workshop Performance & Statistics</h2>
-                <div class="grid grid-cols-1 md:grid-cols-4 gap-5 mb-8">
+            <div id="view-stats" class="bg-slate-950 rounded-xl shadow hidden flex-grow overflow-auto border border-slate-800 p-6 flex flex-col">
+                <!-- PANNEAU DE CONTRÔLE DES FILTRES STATISTIQUES -->
+                <div class="bg-black/60 border border-slate-800 rounded-xl p-4 mb-6 flex flex-wrap items-center justify-between gap-4 shrink-0">
+                    <div class="flex items-center gap-2">
+                        <span class="text-xs font-bold text-red-500 uppercase tracking-wide">Filter Period Type:</span>
+                        <select id="stat-period-type" onchange="onStatPeriodTypeChange()" class="bg-slate-900 border border-slate-700 text-white rounded px-3 py-1.5 text-xs font-semibold focus:outline-none">
+                            <option value="all">All Time (Global)</option>
+                            <option value="year">By Year</option>
+                            <option value="month">By Month</option>
+                            <option value="week">By Week</option>
+                        </select>
+                    </div>
+
+                    <!-- Conteneur dynamique des sélecteurs spécifiques -->
+                    <div id="stat-dynamic-selectors" class="flex items-center gap-3 hidden">
+                        <!-- Sélecteur Année -->
+                        <div id="wrapper-stat-year" class="hidden items-center gap-1.5">
+                            <span class="text-xs text-gray-400 font-semibold">Year:</span>
+                            <select id="stat-year-select" onchange="renderStats()" class="bg-slate-900 border border-slate-700 text-white rounded px-3 py-1.5 text-xs font-semibold focus:outline-none"></select>
+                        </div>
+                        <!-- Sélecteur Mois -->
+                        <div id="wrapper-stat-month" class="hidden items-center gap-1.5">
+                            <span class="text-xs text-gray-400 font-semibold">Month:</span>
+                            <select id="stat-month-select" onchange="renderStats()" class="bg-slate-900 border border-slate-700 text-white rounded px-3 py-1.5 text-xs font-semibold focus:outline-none">
+                                <option value="0">January</option><option value="1">February</option><option value="2">March</option><option value="3">April</option>
+                                <option value="4">May</option><option value="5">June</option><option value="6">July</option><option value="7">August</option>
+                                <option value="8">September</option><option value="9">October</option><option value="10">November</option><option value="11">December</option>
+                            </select>
+                        </div>
+                        <!-- Sélecteur Semaine -->
+                        <div id="wrapper-stat-week" class="hidden items-center gap-1.5">
+                            <span class="text-xs text-gray-400 font-semibold">Week:</span>
+                            <select id="stat-week-select" onchange="renderStats()" class="bg-slate-900 border border-slate-700 text-white rounded px-3 py-1.5 text-xs font-semibold focus:outline-none">
+                                <!-- Généré dynamiquement (Semaine 1 à 52) -->
+                            </select>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="flex justify-between items-center mb-6 border-b border-slate-800 pb-3 shrink-0">
+                    <h2 class="text-xl font-extrabold text-white uppercase tracking-wide">Workshop Performance & Statistics</h2>
+                    <span id="stat-active-period-label" class="text-xs font-bold text-amber-400 bg-amber-950/50 border border-amber-800 px-3 py-1 rounded-full">All Time</span>
+                </div>
+
+                <div class="grid grid-cols-1 md:grid-cols-4 gap-5 mb-8 shrink-0">
                     <div class="bg-slate-900 border border-slate-800 rounded-xl p-5"><span class="text-xs font-bold text-gray-400 uppercase">Total Projects</span><div id="stat-total-projects" class="text-3xl font-black text-white mt-2">0</div></div>
                     <div class="bg-slate-900 border border-slate-800 rounded-xl p-5"><span class="text-xs font-bold text-gray-400 uppercase">Completed Molds (Finished)</span><div id="stat-completed-projects" class="text-3xl font-black text-emerald-400 mt-2">0</div></div>
                     <div class="bg-slate-900 border border-slate-800 rounded-xl p-5"><span class="text-xs font-bold text-gray-400 uppercase">Active In Progress</span><div id="stat-active-projects" class="text-3xl font-black text-amber-400 mt-2">0</div></div>
                     <div class="bg-slate-900 border border-slate-800 rounded-xl p-5"><span class="text-xs font-bold text-gray-400 uppercase">On-Time Delivery Rate</span><div id="stat-on-time" class="text-3xl font-black text-red-500 mt-2">0%</div></div>
                 </div>
-                <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-                    <div class="bg-slate-900 border border-slate-800 rounded-xl p-5">
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-6 flex-grow">
+                    <div class="bg-slate-900 border border-slate-800 rounded-xl p-5 flex flex-col">
                         <h3 class="text-sm font-bold text-gray-300 uppercase mb-4">Workload by Machine</h3>
-                        <div id="stat-machines-list" class="space-y-3"></div>
+                        <div id="stat-machines-list" class="space-y-3 flex-grow overflow-auto"></div>
                     </div>
-                    <div class="bg-slate-900 border border-slate-800 rounded-xl p-5">
+                    <div class="bg-slate-900 border border-slate-800 rounded-xl p-5 flex flex-col">
                         <h3 class="text-sm font-bold text-gray-300 uppercase mb-4">Top Clients (Project Volume)</h3>
-                        <div id="stat-clients-list" class="space-y-3"></div>
+                        <div id="stat-clients-list" class="space-y-3 flex-grow overflow-auto"></div>
                     </div>
                 </div>
             </div>
@@ -312,7 +354,8 @@
                 if (mainContent) mainContent.style.display = 'none';
             }
 
-            initYearDropdown();
+            initYearDropdowns();
+            initWeekDropdown();
             updateMonthYearSelectors();
             loadProjects();
 
@@ -393,14 +436,70 @@
             }
         }
 
-        function initYearDropdown() {
-            const yearSelect = document.getElementById('year-select');
-            if (!yearSelect) return;
+        function initYearDropdowns() {
             let yearsHtml = '';
             for(let y = 2024; y <= 2035; y++) {
                 yearsHtml += `<option value="${y}" class="bg-slate-900 text-white">${y}</option>`;
             }
-            yearSelect.innerHTML = yearsHtml;
+            const yearSelect = document.getElementById('year-select');
+            const statYearSelect = document.getElementById('stat-year-select');
+            if (yearSelect) yearSelect.innerHTML = yearsHtml;
+            if (statYearSelect) statYearSelect.innerHTML = yearsHtml;
+            
+            // Initialiser sur l'année et le mois courants
+            const currentYear = new Date().getFullYear();
+            if (statYearSelect) statYearSelect.value = currentYear;
+            const statMonthSelect = document.getElementById('stat-month-select');
+            if (statMonthSelect) statMonthSelect.value = new Date().getMonth();
+        }
+
+        function initWeekDropdown() {
+            const weekSelect = document.getElementById('stat-week-select');
+            if (!weekSelect) return;
+            let html = '';
+            for (let w = 1; w <= 52; w++) {
+                html += `<option value="${w}">Week ${w}</option>`;
+            }
+            weekSelect.innerHTML = html;
+            
+            // Calculer et pré-sélectionner la semaine courante approximative
+            const now = new Date();
+            const startOfYear = new Date(now.getFullYear(), 0, 1);
+            const weekNum = Math.ceil((((now - startOfYear) / 86400000) + startOfYear.getDay() + 1) / 7);
+            if (weekNum >= 1 && weekNum <= 52) weekSelect.value = weekNum;
+        }
+
+        function onStatPeriodTypeChange() {
+            const type = document.getElementById('stat-period-type').value;
+            const container = document.getElementById('stat-dynamic-selectors');
+            const wYear = document.getElementById('wrapper-stat-year');
+            const wMonth = document.getElementById('wrapper-stat-month');
+            const wWeek = document.getElementById('wrapper-stat-week');
+
+            wYear.classList.add('hidden');
+            wMonth.classList.add('hidden');
+            wWeek.classList.add('hidden');
+
+            if (type === 'all') {
+                container.classList.add('hidden');
+            } else {
+                container.classList.remove('hidden');
+                if (type === 'year') {
+                    wYear.classList.remove('hidden');
+                    wYear.classList.add('flex');
+                } else if (type === 'month') {
+                    wYear.classList.remove('hidden');
+                    wYear.classList.add('flex');
+                    wMonth.classList.remove('hidden');
+                    wMonth.classList.add('flex');
+                } else if (type === 'week') {
+                    wYear.classList.remove('hidden');
+                    wYear.classList.add('flex');
+                    wWeek.classList.remove('hidden');
+                    wWeek.classList.add('flex');
+                }
+            }
+            renderStats();
         }
 
         function updateMonthYearSelectors() {
@@ -928,9 +1027,51 @@
             }).join('');
         }
 
+        // Fonction utilitaire pour vérifier si un projet correspond à la semaine ISO donnée
+        function getIsoWeekNumber(d) {
+            d = new Date(Date.UTC(d.getFullYear(), d.getMonth(), d.getDate()));
+            d.setUTCDate(d.getUTCDate() + 4 - (d.getUTCDay()||7));
+            var yearStart = new Date(Date.UTC(d.getUTCFullYear(),0,1));
+            var weekNo = Math.ceil(( ( (d - yearStart) / 86400000) + 1)/7);
+            return weekNo;
+        }
+
         function renderStats() {
-            const total = projects.length;
-            const completedProjects = projects.filter(p => p.date_reelle);
+            const periodType = document.getElementById('stat-period-type').value;
+            const yearSel = parseInt(document.getElementById('stat-year-select').value);
+            const monthSel = parseInt(document.getElementById('stat-month-select').value);
+            const weekSel = parseInt(document.getElementById('stat-week-select').value);
+
+            let periodLabelText = "All Time";
+
+            // Filtrage des projets selon la période choisie (basé sur la date de réception ou la période active)
+            const filteredProjects = projects.filter(p => {
+                if (!p.date_reception) return false;
+                const pDate = parseLocalDate(p.date_reception);
+                const pYear = pDate.getFullYear();
+                const pMonth = pDate.getMonth();
+
+                if (periodType === 'all') {
+                    return true;
+                } else if (periodType === 'year') {
+                    periodLabelText = `Year ${yearSel}`;
+                    return pYear === yearSel;
+                } else if (periodType === 'month') {
+                    const monthNames = ["January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"];
+                    periodLabelText = `${monthNames[monthSel]} ${yearSel}`;
+                    return pYear === yearSel && pMonth === monthSel;
+                } else if (periodType === 'week') {
+                    periodLabelText = `Week ${weekSel}, ${yearSel}`;
+                    const pWeek = getIsoWeekNumber(pDate);
+                    return pYear === yearSel && pWeek === weekSel;
+                }
+                return true;
+            });
+
+            document.getElementById('stat-active-period-label').textContent = periodLabelText;
+
+            const total = filteredProjects.length;
+            const completedProjects = filteredProjects.filter(p => p.date_reelle);
             const completed = completedProjects.length;
             const active = total - completed;
 
@@ -954,7 +1095,7 @@
 
             const machineCounts = {};
             Object.keys(machinesConfig).forEach(m => machineCounts[m] = 0);
-            projects.forEach(p => {
+            filteredProjects.forEach(p => {
                 if (machineCounts[p.machine] !== undefined) machineCounts[p.machine]++;
             });
 
@@ -978,7 +1119,7 @@
             }
 
             const clientCounts = {};
-            projects.forEach(p => {
+            filteredProjects.forEach(p => {
                 if (p.client) clientCounts[p.client] = (clientCounts[p.client] || 0) + 1;
             });
             const sortedClients = Object.entries(clientCounts).sort((a, b) => b[1] - a[1]).slice(0, 5);
@@ -986,7 +1127,7 @@
             
             if (clientListEl) {
                 if (sortedClients.length === 0) {
-                    clientListEl.innerHTML = `<p class="text-xs text-gray-500 italic">No client data available.</p>`;
+                    clientListEl.innerHTML = `<p class="text-xs text-gray-500 italic">No client data available for this period.</p>`;
                 } else {
                     clientListEl.innerHTML = sortedClients.map(([client, count]) => {
                         const pct = total > 0 ? Math.round((count / total) * 100) : 0;
