@@ -696,7 +696,7 @@
         async function exportTableToExcelTemplate() {
             try {
                 if (typeof XLSX === 'undefined') {
-                    alert("La bibliothèque d'exportation Excel ne s'est pas chargée. Vérifiez votre connexion Internet.");
+                    alert("The Excel export library failed to load. Please check your internet connection.");
                     return;
                 }
 
@@ -716,14 +716,14 @@
                 });
 
                 if (filtered.length === 0) {
-                    alert("Aucun projet à exporter avec les filtres actuels.");
+                    alert("No projects to export with the current filters.");
                     return;
                 }
 
                 // Chargement du fichier template depuis le dossier public
                 const response = await fetch('/public/template.xlsx');
                 if (!response.ok) {
-                    throw new Error("Impossible de charger le fichier /public/template.xlsx.");
+                    throw new Error("Unable to load the /public/template.xlsx file.");
                 }
                 const arrayBuffer = await response.arrayBuffer();
                 
@@ -761,7 +761,7 @@
 
             } catch (error) {
                 console.error("Erreur lors de l'export avec template :", error);
-                alert("Impossible de charger le modèle Excel ou de générer le fichier. Assurez-vous que template.xlsx est bien dans le dossier public.");
+                alert("Unable to load the Excel template or generate the file. Make sure that template.xlsx is located in the public folder");
             }
         }
 
