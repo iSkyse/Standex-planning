@@ -5,7 +5,6 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Standex Engraving - Laser Master Schedule</title>
     <script src="https://cdn.tailwindcss.com"></script>
-    <!-- Inclusion de la librairie standard SheetJS (XLSX) ultra-fiable -->
     <script src="https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js"></script>
     <style>
         #view-grid::-webkit-scrollbar, #view-table::-webkit-scrollbar, #view-stats::-webkit-scrollbar { height: 8px; width: 8px; }
@@ -17,21 +16,9 @@
         #lb-img-container { cursor: grab; }
         #lb-img-container:active { cursor: grabbing; }
         
-        .timeline-bar {
-            cursor: grab;
-            user-select: none;
-        }
-        .timeline-bar:active {
-            cursor: grabbing;
-        }
-        .resize-handle {
-            position: absolute;
-            top: 0;
-            bottom: 0;
-            width: 12px;
-            cursor: ew-resize;
-            z-index: 20;
-        }
+        .timeline-bar { cursor: grab; user-select: none; }
+        .timeline-bar:active { cursor: grabbing; }
+        .resize-handle { position: absolute; top: 0; bottom: 0; width: 12px; cursor: ew-resize; z-index: 20; }
         .resize-handle-left { left: 0; }
         .resize-handle-right { right: 0; }
     </style>
@@ -74,18 +61,9 @@
                 <button onclick="changeMonth(-1)" class="bg-slate-800 px-3 py-1 rounded text-sm hover:bg-slate-700 font-medium border border-slate-700">◀ Prev</button>
                 <div class="flex items-center gap-1 bg-slate-900 border border-slate-700 rounded px-2 py-1">
                     <select id="month-select" onchange="onMonthYearDropdownChange()" class="bg-slate-900 text-red-500 font-bold text-sm focus:outline-none cursor-pointer">
-                        <option value="0" class="bg-slate-900 text-white">January</option>
-                        <option value="1" class="bg-slate-900 text-white">February</option>
-                        <option value="2" class="bg-slate-900 text-white">March</option>
-                        <option value="3" class="bg-slate-900 text-white">April</option>
-                        <option value="4" class="bg-slate-900 text-white">May</option>
-                        <option value="5" class="bg-slate-900 text-white">June</option>
-                        <option value="6" class="bg-slate-900 text-white">July</option>
-                        <option value="7" class="bg-slate-900 text-white">August</option>
-                        <option value="8" class="bg-slate-900 text-white">September</option>
-                        <option value="9" class="bg-slate-900 text-white">October</option>
-                        <option value="10" class="bg-slate-900 text-white">November</option>
-                        <option value="11" class="bg-slate-900 text-white">December</option>
+                        <option value="0">January</option><option value="1">February</option><option value="2">March</option><option value="3">April</option>
+                        <option value="4">May</option><option value="5">June</option><option value="6">July</option><option value="7">August</option>
+                        <option value="8">September</option><option value="9">October</option><option value="10">November</option><option value="11">December</option>
                     </select>
                     <select id="year-select" onchange="onMonthYearDropdownChange()" class="bg-slate-900 text-white font-bold text-sm focus:outline-none cursor-pointer">
                     </select>
@@ -123,7 +101,6 @@
                             <option value="green">Low</option>
                         </select>
                     </div>
-                    <!-- Bouton d'export Excel direct fonctionnel -->
                     <button onclick="exportToExcel()" class="bg-emerald-700 hover:bg-emerald-800 text-white px-3 py-2 rounded text-sm font-medium border border-emerald-600 shadow-sm flex items-center gap-1">📊 Export to Excel</button>
                 </div>
                 <div class="flex-grow overflow-auto">
@@ -152,14 +129,11 @@
                         </select>
                     </div>
 
-                    <!-- Conteneur dynamique des sélecteurs spécifiques -->
                     <div id="stat-dynamic-selectors" class="flex items-center gap-3 hidden flex-wrap">
-                        <!-- Sélecteur Année -->
                         <div id="wrapper-stat-year" class="hidden items-center gap-1.5">
                             <span class="text-xs text-gray-400 font-semibold">Year:</span>
                             <select id="stat-year-select" onchange="renderStats()" class="bg-slate-900 border border-slate-700 text-white rounded px-3 py-1.5 text-xs font-semibold focus:outline-none"></select>
                         </div>
-                        <!-- Sélecteur Mois -->
                         <div id="wrapper-stat-month" class="hidden items-center gap-1.5">
                             <span class="text-xs text-gray-400 font-semibold">Month:</span>
                             <select id="stat-month-select" onchange="renderStats()" class="bg-slate-900 border border-slate-700 text-white rounded px-3 py-1.5 text-xs font-semibold focus:outline-none">
@@ -168,14 +142,10 @@
                                 <option value="8">September</option><option value="9">October</option><option value="10">November</option><option value="11">December</option>
                             </select>
                         </div>
-                        <!-- Sélecteur Semaine -->
                         <div id="wrapper-stat-week" class="hidden items-center gap-1.5">
                             <span class="text-xs text-gray-400 font-semibold">Week:</span>
-                            <select id="stat-week-select" onchange="renderStats()" class="bg-slate-900 border border-slate-700 text-white rounded px-3 py-1.5 text-xs font-semibold focus:outline-none">
-                                <!-- Généré dynamiquement (Semaine 1 à 52) -->
-                            </select>
+                            <select id="stat-week-select" onchange="renderStats()" class="bg-slate-900 border border-slate-700 text-white rounded px-3 py-1.5 text-xs font-semibold focus:outline-none"></select>
                         </div>
-                        <!-- Sélecteurs Période Personnalisée (Du / Au) -->
                         <div id="wrapper-stat-custom" class="hidden items-center gap-2">
                             <span class="text-xs text-gray-400 font-semibold">From:</span>
                             <input type="date" id="stat-custom-start" onchange="renderStats()" class="bg-slate-900 border border-slate-700 text-white rounded px-2 py-1 text-xs">
@@ -196,13 +166,39 @@
                     <div class="bg-slate-900 border border-slate-800 rounded-xl p-5"><span class="text-xs font-bold text-gray-400 uppercase">Active In Progress</span><div id="stat-active-projects" class="text-3xl font-black text-amber-400 mt-2">0</div></div>
                     <div class="bg-slate-900 border border-slate-800 rounded-xl p-5"><span class="text-xs font-bold text-gray-400 uppercase">On-Time Delivery Rate</span><div id="stat-on-time" class="text-3xl font-black text-red-500 mt-2">0%</div></div>
                 </div>
+
+                <!-- SECTION COMPARATIVE PARC DE MACHINES (DMG vs GF) -->
+                <div class="bg-slate-900 border border-slate-800 rounded-xl p-5 mb-6 shrink-0">
+                    <h3 class="text-sm font-bold text-gray-300 uppercase mb-3">Machine Park Comparison (DMG vs GF Utilization)</h3>
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-6 items-center">
+                        <div>
+                            <div class="flex justify-between text-xs font-bold mb-1">
+                                <span class="text-blue-400">DMG Park (DMG 65, 125, 210)</span>
+                                <span id="stat-dmg-share" class="text-white">0% (0 days)</span>
+                            </div>
+                            <div class="w-full bg-slate-950 rounded-full h-3 border border-slate-800 overflow-hidden flex">
+                                <div id="stat-dmg-bar" class="bg-blue-600 h-3 transition-all duration-500" style="width: 0%"></div>
+                            </div>
+                        </div>
+                        <div>
+                            <div class="flex justify-between text-xs font-bold mb-1">
+                                <span class="text-orange-400">GF Park (GF 1000, 1200, 4000)</span>
+                                <span id="stat-gf-share" class="text-white">0% (0 days)</span>
+                            </div>
+                            <div class="w-full bg-slate-950 rounded-full h-3 border border-slate-800 overflow-hidden flex">
+                                <div id="stat-gf-bar" class="bg-orange-600 h-3 transition-all duration-500" style="width: 0%"></div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
                 <div class="grid grid-cols-1 md:grid-cols-2 gap-6 flex-grow">
                     <div class="bg-slate-900 border border-slate-800 rounded-xl p-5 flex flex-col">
-                        <h3 class="text-sm font-bold text-gray-300 uppercase mb-4">Workload by Machine (Number of Molds)</h3>
+                        <h3 class="text-sm font-bold text-gray-300 uppercase mb-4">Detailed Machine Occupation Time</h3>
                         <div id="stat-machines-list" class="space-y-3 flex-grow overflow-auto"></div>
                     </div>
                     <div class="bg-slate-900 border border-slate-800 rounded-xl p-5 flex flex-col">
-                        <h3 class="text-sm font-bold text-gray-300 uppercase mb-4">Top Clients & Late Molds Analysis (%)</h3>
+                        <h3 class="text-sm font-bold text-gray-300 uppercase mb-4">All Clients & Late Molds Analysis (%)</h3>
                         <div id="stat-clients-list" class="space-y-3 flex-grow overflow-auto"></div>
                     </div>
                 </div>
@@ -231,20 +227,20 @@
                     <div>
                         <label class="block text-xs font-bold text-gray-400 uppercase">Machine</label>
                         <select id="machine" class="w-full mt-1 p-2.5 bg-slate-950 border border-slate-700 rounded text-white">
-                            <option value="DMG 65" class="bg-slate-950 text-white">DMG 65</option>
-                            <option value="DMG 125" class="bg-slate-950 text-white">DMG 125</option>
-                            <option value="DMG 210" class="bg-slate-950 text-white">DMG 210</option>
-                            <option value="GF 1000" class="bg-slate-950 text-white">GF 1000</option>
-                            <option value="GF 1200" class="bg-slate-950 text-white">GF 1200</option>
-                            <option value="GF 4000" class="bg-slate-950 text-white">GF 4000</option>
+                            <option value="DMG 65">DMG 65</option>
+                            <option value="DMG 125">DMG 125</option>
+                            <option value="DMG 210">DMG 210</option>
+                            <option value="GF 1000">GF 1000</option>
+                            <option value="GF 1200">GF 1200</option>
+                            <option value="GF 4000">GF 4000</option>
                         </select>
                     </div>
                     <div>
                         <label class="block text-xs font-bold text-gray-400 uppercase">Priority</label>
                         <select id="priority" class="w-full mt-1 p-2.5 bg-slate-950 border border-slate-700 rounded text-white">
-                            <option value="yellow" class="bg-slate-950 text-white">🟡 Standard</option>
-                            <option value="red" class="bg-slate-950 text-white">🔴 Critical</option>
-                            <option value="green" class="bg-slate-950 text-white">🟢 Low</option>
+                            <option value="yellow">🟡 Standard</option>
+                            <option value="red">🔴 Critical</option>
+                            <option value="green">🟢 Low</option>
                         </select>
                     </div>
                 </div>
@@ -255,15 +251,15 @@
                         <div>
                             <label class="block text-[11px] font-bold text-gray-400 uppercase">Mapping Done?</label>
                             <select id="mapping_done" onchange="toggleMappingConfirmation()" class="w-full mt-1 p-2 bg-slate-900 border border-slate-700 rounded text-xs text-white">
-                                <option value="no" class="bg-slate-900 text-white">No</option>
-                                <option value="yes" class="bg-slate-900 text-white">Yes</option>
+                                <option value="no">No</option>
+                                <option value="yes">Yes</option>
                             </select>
                         </div>
                         <div id="mapping-confirmed-wrapper" class="hidden">
                             <label class="block text-[11px] font-bold text-gray-400 uppercase">Mapping Confirmed?</label>
                             <select id="mapping_confirmed" class="w-full mt-1 p-2 bg-slate-900 border border-slate-700 rounded text-xs text-white">
-                                <option value="no" class="bg-slate-900 text-white">No</option>
-                                <option value="yes" class="bg-slate-900 text-white">Yes</option>
+                                <option value="no">No</option>
+                                <option value="yes">Yes</option>
                             </select>
                         </div>
                     </div>
@@ -369,13 +365,9 @@
             loadProjects();
 
             const pasteDropZone = document.getElementById('paste-drop-zone');
-            if (pasteDropZone) {
-                pasteDropZone.addEventListener('paste', handleImagePaste);
-            }
+            if (pasteDropZone) pasteDropZone.addEventListener('paste', handleImagePaste);
             const projectModal = document.getElementById('project-modal');
-            if (projectModal) {
-                projectModal.addEventListener('paste', handleImagePaste);
-            }
+            if (projectModal) projectModal.addEventListener('paste', handleImagePaste);
 
             const photoInput = document.getElementById('photo');
             if (photoInput) {
@@ -400,10 +392,8 @@
                     startY = e.clientY - pointY;
                     panning = true;
                 });
-
                 container.addEventListener('mouseup', () => panning = false);
                 container.addEventListener('mouseleave', () => panning = false);
-
                 container.addEventListener('mousemove', (e) => {
                     if (!panning) return;
                     e.preventDefault();
@@ -411,15 +401,10 @@
                     pointY = e.clientY - startY;
                     updateImageTransform();
                 });
-
                 container.addEventListener('wheel', (e) => {
                     e.preventDefault();
-                    if (e.deltaY < 0) {
-                        scale *= 1.1;
-                    } else {
-                        scale /= 1.1;
-                        if (scale < 1) scale = 1;
-                    }
+                    if (e.deltaY < 0) scale *= 1.1;
+                    else { scale /= 1.1; if (scale < 1) scale = 1; }
                     updateImageTransform();
                 });
             }
@@ -448,7 +433,7 @@
         function initYearDropdowns() {
             let yearsHtml = '';
             for(let y = 2024; y <= 2035; y++) {
-                yearsHtml += `<option value="${y}" class="bg-slate-900 text-white">${y}</option>`;
+                yearsHtml += `<option value="${y}">${y}</option>`;
             }
             const yearSelect = document.getElementById('year-select');
             const statYearSelect = document.getElementById('stat-year-select');
@@ -465,9 +450,7 @@
             const weekSelect = document.getElementById('stat-week-select');
             if (!weekSelect) return;
             let html = '';
-            for (let w = 1; w <= 52; w++) {
-                html += `<option value="${w}">Week ${w}</option>`;
-            }
+            for (let w = 1; w <= 52; w++) html += `<option value="${w}">Week ${w}</option>`;
             weekSelect.innerHTML = html;
             
             const now = new Date();
@@ -503,23 +486,10 @@
                 container.classList.add('hidden');
             } else {
                 container.classList.remove('hidden');
-                if (type === 'year') {
-                    wYear.classList.remove('hidden');
-                    wYear.classList.add('flex');
-                } else if (type === 'month') {
-                    wYear.classList.remove('hidden');
-                    wYear.classList.add('flex');
-                    wMonth.classList.remove('hidden');
-                    wMonth.classList.add('flex');
-                } else if (type === 'week') {
-                    wYear.classList.remove('hidden');
-                    wYear.classList.add('flex');
-                    wWeek.classList.remove('hidden');
-                    wWeek.classList.add('flex');
-                } else if (type === 'custom') {
-                    wCustom.classList.remove('hidden');
-                    wCustom.classList.add('flex');
-                }
+                if (type === 'year') { wYear.classList.remove('hidden'); wYear.classList.add('flex'); }
+                else if (type === 'month') { wYear.classList.remove('hidden'); wYear.classList.add('flex'); wMonth.classList.remove('hidden'); wMonth.classList.add('flex'); }
+                else if (type === 'week') { wYear.classList.remove('hidden'); wYear.classList.add('flex'); wWeek.classList.remove('hidden'); wWeek.classList.add('flex'); }
+                else if (type === 'custom') { wCustom.classList.remove('hidden'); wCustom.classList.add('flex'); }
             }
             renderStats();
         }
@@ -540,17 +510,10 @@
 
         function updateImageTransform() {
             const img = document.getElementById('lb-img');
-            if (img) {
-                img.style.transform = `translate(${pointX}px, ${pointY}px) scale(${scale})`;
-            }
+            if (img) img.style.transform = `translate(${pointX}px, ${pointY}px) scale(${scale})`;
         }
 
-        function resetImageTransform() {
-            scale = 1;
-            pointX = 0;
-            pointY = 0;
-            updateImageTransform();
-        }
+        function resetImageTransform() { scale = 1; pointX = 0; pointY = 0; updateImageTransform(); }
 
         function handleImagePaste(e) {
             const items = (e.clipboardData || e.originalEvent.clipboardData).items;
@@ -604,12 +567,8 @@
             const mappingDone = document.getElementById('mapping_done').value;
             const wrapper = document.getElementById('mapping-confirmed-wrapper');
             if (!wrapper) return;
-            if (mappingDone === 'yes') {
-                wrapper.classList.remove('hidden');
-            } else {
-                wrapper.classList.add('hidden');
-                document.getElementById('mapping_confirmed').value = 'no';
-            }
+            if (mappingDone === 'yes') wrapper.classList.remove('hidden');
+            else { wrapper.classList.add('hidden'); document.getElementById('mapping_confirmed').value = 'no'; }
         }
 
         function openModal(project = null) {
@@ -650,33 +609,20 @@
             document.getElementById('lb-project').textContent = p.project_name || '-';
             document.getElementById('lb-grain').textContent = p.grain || '-';
             
-            let priorityText = '-';
-            let priorityColor = 'text-white';
-            if (p.priority === 'red') {
-                priorityText = 'Critical';
-                priorityColor = 'text-red-500';
-            } else if (p.priority === 'green') {
-                priorityText = 'Low';
-                priorityColor = 'text-green-500';
-            } else if (p.priority === 'yellow') {
-                priorityText = 'Standard';
-                priorityColor = 'text-amber-500';
-            }
+            let priorityText = '-', priorityColor = 'text-white';
+            if (p.priority === 'red') { priorityText = 'Critical'; priorityColor = 'text-red-500'; }
+            else if (p.priority === 'green') { priorityText = 'Low'; priorityColor = 'text-green-500'; }
+            else if (p.priority === 'yellow') { priorityText = 'Standard'; priorityColor = 'text-amber-500'; }
             
             const pSpan = document.getElementById('lb-priority');
-            if (pSpan) {
-                pSpan.textContent = priorityText;
-                pSpan.className = "font-bold text-sm " + priorityColor;
-            }
+            if (pSpan) { pSpan.textContent = priorityText; pSpan.className = "font-bold text-sm " + priorityColor; }
 
             document.getElementById('lb-img').src = p.photo;
             resetImageTransform();
             document.getElementById('image-modal').classList.remove('hidden');
         }
 
-        function closeImageModal() {
-            document.getElementById('image-modal').classList.add('hidden');
-        }
+        function closeImageModal() { document.getElementById('image-modal').classList.add('hidden'); }
 
         async function saveProject(e) {
             if(e) e.preventDefault();
@@ -725,7 +671,7 @@
             const select = document.getElementById('table-client-filter');
             if (!select) return;
             const clients = [...new Set(projects.map(p => p.client))].filter(Boolean).sort();
-            select.innerHTML = `<option value="" class="bg-slate-950 text-white">All Clients</option>` + clients.map(c => `<option value="${c}" class="bg-slate-950 text-white">${c}</option>`).join('');
+            select.innerHTML = `<option value="">All Clients</option>` + clients.map(c => `<option value="${c}">${c}</option>`).join('');
         }
 
         function renderTimeline() {
@@ -761,14 +707,10 @@
                     while(true) {
                         if(!rows[rIdx]) rows[rIdx] = new Array(daysInMonth + 1).fill(false);
                         let clash = false;
-                        for(let d = startD; d <= endD; d++) {
-                            if(rows[rIdx][d]) { clash = true; break; }
-                        }
+                        for(let d = startD; d <= endD; d++) { if(rows[rIdx][d]) { clash = true; break; } }
                         if(!clash) {
                             for(let d = startD; d <= endD; d++) rows[rIdx][d] = true;
-                            proj._startD = startD;
-                            proj._endD = endD;
-                            proj._rowIdx = rIdx;
+                            proj._startD = startD; proj._endD = endD; proj._rowIdx = rIdx;
                             break;
                         }
                         rIdx++;
@@ -789,7 +731,6 @@
 
                         if (proj && day === proj._startD) {
                             const spanCount = (proj._endD - proj._startD) + 1;
-                            
                             let bgPriority = 'bg-amber-600';
                             if (proj.priority === 'red') bgPriority = 'bg-red-600';
                             else if (proj.priority === 'green') bgPriority = 'bg-emerald-600';
@@ -815,18 +756,10 @@
 
         function exportToExcel() {
             try {
-                if (typeof XLSX === 'undefined') {
-                    alert("The Excel export library failed to load. Please check your internet connection.");
-                    return;
-                }
-
-                const searchInput = document.getElementById('table-search');
-                const clientFilterSelect = document.getElementById('table-client-filter');
-                const priorityFilterSelect = document.getElementById('table-priority-filter');
-
-                const search = searchInput ? searchInput.value.toLowerCase() : '';
-                const clientFilter = clientFilterSelect ? clientFilterSelect.value : '';
-                const priorityFilter = priorityFilterSelect ? priorityFilterSelect.value : '';
+                if (typeof XLSX === 'undefined') { alert("Excel library missing."); return; }
+                const search = document.getElementById('table-search').value.toLowerCase();
+                const clientFilter = document.getElementById('table-client-filter').value;
+                const priorityFilter = document.getElementById('table-priority-filter').value;
 
                 const filtered = projects.filter(p => {
                     const matchesSearch = !search || [p.po, p.project_name, p.grain, p.client].some(x => (x || '').toLowerCase().includes(search));
@@ -835,59 +768,31 @@
                     return matchesSearch && matchesClient && matchesPriority;
                 });
 
-                if (filtered.length === 0) {
-                    alert("No projects to export with the current filters.");
-                    return;
-                }
-
                 const dataToExport = filtered.map(p => ({
-                    "PO": p.po || '-',
-                    "Project Name": p.project_name || '-',
-                    "Grain": p.grain || '-',
-                    "Client": p.client || '-',
-                    "Machine": p.machine || '-',
+                    "PO": p.po || '-', "Project Name": p.project_name || '-', "Grain": p.grain || '-',
+                    "Client": p.client || '-', "Machine": p.machine || '-',
                     "Priority": p.priority === 'red' ? 'CRITICAL' : (p.priority === 'green' ? 'LOW' : 'STANDARD'),
-                    "Mapping Done": p.mapping_done || 'no',
-                    "Mapping Confirmed": p.mapping_confirmed || 'no',
+                    "Mapping Done": p.mapping_done || 'no', "Mapping Confirmed": p.mapping_confirmed || 'no',
                     "Status": p.date_reelle ? 'FINISHED' : 'IN PROGRESS',
-                    "Reception": p.date_reception || '-',
-                    "Est. End": p.date_estimee || '-',
-                    "Real End": p.date_reelle || '-'
+                    "Reception": p.date_reception || '-', "Est. End": p.date_estimee || '-', "Real End": p.date_reelle || '-'
                 }));
 
                 const worksheet = XLSX.utils.json_to_sheet(dataToExport);
                 const workbook = XLSX.utils.book_new();
                 XLSX.utils.book_append_sheet(workbook, worksheet, "Master Schedule");
-
-                const today = new Date().toISOString().split('T')[0];
-                XLSX.writeFile(workbook, `Standex_Master_Schedule_${today}.xlsx`);
-
+                XLSX.writeFile(workbook, `Standex_Master_Schedule_${new Date().toISOString().split('T')[0]}.xlsx`);
             } catch (error) {
-                console.error("Erreur lors de l'export Excel :", error);
-                alert("An error occurred while generating the Excel file.");
+                console.error(error);
+                alert("Error exporting Excel.");
             }
         }
 
         let draggedProjectId = null;
-
-        function dragStartProject(e, id) {
-            draggedProjectId = id;
-            e.dataTransfer.setData('text/plain', id);
-        }
-
-        function allowDrop(e) {
-            e.preventDefault();
-        }
-
-        function parseLocalDate(dateStr) {
-            const parts = dateStr.split('-');
-            return new Date(parts[0], parts[1] - 1, parts[2]);
-        }
-
+        function dragStartProject(e, id) { draggedProjectId = id; e.dataTransfer.setData('text/plain', id); }
+        function allowDrop(e) { e.preventDefault(); }
+        function parseLocalDate(dateStr) { const parts = dateStr.split('-'); return new Date(parts[0], parts[1] - 1, parts[2]); }
         function formatLocalDate(dateObj) {
-            const y = dateObj.getFullYear();
-            const m = String(dateObj.getMonth() + 1).padStart(2, '0');
-            const d = String(dateObj.getDate()).padStart(2, '0');
+            const y = dateObj.getFullYear(), m = String(dateObj.getMonth() + 1).padStart(2, '0'), d = String(dateObj.getDate()).padStart(2, '0');
             return `${y}-${m}-${d}`;
         }
 
@@ -896,26 +801,19 @@
             if (!draggedProjectId) return;
             const proj = projects.find(p => p.id === draggedProjectId);
             if (!proj) return;
-
-            const oldStart = parseLocalDate(proj.date_reception);
-            const newStart = parseLocalDate(targetDateStr);
-            const diffTime = newStart - oldStart;
-            const diffDays = Math.round(diffTime / (1000 * 60 * 60 * 24));
-
-            const oldEstEnd = parseLocalDate(proj.date_estimee);
-            const newEstEnd = new Date(oldEstEnd);
+            const diffDays = Math.round((parseLocalDate(targetDateStr) - parseLocalDate(proj.date_reception)) / (1000 * 60 * 60 * 24));
+            
+            const newEstEnd = new Date(parseLocalDate(proj.date_estimee));
             newEstEnd.setDate(newEstEnd.getDate() + diffDays);
-
             let newRealEnd = proj.date_reelle;
             if (proj.date_reelle) {
-                const oldRealEnd = parseLocalDate(proj.date_reelle);
-                const tempReal = new Date(oldRealEnd);
+                const tempReal = new Date(parseLocalDate(proj.date_reelle));
                 tempReal.setDate(tempReal.getDate() + diffDays);
                 newRealEnd = formatLocalDate(tempReal);
             }
 
             proj.machine = targetMachine;
-            proj.date_reception = formatLocalDate(newStart);
+            proj.date_reception = targetDateStr;
             proj.date_estimee = formatLocalDate(newEstEnd);
             proj.date_reelle = newRealEnd;
 
@@ -928,46 +826,35 @@
             if (!draggedProjectId) return;
             const proj = projects.find(p => p.id === draggedProjectId);
             if (!proj) return;
-
             proj.machine = targetMachine;
             await saveProjectDirect(proj);
             draggedProjectId = null;
         }
 
         function initResize(e, projId, direction) {
-            e.stopPropagation();
-            e.preventDefault();
+            e.stopPropagation(); e.preventDefault();
             const proj = projects.find(p => p.id === projId);
             if (!proj) return;
-
-            const startX = e.clientX;
-            const cellWidth = 40; 
-            
+            const startX = e.clientX, cellWidth = 40;
             const initialReception = parseLocalDate(proj.date_reception);
             const targetField = proj.date_reelle ? 'date_reelle' : 'date_estimee';
             const initialTargetDate = parseLocalDate(proj[targetField]);
 
             function onMouseMove(moveEvent) {
-                const deltaX = moveEvent.clientX - startX;
-                const dayShift = Math.trunc(deltaX / cellWidth);
-
+                const dayShift = Math.trunc((moveEvent.clientX - startX) / cellWidth);
                 if (direction === 'left') {
                     let newDate = new Date(initialReception);
                     newDate.setDate(newDate.getDate() + dayShift);
-                    
-                    const currentEnd = parseLocalDate(proj.date_reelle || proj.date_estimee);
-                    if (newDate <= currentEnd) {
+                    if (newDate <= parseLocalDate(proj.date_reelle || proj.date_estimee)) {
                         proj.date_reception = formatLocalDate(newDate);
-                        renderTimeline(); 
+                        renderTimeline();
                     }
                 } else if (direction === 'right') {
                     let newDate = new Date(initialTargetDate);
                     newDate.setDate(newDate.getDate() + dayShift);
-                    
-                    const start = parseLocalDate(proj.date_reception);
-                    if (newDate >= start) {
+                    if (newDate >= parseLocalDate(proj.date_reception)) {
                         proj[targetField] = formatLocalDate(newDate);
-                        renderTimeline(); 
+                        renderTimeline();
                     }
                 }
             }
@@ -977,30 +864,21 @@
                 window.removeEventListener('mouseup', onMouseUp);
                 await saveProjectDirect(proj);
             }
-
             window.addEventListener('mousemove', onMouseMove);
             window.addEventListener('mouseup', onMouseUp);
         }
 
         async function saveProjectDirect(proj) {
-            await fetch('/api/projects', {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify(proj)
-            });
+            await fetch('/api/projects', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(proj) });
             loadProjects();
         }
 
         function renderTable() {
             const tbody = document.getElementById('projects-table-body');
             if (!tbody) return;
-            const searchInput = document.getElementById('table-search');
-            const clientFilterSelect = document.getElementById('table-client-filter');
-            const priorityFilterSelect = document.getElementById('table-priority-filter');
-
-            const search = searchInput ? searchInput.value.toLowerCase() : '';
-            const clientFilter = clientFilterSelect ? clientFilterSelect.value : '';
-            const priorityFilter = priorityFilterSelect ? priorityFilterSelect.value : '';
+            const search = document.getElementById('table-search').value.toLowerCase();
+            const clientFilter = document.getElementById('table-client-filter').value;
+            const priorityFilter = document.getElementById('table-priority-filter').value;
 
             const filtered = projects.filter(p => {
                 const matchesSearch = !search || [p.po, p.project_name, p.grain, p.client].some(x => (x || '').toLowerCase().includes(search));
@@ -1013,11 +891,7 @@
                 const isFinished = Boolean(p.date_reelle);
                 let mappingLabel = '<span class="text-gray-500">No</span>';
                 if (p.mapping_done === 'yes') {
-                    if (p.mapping_confirmed === 'yes') {
-                        mappingLabel = '<span class="text-emerald-400 font-semibold">Done & Confirmed</span>';
-                    } else {
-                        mappingLabel = '<span class="text-amber-400 font-semibold">Done (Not Confirmed)</span>';
-                    }
+                    mappingLabel = p.mapping_confirmed === 'yes' ? '<span class="text-emerald-400 font-semibold">Done & Confirmed</span>' : '<span class="text-amber-400 font-semibold">Done (Not Confirmed)</span>';
                 }
 
                 return `
@@ -1052,8 +926,7 @@
             d = new Date(Date.UTC(d.getFullYear(), d.getMonth(), d.getDate()));
             d.setUTCDate(d.getUTCDate() + 4 - (d.getUTCDay()||7));
             var yearStart = new Date(Date.UTC(d.getUTCFullYear(),0,1));
-            var weekNo = Math.ceil(( ( (d - yearStart) / 86400000) + 1)/7);
-            return weekNo;
+            return Math.ceil((((d - yearStart) / 86400000) + 1)/7);
         }
 
         function renderStats() {
@@ -1072,20 +945,18 @@
                 const pYear = pDate.getFullYear();
                 const pMonth = pDate.getMonth();
 
-                if (periodType === 'all') {
-                    return true;
-                } else if (periodType === 'year') {
-                    periodLabelText = `Year ${yearSel}`;
-                    return pYear === yearSel;
-                } else if (periodType === 'month') {
+                if (periodType === 'all') return true;
+                if (periodType === 'year') { periodLabelText = `Year ${yearSel}`; return pYear === yearSel; }
+                if (periodType === 'month') {
                     const monthNames = ["January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"];
                     periodLabelText = `${monthNames[monthSel]} ${yearSel}`;
                     return pYear === yearSel && pMonth === monthSel;
-                } else if (periodType === 'week') {
+                }
+                if (periodType === 'week') {
                     periodLabelText = `Week ${weekSel}, ${yearSel}`;
-                    const pWeek = getIsoWeekNumber(pDate);
-                    return pYear === yearSel && pWeek === weekSel;
-                } else if (periodType === 'custom') {
+                    return pYear === yearSel && getIsoWeekNumber(pDate) === weekSel;
+                }
+                if (periodType === 'custom') {
                     periodLabelText = `From ${customStart || '...'} to ${customEnd || '...'}`;
                     if (!customStart || !customEnd) return true;
                     return p.date_reception >= customStart && p.date_reception <= customEnd;
@@ -1101,57 +972,73 @@
             const active = total - completed;
 
             let onTimeCount = 0;
-            completedProjects.forEach(p => {
-                if (p.date_reelle <= p.date_estimee) {
-                    onTimeCount++;
-                }
-            });
+            completedProjects.forEach(p => { if (p.date_reelle <= p.date_estimee) onTimeCount++; });
             const onTimeRate = completed > 0 ? Math.round((onTimeCount / completed) * 100) : (total === 0 ? 0 : 100);
 
-            const statTotal = document.getElementById('stat-total-projects');
-            const statComp = document.getElementById('stat-completed-projects');
-            const statActive = document.getElementById('stat-active-projects');
-            const statOnTime = document.getElementById('stat-on-time');
+            document.getElementById('stat-total-projects').textContent = total;
+            document.getElementById('stat-completed-projects').textContent = completed;
+            document.getElementById('stat-active-projects').textContent = active;
+            document.getElementById('stat-on-time').textContent = `${onTimeRate}%`;
 
-            if (statTotal) statTotal.textContent = total;
-            if (statComp) statComp.textContent = completed;
-            if (statActive) statActive.textContent = active;
-            if (statOnTime) statOnTime.textContent = `${onTimeRate}%`;
+            // Calcul du temps d'occupation par machine et par parc (DMG vs GF)
+            const machineStats = {};
+            Object.keys(machinesConfig).forEach(m => machineStats[m] = { count: 0, days: 0 });
+            
+            let dmgTotalDays = 0;
+            let gfTotalDays = 0;
 
-            const machineCounts = {};
-            Object.keys(machinesConfig).forEach(m => machineCounts[m] = 0);
             filteredProjects.forEach(p => {
-                if (machineCounts[p.machine] !== undefined) machineCounts[p.machine]++;
+                if (machineStats[p.machine] !== undefined) {
+                    machineStats[p.machine].count++;
+                    const start = parseLocalDate(p.date_reception);
+                    const end = parseLocalDate(p.date_reelle || p.date_estimee);
+                    const diffDays = Math.max(1, Math.round((end - start) / (1000 * 60 * 60 * 24)) + 1);
+                    machineStats[p.machine].days += diffDays;
+
+                    if (p.machine.startsWith("DMG")) {
+                        dmgTotalDays += diffDays;
+                    } else if (p.machine.startsWith("GF")) {
+                        gfTotalDays += diffDays;
+                    }
+                }
             });
+
+            // Calcul des pourcentages du parc (DMG vs GF)
+            const combinedParkDays = dmgTotalDays + gfTotalDays;
+            const dmgSharePct = combinedParkDays > 0 ? Math.round((dmgTotalDays / combinedParkDays) * 100) : 0;
+            const gfSharePct = combinedParkDays > 0 ? Math.round((gfTotalDays / combinedParkDays) * 100) : 0;
+
+            document.getElementById('stat-dmg-share').textContent = `${dmgSharePct}% (${dmgTotalDays} days)`;
+            document.getElementById('stat-dmg-bar').style.width = `${dmgSharePct}%`;
+            document.getElementById('stat-gf-share').textContent = `${gfSharePct}% (${gfTotalDays} days)`;
+            document.getElementById('stat-gf-bar').style.width = `${gfSharePct}%`;
 
             const machListEl = document.getElementById('stat-machines-list');
             if (machListEl) {
                 machListEl.innerHTML = Object.keys(machinesConfig).map(mach => {
-                    const count = machineCounts[mach];
-                    const pct = total > 0 ? Math.round((count / total) * 100) : 0;
+                    const data = machineStats[mach];
+                    const maxDays = Math.max(...Object.values(machineStats).map(d => d.days), 1);
+                    const barPct = Math.round((data.days / maxDays) * 100);
                     return `
-                        <div>
+                        <div class="bg-slate-950/40 p-3 rounded-lg border border-slate-800/80 mb-2">
                             <div class="flex justify-between text-xs font-semibold mb-1">
-                                <span class="text-gray-300">${mach}</span>
-                                <span class="text-gray-400">${count} molds (${pct}%)</span>
+                                <span class="text-white font-bold">${mach}</span>
+                                <span class="text-red-400 font-mono">${data.days} days occupied (${data.count} molds)</span>
                             </div>
                             <div class="w-full bg-slate-950 rounded-full h-2 border border-slate-800">
-                                <div class="bg-red-600 h-2 rounded-full" style="width: ${pct}%"></div>
+                                <div class="bg-red-600 h-2 rounded-full" style="width: ${barPct}%"></div>
                             </div>
                         </div>
                     `;
                 }).join('');
             }
 
-            // Statistiques par client enrichies : Pourcentage de moules en retard calculé sur le total de ses moules
+            // Statistiques pour TOUS les clients (Volume et Pourcentage de retard)
             const clientStats = {};
             filteredProjects.forEach(p => {
                 if (!p.client) return;
-                if (!clientStats[p.client]) {
-                    clientStats[p.client] = { total: 0, late: 0 };
-                }
+                if (!clientStats[p.client]) clientStats[p.client] = { total: 0, late: 0 };
                 clientStats[p.client].total++;
-                // Un moule est considéré en retard si sa date réelle dépasse la date estimée
                 if (p.date_reelle && p.date_reelle > p.date_estimee) {
                     clientStats[p.client].late++;
                 }
@@ -1166,7 +1053,6 @@
                 } else {
                     clientListEl.innerHTML = sortedClients.map(([client, data]) => {
                         const volumePct = total > 0 ? Math.round((data.total / total) * 100) : 0;
-                        // Calcul du pourcentage de retard par rapport au total des moules de ce client
                         const latePct = data.total > 0 ? Math.round((data.late / data.total) * 100) : 0;
                         return `
                             <div class="bg-slate-950/40 p-3 rounded-lg border border-slate-800/80 mb-2">
@@ -1175,7 +1061,7 @@
                                     <span class="text-red-400 bg-red-950/60 border border-red-900 px-2 py-0.5 rounded text-[11px]">⚠️ ${data.late} late (${latePct}% of client's molds)</span>
                                 </div>
                                 <div class="w-full bg-slate-950 rounded-full h-2 border border-slate-800">
-                                    <div class="bg-red-600 h-2 rounded-full" style="width: ${latePct}%" title="${latePct}% late molds"></div>
+                                    <div class="bg-red-600 h-2 rounded-full" style="width: ${latePct}%"></div>
                                 </div>
                             </div>
                         `;
