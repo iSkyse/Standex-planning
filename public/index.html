@@ -26,7 +26,7 @@
 </head>
 <body class="bg-slate-950 font-sans h-screen flex flex-col overflow-hidden text-gray-100">
 
-    <!-- ÉCRAN DE VERROUILLAGE PAR MOT DE PASSE -->
+    <!-- PASSWORD LOCK SCREEN -->
     <div id="auth-screen" class="fixed inset-0 bg-slate-950 z-50 flex items-center justify-center p-4">
         <div class="bg-slate-900 border border-slate-800 rounded-2xl max-w-md w-full p-8 shadow-2xl text-center">
             <div class="inline-flex p-3 bg-red-950/50 border border-red-800/50 rounded-full text-red-500 mb-4">
@@ -204,7 +204,7 @@
         </main>
     </div>
 
-    <!-- Modal Form (Modifié avec max-h-[90vh] et overflow-y-auto pour le défilement) -->
+    <!-- Modal Form -->
     <div id="project-modal" class="fixed inset-0 bg-black/80 hidden flex items-center justify-center p-4 z-50 backdrop-blur-sm">
         <div class="bg-slate-900 border border-slate-800 rounded-2xl max-w-lg w-full p-7 shadow-2xl max-h-[90vh] overflow-y-auto modal-scroll">
             <div class="flex justify-between items-start mb-5 border-b border-slate-800 pb-3">
@@ -270,8 +270,8 @@
                 </div>
 
                 <div>
-                    <label class="block text-xs font-bold text-gray-400 uppercase">Remarques / Notes</label>
-                    <textarea id="remarques" rows="2" placeholder="Notes additionnelles, instructions..." class="w-full mt-1 p-2.5 bg-slate-950 border border-slate-700 rounded text-white text-xs"></textarea>
+                    <label class="block text-xs font-bold text-gray-400 uppercase">Remarks / Notes</label>
+                    <textarea id="remarques" rows="2" placeholder="Additional notes, instructions..." class="w-full mt-1 p-2.5 bg-slate-950 border border-slate-700 rounded text-white text-xs"></textarea>
                 </div>
 
                 <div>
@@ -296,7 +296,7 @@
         </div>
     </div>
 
-    <!-- Image Lightbox Modal with Zoom, Pan & Remarques -->
+    <!-- Image Lightbox Modal with Zoom, Pan & Remarks -->
     <div id="image-modal" class="fixed inset-0 bg-black/95 hidden flex flex-col items-center justify-center p-4 z-50 backdrop-blur-md">
         <div class="absolute top-4 inset-x-6 flex justify-between items-center bg-slate-900 border border-slate-800 p-3 rounded-xl shadow-xl z-10 flex-wrap gap-4">
             <div class="flex gap-6 text-xs flex-wrap">
@@ -314,7 +314,7 @@
         </div>
 
         <div id="lb-remarques-box" class="w-full max-w-2xl bg-slate-900/90 border border-slate-700/80 rounded-xl p-3 my-2 text-xs text-gray-200 shadow-lg z-10 hidden">
-            <span class="text-red-500 font-bold uppercase block mb-1">Remarques :</span>
+            <span class="text-red-500 font-bold uppercase block mb-1">Remarks:</span>
             <p id="lb-remarques-text" class="italic text-gray-300"></p>
         </div>
 
@@ -765,11 +765,11 @@
                             else if (proj.priority === 'green') bgPriority = 'bg-emerald-600';
                             
                             html += `<td colspan="${spanCount}" class="border border-slate-800 p-0 relative shadow-md h-10">`;
-                            html += `<div class="absolute inset-x-1 inset-y-1 px-2 rounded flex items-center gap-2 overflow-hidden timeline-bar ${bgPriority} text-white cursor-pointer" draggable="true" ondragstart="dragStartProject(event, ${proj.id})" onclick="editProject(${proj.id})" title="Cliquez pour éditer">`;
+                            html += `<div class="absolute inset-x-1 inset-y-1 px-2 rounded flex items-center gap-2 overflow-hidden timeline-bar ${bgPriority} text-white cursor-pointer" draggable="true" ondragstart="dragStartProject(event, ${proj.id})" onclick="editProject(${proj.id})" title="Click to edit">`;
                             html += `<div class="resize-handle resize-handle-left" onmousedown="initResize(event, ${proj.id}, 'left')"></div>`;
                             html += `<div class="resize-handle resize-handle-right" onmousedown="initResize(event, ${proj.id}, 'right')"></div>`;
                             
-                            if (proj.photo) html += `<img src="${proj.photo}" class="project-bar-img shrink-0" onclick="openImageModal(${proj.id}, event)" title="Voir l'image et remarques">`;
+                            if (proj.photo) html += `<img src="${proj.photo}" class="project-bar-img shrink-0" onclick="openImageModal(${proj.id}, event)" title="View image and remarks">`;
                             html += `<div class="text-white font-medium text-[11px] whitespace-nowrap truncate pointer-events-none">PO: ${proj.po} | Client: ${proj.client} | Project: ${proj.project_name} ${proj.remarques ? ' | 📝' : ''}</div></div></td>`;
                             day += spanCount - 1;
                             continue;
@@ -804,7 +804,7 @@
                     "Mapping Done": p.mapping_done || 'no', "Mapping Confirmed": p.mapping_confirmed || 'no',
                     "Status": p.date_reelle ? 'FINISHED' : 'IN PROGRESS',
                     "Reception": p.date_reception || '-', "Est. End": p.date_estimee || '-', "Real End": p.date_reelle || '-',
-                    "Remarques": p.remarques || '-'
+                    "Remarks": p.remarques || '-'
                 }));
 
                 const worksheet = XLSX.utils.json_to_sheet(dataToExport);
@@ -926,7 +926,7 @@
 
                 return `
                     <tr class="hover:bg-slate-900/80 transition border-b border-slate-800/60">
-                        <td class="p-3">${p.photo ? `<img src="${p.photo}" class="w-12 h-12 object-cover rounded border border-slate-700 cursor-pointer" onclick="openImageModal(${p.id}, event)" title="Voir l'image et remarques">` : (p.remarques ? `<button onclick="openImageModal(${p.id}, event)" class="bg-slate-800 text-xs px-2 py-1 rounded text-amber-400">📝 Notes</button>` : '-')}</td>
+                        <td class="p-3">${p.photo ? `<img src="${p.photo}" class="w-12 h-12 object-cover rounded border border-slate-700 cursor-pointer" onclick="openImageModal(${p.id}, event)" title="View image and remarks">` : (p.remarques ? `<button onclick="openImageModal(${p.id}, event)" class="bg-slate-800 text-xs px-2 py-1 rounded text-amber-400">📝 Notes</button>` : '-')}</td>
                         <td class="p-3 font-mono font-bold text-red-400">${p.po || '-'}</td>
                         <td class="p-3 font-bold text-white">${p.project_name || '-'}</td>
                         <td class="p-3 text-gray-200">${p.grain || '-'}</td>
@@ -1099,3 +1099,4 @@
     </script>
 </body>
 </html>
+```[cite: 5]
