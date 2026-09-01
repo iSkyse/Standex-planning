@@ -7,9 +7,9 @@
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js"></script>
     <style>
-        #view-grid::-webkit-scrollbar, #view-table::-webkit-scrollbar, #view-stats::-webkit-scrollbar { height: 8px; width: 8px; }
-        #view-grid::-webkit-scrollbar-track, #view-table::-webkit-scrollbar-track, #view-stats::-webkit-scrollbar-track { background: #1e2229; }
-        #view-grid::-webkit-scrollbar-thumb, #view-table::-webkit-scrollbar-thumb, #view-stats::-webkit-scrollbar-thumb { background: #e31b23; border-radius: 4px; }
+        #view-grid::-webkit-scrollbar, #view-table::-webkit-scrollbar, #view-stats::-webkit-scrollbar, .modal-scroll::-webkit-scrollbar { height: 8px; width: 8px; }
+        #view-grid::-webkit-scrollbar-track, #view-table::-webkit-scrollbar-track, #view-stats::-webkit-scrollbar-track, .modal-scroll::-webkit-scrollbar-track { background: #1e2229; }
+        #view-grid::-webkit-scrollbar-thumb, #view-table::-webkit-scrollbar-thumb, #view-stats::-webkit-scrollbar-thumb, .modal-scroll::-webkit-scrollbar-thumb { background: #e31b23; border-radius: 4px; }
         input[type="date"] { color-scheme: dark; cursor: pointer; }
         .project-bar-img { width: 32px; height: 32px; object-fit: cover; border-radius: 4px; border: 1px solid rgba(255, 255, 255, 0.6); cursor: pointer; transition: transform 0.2s; }
         .project-bar-img:hover { transform: scale(1.1); }
@@ -204,9 +204,9 @@
         </main>
     </div>
 
-    <!-- Modal Form -->
+    <!-- Modal Form (Modifié avec max-h-[90vh] et overflow-y-auto pour le défilement) -->
     <div id="project-modal" class="fixed inset-0 bg-black/80 hidden flex items-center justify-center p-4 z-50 backdrop-blur-sm">
-        <div class="bg-slate-900 border border-slate-800 rounded-2xl max-w-lg w-full p-7 shadow-2xl">
+        <div class="bg-slate-900 border border-slate-800 rounded-2xl max-w-lg w-full p-7 shadow-2xl max-h-[90vh] overflow-y-auto modal-scroll">
             <div class="flex justify-between items-start mb-5 border-b border-slate-800 pb-3">
                 <h2 id="modal-title" class="text-xl font-extrabold text-white uppercase">Add Mold to Schedule</h2>
                 <button onclick="closeModal()" class="text-gray-400 hover:text-white text-2xl">&times;</button>
@@ -269,7 +269,6 @@
                     <div><label class="block text-xs font-bold text-gray-400 uppercase">Real End</label><input type="date" id="date_reelle" class="w-full mt-1 p-2.5 bg-slate-950 border border-slate-700 rounded text-white"></div>
                 </div>
 
-                <!-- Champ Remarques Ajouté -->
                 <div>
                     <label class="block text-xs font-bold text-gray-400 uppercase">Remarques / Notes</label>
                     <textarea id="remarques" rows="2" placeholder="Notes additionnelles, instructions..." class="w-full mt-1 p-2.5 bg-slate-950 border border-slate-700 rounded text-white text-xs"></textarea>
@@ -314,7 +313,6 @@
             <img id="lb-img" src="" alt="Zoomed Mold" class="transition-transform duration-75 object-contain rounded-lg shadow-2xl max-h-[60vh] max-w-[85vw]" style="transform: scale(1) translate(0px, 0px);">
         </div>
 
-        <!-- Encadré des remarques visibles dans la visionneuse d'image -->
         <div id="lb-remarques-box" class="w-full max-w-2xl bg-slate-900/90 border border-slate-700/80 rounded-xl p-3 my-2 text-xs text-gray-200 shadow-lg z-10 hidden">
             <span class="text-red-500 font-bold uppercase block mb-1">Remarques :</span>
             <p id="lb-remarques-text" class="italic text-gray-300"></p>
@@ -631,7 +629,6 @@
             const pSpan = document.getElementById('lb-priority');
             if (pSpan) { pSpan.textContent = priorityText; pSpan.className = "font-bold text-sm " + priorityColor; }
 
-            // Affichage des remarques dans la modale image si renseignées
             const remBox = document.getElementById('lb-remarques-box');
             const remText = document.getElementById('lb-remarques-text');
             if (p.remarques && p.remarques.trim() !== '') {
@@ -646,7 +643,7 @@
                 imgEl.src = p.photo;
                 imgEl.style.display = 'block';
             } else {
-                imgEl.style.display = 'none'; // Pas de photo, on affiche juste les infos et remarques
+                imgEl.style.display = 'none';
             }
 
             resetImageTransform();
@@ -768,8 +765,7 @@
                             else if (proj.priority === 'green') bgPriority = 'bg-emerald-600';
                             
                             html += `<td colspan="${spanCount}" class="border border-slate-800 p-0 relative shadow-md h-10">`;
-                            // Frise cliquable pour éditer directement en cliquant dessus (sauf si clic sur photo ou resize)
-                            html += `<div class="absolute inset-x-1 inset-y-1 px-2 rounded flex items-center gap-2 overflow-hidden timeline-bar ${bgPriority} text-white cursor-pointer" draggable="true" ondragstart="dragStartProject(event, ${proj.id})" onclick="editProject(${proj.id})" title="Cliquez pour éditer / Double-cliquez">`;
+                            html += `<div class="absolute inset-x-1 inset-y-1 px-2 rounded flex items-center gap-2 overflow-hidden timeline-bar ${bgPriority} text-white cursor-pointer" draggable="true" ondragstart="dragStartProject(event, ${proj.id})" onclick="editProject(${proj.id})" title="Cliquez pour éditer">`;
                             html += `<div class="resize-handle resize-handle-left" onmousedown="initResize(event, ${proj.id}, 'left')"></div>`;
                             html += `<div class="resize-handle resize-handle-right" onmousedown="initResize(event, ${proj.id}, 'right')"></div>`;
                             
