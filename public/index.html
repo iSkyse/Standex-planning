@@ -116,7 +116,6 @@
             </div>
 
             <div id="view-stats" class="bg-slate-950 rounded-xl shadow hidden flex-grow overflow-auto border border-slate-800 p-6 flex flex-col">
-                <!-- PANNEAU DE CONTRÔLE DES FILTRES STATISTIQUES -->
                 <div class="bg-black/60 border border-slate-800 rounded-xl p-4 mb-6 flex flex-wrap items-center justify-between gap-4 shrink-0">
                     <div class="flex items-center gap-2">
                         <span class="text-xs font-bold text-red-500 uppercase tracking-wide">Filter Period Type:</span>
@@ -167,7 +166,6 @@
                     <div class="bg-slate-900 border border-slate-800 rounded-xl p-5"><span class="text-xs font-bold text-gray-400 uppercase">On-Time Delivery Rate</span><div id="stat-on-time" class="text-3xl font-black text-red-500 mt-2">0%</div></div>
                 </div>
 
-                <!-- SECTION COMPARATIVE PARC DE MACHINES (DMG vs GF) -->
                 <div class="bg-slate-900 border border-slate-800 rounded-xl p-5 mb-6 shrink-0">
                     <h3 class="text-sm font-bold text-gray-300 uppercase mb-3">Machine Park Comparison (DMG vs GF Utilization)</h3>
                     <div class="grid grid-cols-1 md:grid-cols-2 gap-6 items-center">
@@ -270,6 +268,13 @@
                     <div><label class="block text-xs font-bold text-gray-400 uppercase">Est. End</label><input type="date" id="date_estimee" required class="w-full mt-1 p-2.5 bg-slate-950 border border-slate-700 rounded text-white"></div>
                     <div><label class="block text-xs font-bold text-gray-400 uppercase">Real End</label><input type="date" id="date_reelle" class="w-full mt-1 p-2.5 bg-slate-950 border border-slate-700 rounded text-white"></div>
                 </div>
+
+                <!-- Champ Remarques Ajouté -->
+                <div>
+                    <label class="block text-xs font-bold text-gray-400 uppercase">Remarques / Notes</label>
+                    <textarea id="remarques" rows="2" placeholder="Notes additionnelles, instructions..." class="w-full mt-1 p-2.5 bg-slate-950 border border-slate-700 rounded text-white text-xs"></textarea>
+                </div>
+
                 <div>
                     <label class="block text-xs font-bold text-gray-400 uppercase mb-1">Mold Photo <span class="text-gray-500 lowercase">(Click & press Ctrl+V)</span></label>
                     <div id="paste-drop-zone" class="border-2 border-dashed border-slate-700 hover:border-red-600 rounded-lg p-4 bg-slate-950 text-center cursor-pointer" tabindex="0">
@@ -292,10 +297,10 @@
         </div>
     </div>
 
-    <!-- Image Lightbox Modal with Zoom & Pan -->
+    <!-- Image Lightbox Modal with Zoom, Pan & Remarques -->
     <div id="image-modal" class="fixed inset-0 bg-black/95 hidden flex flex-col items-center justify-center p-4 z-50 backdrop-blur-md">
-        <div class="absolute top-4 inset-x-6 flex justify-between items-center bg-slate-900 border border-slate-800 p-3 rounded-xl shadow-xl z-10">
-            <div class="flex gap-6 text-xs">
+        <div class="absolute top-4 inset-x-6 flex justify-between items-center bg-slate-900 border border-slate-800 p-3 rounded-xl shadow-xl z-10 flex-wrap gap-4">
+            <div class="flex gap-6 text-xs flex-wrap">
                 <div><span class="text-gray-400 block font-bold uppercase">PO</span><span id="lb-po" class="text-red-500 font-bold text-sm"></span></div>
                 <div><span class="text-gray-400 block font-bold uppercase">Client</span><span id="lb-client" class="text-white font-bold text-sm"></span></div>
                 <div><span class="text-gray-400 block font-bold uppercase">Project</span><span id="lb-project" class="text-white font-bold text-sm"></span></div>
@@ -304,9 +309,17 @@
             </div>
             <button onclick="closeImageModal()" class="text-gray-400 hover:text-white text-3xl font-light px-3">&times;</button>
         </div>
-        <div id="lb-img-container" class="flex-grow flex items-center justify-center w-full overflow-hidden relative select-none mt-16">
-            <img id="lb-img" src="" alt="Zoomed Mold" class="transition-transform duration-75 object-contain rounded-lg shadow-2xl max-h-[75vh] max-w-[85vw]" style="transform: scale(1) translate(0px, 0px);">
+
+        <div id="lb-img-container" class="flex-grow flex items-center justify-center w-full overflow-hidden relative select-none mt-20">
+            <img id="lb-img" src="" alt="Zoomed Mold" class="transition-transform duration-75 object-contain rounded-lg shadow-2xl max-h-[60vh] max-w-[85vw]" style="transform: scale(1) translate(0px, 0px);">
         </div>
+
+        <!-- Encadré des remarques visibles dans la visionneuse d'image -->
+        <div id="lb-remarques-box" class="w-full max-w-2xl bg-slate-900/90 border border-slate-700/80 rounded-xl p-3 my-2 text-xs text-gray-200 shadow-lg z-10 hidden">
+            <span class="text-red-500 font-bold uppercase block mb-1">Remarques :</span>
+            <p id="lb-remarques-text" class="italic text-gray-300"></p>
+        </div>
+
         <div class="absolute bottom-4 flex justify-between items-center w-full px-8 text-xs text-gray-400 z-10">
             <span>💡 Use mouse wheel to zoom, click & drag to move image</span>
             <div class="flex gap-3">
@@ -579,7 +592,7 @@
             document.getElementById('delete-btn').classList.toggle('hidden', !project);
 
             if (project) {
-                ['po', 'project_name', 'grain', 'client', 'machine', 'priority', 'mapping_done', 'mapping_confirmed', 'date_reception', 'date_estimee', 'date_reelle'].forEach(field => {
+                ['po', 'project_name', 'grain', 'client', 'machine', 'priority', 'mapping_done', 'mapping_confirmed', 'date_reception', 'date_estimee', 'date_reelle', 'remarques'].forEach(field => {
                     if(document.getElementById(field)) document.getElementById(field).value = project[field] || '';
                 });
                 toggleMappingConfirmation();
@@ -603,7 +616,8 @@
         function openImageModal(id, event) {
             if(event) event.stopPropagation();
             const p = projects.find(x => x.id === id);
-            if (!p || !p.photo) return;
+            if (!p) return;
+            
             document.getElementById('lb-po').textContent = p.po || '-';
             document.getElementById('lb-client').textContent = p.client || '-';
             document.getElementById('lb-project').textContent = p.project_name || '-';
@@ -617,7 +631,24 @@
             const pSpan = document.getElementById('lb-priority');
             if (pSpan) { pSpan.textContent = priorityText; pSpan.className = "font-bold text-sm " + priorityColor; }
 
-            document.getElementById('lb-img').src = p.photo;
+            // Affichage des remarques dans la modale image si renseignées
+            const remBox = document.getElementById('lb-remarques-box');
+            const remText = document.getElementById('lb-remarques-text');
+            if (p.remarques && p.remarques.trim() !== '') {
+                remText.textContent = p.remarques;
+                remBox.classList.remove('hidden');
+            } else {
+                remBox.classList.add('hidden');
+            }
+
+            const imgEl = document.getElementById('lb-img');
+            if (p.photo) {
+                imgEl.src = p.photo;
+                imgEl.style.display = 'block';
+            } else {
+                imgEl.style.display = 'none'; // Pas de photo, on affiche juste les infos et remarques
+            }
+
             resetImageTransform();
             document.getElementById('image-modal').classList.remove('hidden');
         }
@@ -643,6 +674,7 @@
                 date_reception: document.getElementById('date_reception').value,
                 date_estimee: document.getElementById('date_estimee').value,
                 date_reelle: document.getElementById('date_reelle').value || null,
+                remarques: document.getElementById('remarques').value.trim(),
                 photo: tempPastedPhotoUrl || (existingProj ? existingProj.photo : '')
             };
 
@@ -736,12 +768,13 @@
                             else if (proj.priority === 'green') bgPriority = 'bg-emerald-600';
                             
                             html += `<td colspan="${spanCount}" class="border border-slate-800 p-0 relative shadow-md h-10">`;
-                            html += `<div class="absolute inset-x-1 inset-y-1 px-2 rounded flex items-center gap-2 overflow-hidden timeline-bar ${bgPriority} text-white" draggable="true" ondragstart="dragStartProject(event, ${proj.id})" ondblclick="editProject(${proj.id})">`;
+                            // Frise cliquable pour éditer directement en cliquant dessus (sauf si clic sur photo ou resize)
+                            html += `<div class="absolute inset-x-1 inset-y-1 px-2 rounded flex items-center gap-2 overflow-hidden timeline-bar ${bgPriority} text-white cursor-pointer" draggable="true" ondragstart="dragStartProject(event, ${proj.id})" onclick="editProject(${proj.id})" title="Cliquez pour éditer / Double-cliquez">`;
                             html += `<div class="resize-handle resize-handle-left" onmousedown="initResize(event, ${proj.id}, 'left')"></div>`;
                             html += `<div class="resize-handle resize-handle-right" onmousedown="initResize(event, ${proj.id}, 'right')"></div>`;
                             
-                            if (proj.photo) html += `<img src="${proj.photo}" class="project-bar-img shrink-0" onclick="openImageModal(${proj.id}, event)">`;
-                            html += `<div class="text-white font-medium text-[11px] whitespace-nowrap truncate pointer-events-none">PO: ${proj.po} | Client: ${proj.client} | Project: ${proj.project_name}</div></div></td>`;
+                            if (proj.photo) html += `<img src="${proj.photo}" class="project-bar-img shrink-0" onclick="openImageModal(${proj.id}, event)" title="Voir l'image et remarques">`;
+                            html += `<div class="text-white font-medium text-[11px] whitespace-nowrap truncate pointer-events-none">PO: ${proj.po} | Client: ${proj.client} | Project: ${proj.project_name} ${proj.remarques ? ' | 📝' : ''}</div></div></td>`;
                             day += spanCount - 1;
                             continue;
                         } else if (!proj) {
@@ -762,7 +795,7 @@
                 const priorityFilter = document.getElementById('table-priority-filter').value;
 
                 const filtered = projects.filter(p => {
-                    const matchesSearch = !search || [p.po, p.project_name, p.grain, p.client].some(x => (x || '').toLowerCase().includes(search));
+                    const matchesSearch = !search || [p.po, p.project_name, p.grain, p.client, p.remarques].some(x => (x || '').toLowerCase().includes(search));
                     const matchesClient = !clientFilter || p.client === clientFilter;
                     const matchesPriority = !priorityFilter || p.priority === priorityFilter;
                     return matchesSearch && matchesClient && matchesPriority;
@@ -774,7 +807,8 @@
                     "Priority": p.priority === 'red' ? 'CRITICAL' : (p.priority === 'green' ? 'LOW' : 'STANDARD'),
                     "Mapping Done": p.mapping_done || 'no', "Mapping Confirmed": p.mapping_confirmed || 'no',
                     "Status": p.date_reelle ? 'FINISHED' : 'IN PROGRESS',
-                    "Reception": p.date_reception || '-', "Est. End": p.date_estimee || '-', "Real End": p.date_reelle || '-'
+                    "Reception": p.date_reception || '-', "Est. End": p.date_estimee || '-', "Real End": p.date_reelle || '-',
+                    "Remarques": p.remarques || '-'
                 }));
 
                 const worksheet = XLSX.utils.json_to_sheet(dataToExport);
@@ -881,7 +915,7 @@
             const priorityFilter = document.getElementById('table-priority-filter').value;
 
             const filtered = projects.filter(p => {
-                const matchesSearch = !search || [p.po, p.project_name, p.grain, p.client].some(x => (x || '').toLowerCase().includes(search));
+                const matchesSearch = !search || [p.po, p.project_name, p.grain, p.client, p.remarques].some(x => (x || '').toLowerCase().includes(search));
                 const matchesClient = !clientFilter || p.client === clientFilter;
                 const matchesPriority = !priorityFilter || p.priority === priorityFilter;
                 return matchesSearch && matchesClient && matchesPriority;
@@ -896,7 +930,7 @@
 
                 return `
                     <tr class="hover:bg-slate-900/80 transition border-b border-slate-800/60">
-                        <td class="p-3">${p.photo ? `<img src="${p.photo}" class="w-12 h-12 object-cover rounded border border-slate-700 cursor-pointer" onclick="openImageModal(${p.id}, event)">` : '-'}</td>
+                        <td class="p-3">${p.photo ? `<img src="${p.photo}" class="w-12 h-12 object-cover rounded border border-slate-700 cursor-pointer" onclick="openImageModal(${p.id}, event)" title="Voir l'image et remarques">` : (p.remarques ? `<button onclick="openImageModal(${p.id}, event)" class="bg-slate-800 text-xs px-2 py-1 rounded text-amber-400">📝 Notes</button>` : '-')}</td>
                         <td class="p-3 font-mono font-bold text-red-400">${p.po || '-'}</td>
                         <td class="p-3 font-bold text-white">${p.project_name || '-'}</td>
                         <td class="p-3 text-gray-200">${p.grain || '-'}</td>
@@ -980,7 +1014,6 @@
             document.getElementById('stat-active-projects').textContent = active;
             document.getElementById('stat-on-time').textContent = `${onTimeRate}%`;
 
-            // Calcul du temps d'occupation par machine et par parc (DMG vs GF)
             const machineStats = {};
             Object.keys(machinesConfig).forEach(m => machineStats[m] = { count: 0, days: 0 });
             
@@ -1003,7 +1036,6 @@
                 }
             });
 
-            // Calcul des pourcentages du parc (DMG vs GF)
             const combinedParkDays = dmgTotalDays + gfTotalDays;
             const dmgSharePct = combinedParkDays > 0 ? Math.round((dmgTotalDays / combinedParkDays) * 100) : 0;
             const gfSharePct = combinedParkDays > 0 ? Math.round((gfTotalDays / combinedParkDays) * 100) : 0;
@@ -1033,7 +1065,6 @@
                 }).join('');
             }
 
-            // Statistiques pour TOUS les clients (Volume et Pourcentage de retard)
             const clientStats = {};
             filteredProjects.forEach(p => {
                 if (!p.client) return;
