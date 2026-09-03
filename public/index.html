@@ -26,30 +26,8 @@
 </head>
 <body class="bg-slate-950 font-sans h-screen flex flex-col overflow-hidden text-gray-100">
 
-    <!-- PASSWORD LOCK SCREEN -->
-    <div id="auth-screen" class="fixed inset-0 bg-slate-950 z-50 flex items-center justify-center p-4">
-        <div class="bg-slate-900 border border-slate-800 rounded-2xl max-w-md w-full p-8 shadow-2xl text-center">
-            <div class="inline-flex p-3 bg-red-950/50 border border-red-800/50 rounded-full text-red-500 mb-4">
-                <svg xmlns="http://www.w3.org/2000/svg" class="h-8 w-8" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z" />
-                </svg>
-            </div>
-            <h2 class="text-xl font-extrabold text-white uppercase tracking-wide mb-1">Restricted Access</h2>
-            <p class="text-xs text-gray-400 mb-6">Enter password to access the system</p>
-            
-            <form onsubmit="checkPassword(event)" class="space-y-4">
-                <input type="password" id="site-password" placeholder="Password..." required autocomplete="current-password"
-                    class="w-full p-3 bg-slate-950 border border-slate-700 rounded text-white text-center text-sm focus:outline-none focus:border-red-600">
-                <button type="submit" class="w-full bg-red-600 hover:bg-red-700 text-white p-3 rounded font-bold text-sm uppercase tracking-wider transition shadow-lg">
-                    Unlock
-                </button>
-                <p id="auth-error" class="text-xs text-red-500 hidden font-semibold">Incorrect password.</p>
-            </form>
-        </div>
-    </div>
-
     <!-- MODE SELECTION SCREEN -->
-    <div id="mode-selection-screen" class="fixed inset-0 bg-slate-950 z-40 flex items-center justify-center p-4" style="display:none;">
+    <div id="mode-selection-screen" class="fixed inset-0 bg-slate-950 z-40 flex items-center justify-center p-4">
         <div class="bg-slate-900 border border-slate-800 rounded-2xl max-w-xl w-full p-10 shadow-2xl text-center">
             <h1 class="text-2xl font-extrabold text-white uppercase tracking-wide mb-2">Standex Engraving</h1>
             <p class="text-xs text-gray-400 mb-8">Please select the operational module you wish to access</p>
@@ -65,7 +43,6 @@
                     <span class="text-[11px] text-gray-400 text-center">Textures in Progress, Approved Textures & Dev Statistics</span>
                 </button>
             </div>
-            <button onclick="lockScreen()" class="mt-8 text-xs text-gray-500 hover:text-gray-300 underline">Lock Screen / Logout</button>
         </div>
     </div>
 
@@ -97,7 +74,6 @@
                     <button onclick="changeMonth(0)" class="bg-slate-900 px-3 py-1 rounded text-sm hover:bg-slate-800 ml-2 font-medium border border-slate-700">Today[cite: 8]</button>
 
                     <button onclick="openModal()" class="bg-red-600 hover:bg-red-700 text-white px-5 py-2 rounded font-bold transition text-sm ml-4 shadow-lg uppercase tracking-wider">+ New Project[cite: 8]</button>
-                    <button onclick="lockScreen()" title="Lock Screen" class="bg-slate-800 hover:bg-slate-700 text-gray-300 px-3 py-2 rounded text-sm border border-slate-700 ml-2">🔒[cite: 8]</button>
                 </div>
             </header>
 
@@ -241,7 +217,6 @@
                 </div>
                 <div class="flex items-center gap-3">
                     <button onclick="openDevModal()" class="bg-blue-600 hover:bg-blue-700 text-white px-5 py-2 rounded font-bold transition text-sm shadow-lg uppercase tracking-wider">+ New Development Texture</button>
-                    <button onclick="lockScreen()" title="Lock Screen" class="bg-slate-800 hover:bg-slate-700 text-gray-300 px-3 py-2 rounded text-sm border border-slate-700 ml-2">🔒</button>
                 </div>
             </header>
 
@@ -548,35 +523,6 @@
 
     <!-- SCRIPT -->
     <script>
-        const SITE_PASSWORD = "laser2026";[cite: 8]
-
-        function checkPassword(event) {
-            if (event) event.preventDefault();
-            const inputField = document.getElementById('site-password');
-            const authScreen = document.getElementById('auth-screen');
-            const modeScreen = document.getElementById('mode-selection-screen');
-            const errorText = document.getElementById('auth-error');
-
-            if (inputField && inputField.value === SITE_PASSWORD) {
-                authScreen.style.display = 'none';
-                modeScreen.style.display = 'flex';
-                sessionStorage.setItem('authenticated', 'true');
-                errorText.classList.add('hidden');
-            } else {
-                if (errorText) errorText.classList.remove('hidden');
-                if (inputField) inputField.value = '';
-            }
-        }
-
-        function lockScreen() {
-            sessionStorage.removeItem('authenticated');
-            document.getElementById('main-content').style.display = 'none';
-            document.getElementById('mode-selection-screen').style.display = 'none';
-            document.getElementById('auth-screen').style.display = 'flex';
-            const inputField = document.getElementById('site-password');
-            if (inputField) inputField.value = '';
-        }
-
         function selectMode(mode) {
             document.getElementById('mode-selection-screen').style.display = 'none';
             document.getElementById('main-content').style.display = 'flex';
@@ -599,16 +545,8 @@
         }
 
         document.addEventListener('DOMContentLoaded', () => {
-            const authScreen = document.getElementById('auth-screen');
             const modeScreen = document.getElementById('mode-selection-screen');
-
-            if (sessionStorage.getItem('authenticated') === 'true') {
-                if (authScreen) authScreen.style.display = 'none';
-                if (modeScreen) modeScreen.style.display = 'flex';
-            } else {
-                if (authScreen) authScreen.style.display = 'flex';
-                if (modeScreen) modeScreen.style.display = 'none';
-            }
+            if (modeScreen) modeScreen.style.display = 'flex';
 
             initYearDropdowns();
             initWeekDropdown();
@@ -1449,79 +1387,86 @@
 
             periodLabel.textContent = labelText;
 
-            const total = filtered.length;
-            const completed = filtered.filter(p => Boolean(p.date_reelle)).length;
-            const active = total - completed;
+            const totalCount = filtered.length;
+            const completedCount = filtered.filter(p => p.date_reelle).length;
+            const activeCount = totalCount - completedCount;
 
             let onTimeCount = 0;
-            let finishedWithEst = 0;
-            filtered.forEach(p => {
-                if (p.date_reelle && p.date_estimee) {
-                    finishedWithEst++;
-                    if (p.date_reelle <= p.date_estimee) onTimeCount++;
-                }
+            let finishedWithEst = filtered.filter(p => p.date_reelle && p.date_estimee);
+            finishedWithEst.forEach(p => {
+                if (p.date_reelle <= p.date_estimee) onTimeCount++;
             });
-            const onTimeRate = finishedWithEst > 0 ? Math.round((onTimeCount / finishedWithEst) * 100) : 0;
+            const onTimeRate = finishedWithEst.length > 0 ? Math.round((onTimeCount / finishedWithEst.length) * 100) : 0;
 
-            totalEl.textContent = total;
-            completedEl.textContent = completed;
-            activeEl.textContent = active;
+            totalEl.textContent = totalCount;
+            completedEl.textContent = completedCount;
+            activeEl.textContent = activeCount;
             onTimeEl.textContent = `${onTimeRate}%`;
 
-            let dmgDays = 0;
-            let gfDays = 0;
-            const machineCounts = {};
-            const clientStats = {};
+            let dmgDays = 0, gfDays = 0;
+            const machineStats = {};
+            Object.keys(machinesConfig).forEach(m => machineStats[m] = 0);
 
             filtered.forEach(p => {
                 const start = parseLocalDate(p.date_reception);
-                const end = parseLocalDate(p.date_reelle || p.date_estimee || p.date_reception);
-                const diffDays = Math.max(1, Math.round((end - start) / (1000 * 60 * 60 * 24)) + 1);
-
-                const mach = p.machine || 'Unknown';
-                machineCounts[mach] = (machineCounts[mach] || 0) + diffDays;
-
-                if (mach.startsWith('DMG')) dmgDays += diffDays;
-                else if (mach.startsWith('GF')) gfDays += diffDays;
-
-                const client = p.client || 'Unknown';
-                if (!clientStats[client]) clientStats[client] = { total: 0, late: 0 };
-                clientStats[client].total++;
-                if (p.date_reelle && p.date_estimee && p.date_reelle > p.date_estimee) {
-                    clientStats[client].late++;
-                }
+                const end = parseLocalDate(p.date_reelle || p.date_estimee);
+                const days = Math.max(1, Math.round((end - start) / (1000 * 60 * 60 * 24)) + 1);
+                
+                if (machineStats[p.machine] !== undefined) machineStats[p.machine] += days;
+                if (p.machine && p.machine.startsWith('DMG')) dmgDays += days;
+                else if (p.machine && p.machine.startsWith('GF')) gfDays += days;
             });
 
-            const totalMachDays = dmgDays + gfDays || 1;
-            const dmgPct = Math.round((dmgDays / totalMachDays) * 100);
-            const gfPct = 100 - dmgPct;
+            const totalParkDays = dmgDays + gfDays;
+            const dmgPct = totalParkDays > 0 ? Math.round((dmgDays / totalParkDays) * 100) : 0;
+            const gfPct = totalParkDays > 0 ? Math.round((gfDays / totalParkDays) * 100) : 0;
 
             dmgBar.style.width = `${dmgPct}%`;
             gfBar.style.width = `${gfPct}%`;
-            dmgShare.textContent = `${dmgPct}% (${dmgDays} days)`;
-            gfShare.textContent = `${gfPct}% (${gfDays} days)`;
+            dmgShare.textContent = `${dmgPct}% (${dmgDays} days)[cite: 8]`;
+            gfShare.textContent = `${gfPct}% (${gfDays} days)[cite: 8]`;
 
-            machinesList.innerHTML = Object.entries(machineCounts).map(([m, days]) => `
-                <div class="flex justify-between items-center bg-slate-950 p-2.5 rounded-lg border border-slate-800 text-xs">
-                    <span class="font-bold text-white">${m}</span>
-                    <span class="text-gray-300">${days} days allocated</span>
-                </div>
-            `).join('') || '<span class="text-xs text-gray-500">No machine data</span>';
-
-            clientsList.innerHTML = Object.entries(clientStats).map(([client, st]) => {
-                const lateRate = st.total > 0 ? Math.round((st.late / st.total) * 100) : 0;
+            machinesList.innerHTML = Object.keys(machineStats).map(m => {
+                const dCount = machineStats[m];
+                const pct = totalParkDays > 0 ? Math.round((dCount / totalParkDays) * 100) : 0;
                 return `
-                    <div class="bg-slate-950 p-2.5 rounded-lg border border-slate-800 text-xs space-y-1">
-                        <div class="flex justify-between font-bold">
-                            <span class="text-white">${client}</span>
-                            <span class="text-gray-400">${st.total} molds (${lateRate}% late)</span>
+                    <div>
+                        <div class="flex justify-between text-xs font-bold mb-1">
+                            <span class="text-gray-300">${m}[cite: 8]</span>
+                            <span class="text-white">${dCount} days (${pct}%)[cite: 8]</span>
                         </div>
-                        <div class="w-full bg-slate-900 rounded-full h-2 overflow-hidden border border-slate-800 flex">
-                            <div class="bg-red-500 h-2" style="width: ${lateRate}%"></div>
+                        <div class="w-full bg-slate-950 rounded-full h-2 border border-slate-800 overflow-hidden">
+                            <div class="bg-red-600 h-2" style="width: ${pct}%"></div>
                         </div>
                     </div>
                 `;
-            }).join('') || '<span class="text-xs text-gray-500">No client data</span>';
+            }).join('');
+
+            const clientStats = {};
+            filtered.forEach(p => {
+                const c = p.client || 'Unknown';
+                if (!clientStats[c]) clientStats[c] = { total: 0, late: 0 };
+                clientStats[c].total++;
+                if (p.date_reelle && p.date_estimee && p.date_reelle > p.date_estimee) {
+                    clientStats[c].late++;
+                }
+            });
+
+            clientsList.innerHTML = Object.keys(clientStats).map(c => {
+                const stats = clientStats[c];
+                const latePct = stats.total > 0 ? Math.round((stats.late / stats.total) * 100) : 0;
+                return `
+                    <div class="bg-slate-950 p-3 rounded-lg border border-slate-800 flex justify-between items-center">
+                        <div>
+                            <span class="text-white font-bold text-xs block">${c}[cite: 8]</span>
+                            <span class="text-[10px] text-gray-400">Total Molds: ${stats.total} | Late: ${stats.late}[cite: 8]</span>
+                        </div>
+                        <span class="text-xs font-bold px-2.5 py-1 rounded ${latePct > 20 ? 'bg-red-950 text-red-400 border border-red-800' : 'bg-slate-900 text-gray-300 border border-slate-800'}">
+                            ${latePct}% Late[cite: 8]
+                        </span>
+                    </div>
+                `;
+            }).join('');
         }
 
         function renderDevStats() {
@@ -1541,23 +1486,36 @@
 
             if (periodType === 'year') {
                 labelText = `Year ${yearVal}`;
-                filtered = devTextures.filter(item => item.date && item.date.startsWith(String(yearVal)));
+                filtered = devTextures.filter(item => {
+                    const d = item.date;
+                    return d && d.startsWith(String(yearVal));
+                });
             } else if (periodType === 'month') {
                 labelText = `Month ${monthVal + 1} / ${yearVal}`;
                 const prefix = `${yearVal}-${String(monthVal + 1).padStart(2, '0')}`;
-                filtered = devTextures.filter(item => item.date && item.date.startsWith(prefix));
+                filtered = devTextures.filter(item => {
+                    const d = item.date;
+                    return d && d.startsWith(prefix);
+                });
             } else if (periodType === 'custom') {
                 const startStr = document.getElementById('dev-stat-start').value;
                 const endStr = document.getElementById('dev-stat-end').value;
                 labelText = `From ${startStr} to ${endStr}`;
-                filtered = devTextures.filter(item => item.date && item.date >= startStr && item.date <= endStr);
+                filtered = devTextures.filter(item => {
+                    const d = item.date;
+                    return d && d >= startStr && d <= endStr;
+                });
             }
 
             periodLabel.textContent = labelText;
 
-            totalEl.textContent = filtered.length;
-            approvedEl.textContent = filtered.filter(i => i.approved === 'yes').length;
-            injectedEl.textContent = filtered.filter(i => i.injected === 'yes').length;
+            const totalCount = filtered.length;
+            const approvedCount = filtered.filter(item => item.approved === 'yes').length;
+            const injectedCount = filtered.filter(item => item.injected === 'yes').length;
+
+            totalEl.textContent = totalCount;
+            approvedEl.textContent = approvedCount;
+            injectedEl.textContent = injectedCount;
         }
     </script>
 </body>
