@@ -7,9 +7,9 @@
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js"></script>
     <style>
-        #view-grid::-webkit-scrollbar, #view-table::-webkit-scrollbar, #view-stats::-webkit-scrollbar, #view-dev::-webkit-scrollbar, #view-approved::-webkit-scrollbar, .modal-scroll::-webkit-scrollbar { height: 8px; width: 8px; }
-        #view-grid::-webkit-scrollbar-track, #view-table::-webkit-scrollbar-track, #view-stats::-webkit-scrollbar-track, #view-dev::-webkit-scrollbar-track, #view-approved::-webkit-scrollbar-track, .modal-scroll::-webkit-scrollbar-track { background: #1e2229; }
-        #view-grid::-webkit-scrollbar-thumb, #view-table::-webkit-scrollbar-thumb, #view-stats::-webkit-scrollbar-thumb, #view-dev::-webkit-scrollbar-thumb, #view-approved::-webkit-scrollbar-thumb, .modal-scroll::-webkit-scrollbar-thumb { background: #e31b23; border-radius: 4px; }
+        #view-grid::-webkit-scrollbar, #view-table::-webkit-scrollbar, #view-stats::-webkit-scrollbar, .modal-scroll::-webkit-scrollbar { height: 8px; width: 8px; }
+        #view-grid::-webkit-scrollbar-track, #view-table::-webkit-scrollbar-track, #view-stats::-webkit-scrollbar-track, .modal-scroll::-webkit-scrollbar-track { background: #1e2229; }
+        #view-grid::-webkit-scrollbar-thumb, #view-table::-webkit-scrollbar-thumb, #view-stats::-webkit-scrollbar-thumb, .modal-scroll::-webkit-scrollbar-thumb { background: #e31b23; border-radius: 4px; }
         input[type="date"] { color-scheme: dark; cursor: pointer; }
         .project-bar-img { width: 32px; height: 32px; object-fit: cover; border-radius: 4px; border: 1px solid rgba(255, 255, 255, 0.6); cursor: pointer; transition: transform 0.2s; }
         .project-bar-img:hover { transform: scale(1.1); }
@@ -57,9 +57,9 @@
                     <p class="text-[11px] text-gray-400">Laser Department Production Planning</p>
                 </div>
             </div>
-            <div class="flex items-center gap-3" id="header-nav-controls">
-                <button onclick="changeMonth(-1)" id="prev-month-btn" class="bg-slate-800 px-3 py-1 rounded text-sm hover:bg-slate-700 font-medium border border-slate-700">◀ Prev</button>
-                <div id="month-year-container" class="flex items-center gap-1 bg-slate-900 border border-slate-700 rounded px-2 py-1">
+            <div class="flex items-center gap-3">
+                <button onclick="changeMonth(-1)" class="bg-slate-800 px-3 py-1 rounded text-sm hover:bg-slate-700 font-medium border border-slate-700">◀ Prev</button>
+                <div class="flex items-center gap-1 bg-slate-900 border border-slate-700 rounded px-2 py-1">
                     <select id="month-select" onchange="onMonthYearDropdownChange()" class="bg-slate-900 text-red-500 font-bold text-sm focus:outline-none cursor-pointer">
                         <option value="0">January</option><option value="1">February</option><option value="2">March</option><option value="3">April</option>
                         <option value="4">May</option><option value="5">June</option><option value="6">July</option><option value="7">August</option>
@@ -68,20 +68,18 @@
                     <select id="year-select" onchange="onMonthYearDropdownChange()" class="bg-slate-900 text-white font-bold text-sm focus:outline-none cursor-pointer">
                     </select>
                 </div>
-                <button onclick="changeMonth(1)" id="next-month-btn" class="bg-slate-800 px-3 py-1 rounded text-sm hover:bg-slate-700 font-medium border border-slate-700">Next ▶</button>
-                <button onclick="changeMonth(0)" id="today-btn" class="bg-slate-900 px-3 py-1 rounded text-sm hover:bg-slate-800 ml-2 font-medium border border-slate-700">Today</button>
+                <button onclick="changeMonth(1)" class="bg-slate-800 px-3 py-1 rounded text-sm hover:bg-slate-700 font-medium border border-slate-700">Next ▶</button>
+                <button onclick="changeMonth(0)" class="bg-slate-900 px-3 py-1 rounded text-sm hover:bg-slate-800 ml-2 font-medium border border-slate-700">Today</button>
 
-                <button onclick="openModal()" id="header-add-btn" class="bg-red-600 hover:bg-red-700 text-white px-5 py-2 rounded font-bold transition text-sm ml-4 shadow-lg uppercase tracking-wider">+ New Project</button>
+                <button onclick="openModal()" class="bg-red-600 hover:bg-red-700 text-white px-5 py-2 rounded font-bold transition text-sm ml-4 shadow-lg uppercase tracking-wider">+ New Project</button>
                 <button onclick="lockScreen()" title="Lock Screen" class="bg-slate-800 hover:bg-slate-700 text-gray-300 px-3 py-2 rounded text-sm border border-slate-700 ml-2">🔒</button>
             </div>
         </header>
 
         <main class="flex-grow p-4 flex flex-col overflow-hidden bg-slate-900">
-            <div class="flex gap-3 mb-3 shrink-0 flex-wrap">
+            <div class="flex gap-3 mb-3 shrink-0">
                 <button onclick="switchView('grid')" id="btn-grid" class="bg-red-600 text-white px-4 py-2 rounded font-bold text-xs shadow tracking-wide uppercase">Timeline Schedule</button>
                 <button onclick="switchView('table')" id="btn-table" class="bg-slate-800 text-gray-300 px-4 py-2 rounded font-bold text-xs border border-slate-700 shadow-sm uppercase">Projects List View</button>
-                <button onclick="switchView('dev')" id="btn-dev" class="bg-slate-800 text-gray-300 px-4 py-2 rounded font-bold text-xs border border-slate-700 shadow-sm uppercase">Textures in Development</button>
-                <button onclick="switchView('approved')" id="btn-approved" class="bg-slate-800 text-gray-300 px-4 py-2 rounded font-bold text-xs border border-slate-700 shadow-sm uppercase">Approved Textures</button>
                 <button onclick="switchView('stats')" id="btn-stats" class="bg-slate-800 text-gray-300 px-4 py-2 rounded font-bold text-xs border border-slate-700 shadow-sm uppercase">Statistics</button>
             </div>
 
@@ -114,45 +112,6 @@
                         </thead>
                         <tbody id="projects-table-body" class="text-sm divide-y divide-slate-800/60 text-gray-300"></tbody>
                     </table>
-                </div>
-            </div>
-
-            <!-- TEXTURES IN DEVELOPMENT VIEW -->
-            <div id="view-dev" class="bg-slate-950 rounded-xl shadow hidden flex-grow overflow-hidden border border-slate-800 flex flex-col">
-                <div class="p-4 bg-black/60 border-b border-slate-800 flex justify-between items-center shrink-0 flex-wrap gap-4">
-                    <div class="flex gap-4 items-center flex-wrap">
-                        <input type="text" id="dev-search" oninput="renderDevTextures()" placeholder="Search Texture, Grain, Client..." class="p-2 bg-slate-950 border border-slate-700 rounded text-sm text-white w-64">
-                        <select id="dev-method-filter" onchange="renderDevTextures()" class="p-2 bg-slate-950 border border-slate-700 rounded text-sm text-white w-48">
-                            <option value="">All Creation Methods</option>
-                            <option value="Scan">Scan</option>
-                            <option value="Rhino">Rhino (Creation)</option>
-                            <option value="Photoshop">Photoshop (Retouch)</option>
-                            <option value="Machine Test">Machine Test</option>
-                        </select>
-                    </div>
-                    <button onclick="openDevModal()" class="bg-red-600 hover:bg-red-700 text-white px-5 py-2 rounded font-bold transition text-sm shadow-lg uppercase tracking-wider">+ New Texture in Dev</button>
-                </div>
-                <div class="flex-grow overflow-auto p-4 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4" id="dev-cards-container">
-                </div>
-            </div>
-
-            <!-- APPROVED TEXTURES VIEW -->
-            <div id="view-approved" class="bg-slate-950 rounded-xl shadow hidden flex-grow overflow-hidden border border-slate-800 flex flex-col">
-                <div class="p-4 bg-black/60 border-b border-slate-800 flex justify-between items-center shrink-0 flex-wrap gap-4">
-                    <div class="flex gap-4 items-center flex-wrap">
-                        <input type="text" id="approved-search" oninput="renderApprovedTextures()" placeholder="Search Approved Texture, Grain..." class="p-2 bg-slate-950 border border-slate-700 rounded text-sm text-white w-64">
-                        <select id="approved-machine-filter" onchange="renderApprovedTextures()" class="p-2 bg-slate-950 border border-slate-700 rounded text-sm text-white w-48">
-                            <option value="">All Machines</option>
-                            <option value="DMG 65">DMG 65</option>
-                            <option value="DMG 125">DMG 125</option>
-                            <option value="DMG 210">DMG 210</option>
-                            <option value="GF 1000">GF 1000</option>
-                            <option value="GF 1200">GF 1200</option>
-                            <option value="GF 4000">GF 4000</option>
-                        </select>
-                    </div>
-                </div>
-                <div class="flex-grow overflow-auto p-4 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4" id="approved-cards-container">
                 </div>
             </div>
 
@@ -337,79 +296,6 @@
         </div>
     </div>
 
-    <!-- Dev Texture Modal Form -->
-    <div id="dev-modal" class="fixed inset-0 bg-black/80 hidden flex items-center justify-center p-4 z-50 backdrop-blur-sm">
-        <div class="bg-slate-900 border border-slate-800 rounded-2xl max-w-lg w-full p-7 shadow-2xl max-h-[90vh] overflow-y-auto modal-scroll">
-            <div class="flex justify-between items-start mb-5 border-b border-slate-800 pb-3">
-                <h2 id="dev-modal-title" class="text-xl font-extrabold text-white uppercase">Add Texture in Development</h2>
-                <button onclick="closeDevModal()" class="text-gray-400 hover:text-white text-2xl">&times;</button>
-            </div>
-            <form id="dev-form" onsubmit="saveDevTexture(event)" class="space-y-4">
-                <input type="hidden" id="dev-id">
-                <div class="grid grid-cols-2 gap-4">
-                    <div><label class="block text-xs font-bold text-gray-400 uppercase">Texture / Project Name</label><input type="text" id="dev_name" required class="w-full mt-1 p-2.5 bg-slate-950 border border-slate-700 rounded text-white"></div>
-                    <div><label class="block text-xs font-bold text-gray-400 uppercase">Grain Code</label><input type="text" id="dev_grain" required class="w-full mt-1 p-2.5 bg-slate-950 border border-slate-700 rounded text-white"></div>
-                </div>
-                <div class="grid grid-cols-2 gap-4">
-                    <div><label class="block text-xs font-bold text-gray-400 uppercase">Client</label><input type="text" id="dev_client" required class="w-full mt-1 p-2.5 bg-slate-950 border border-slate-700 rounded text-white"></div>
-                    <div>
-                        <label class="block text-xs font-bold text-gray-400 uppercase">Creation Method</label>
-                        <select id="dev_method" class="w-full mt-1 p-2.5 bg-slate-950 border border-slate-700 rounded text-white">
-                            <option value="Scan">Scan</option>
-                            <option value="Rhino">Rhino (Creation)</option>
-                            <option value="Photoshop">Photoshop (Retouch)</option>
-                            <option value="Machine Test">Machine Test</option>
-                        </select>
-                    </div>
-                </div>
-                <div>
-                    <label class="block text-xs font-bold text-gray-400 uppercase">Status / Current Progress Info</label>
-                    <textarea id="dev_status_info" rows="3" placeholder="Where it stands, progress notes, pending actions..." required class="w-full mt-1 p-2.5 bg-slate-950 border border-slate-700 rounded text-white text-xs"></textarea>
-                </div>
-
-                <div class="grid grid-cols-2 gap-4">
-                    <div>
-                        <label class="block text-xs font-bold text-gray-400 uppercase">Is Approved?</label>
-                        <select id="dev_approved" onchange="toggleDevApprovalFields()" class="w-full mt-1 p-2.5 bg-slate-950 border border-slate-700 rounded text-white">
-                            <option value="no">No (In Development)</option>
-                            <option value="yes">Yes (Approved)</option>
-                        </select>
-                    </div>
-                    <div id="dev-target-machine-wrapper" class="hidden">
-                        <label class="block text-xs font-bold text-gray-400 uppercase">Approved For Machine</label>
-                        <select id="dev_target_machine" class="w-full mt-1 p-2.5 bg-slate-950 border border-slate-700 rounded text-white">
-                            <option value="DMG 65">DMG 65</option>
-                            <option value="DMG 125">DMG 125</option>
-                            <option value="DMG 210">DMG 210</option>
-                            <option value="GF 1000">GF 1000</option>
-                            <option value="GF 1200">GF 1200</option>
-                            <option value="GF 4000">GF 4000</option>
-                        </select>
-                    </div>
-                </div>
-
-                <div>
-                    <label class="block text-xs font-bold text-gray-400 uppercase mb-1">Texture Photo / Scan Preview</label>
-                    <div id="dev-paste-drop-zone" class="border-2 border-dashed border-slate-700 hover:border-red-600 rounded-lg p-4 bg-slate-950 text-center cursor-pointer" tabindex="0">
-                        <p class="text-xs text-gray-400 mb-2">Click here and press <strong class="text-white">Ctrl + V</strong> to paste image</p>
-                        <input type="file" id="dev_photo_file" accept="image/*" class="text-xs text-gray-400">
-                    </div>
-                </div>
-                <div id="dev-photo-preview-container" class="hidden mt-2 text-center relative">
-                    <img id="dev-photo-preview" src="" alt="Preview" class="max-h-28 rounded border border-slate-700 mx-auto">
-                    <button type="button" onclick="clearDevPhotoSelection()" class="absolute top-1 right-2 bg-red-950 text-red-400 px-2 py-0.5 rounded text-[10px]">Remove</button>
-                </div>
-                <div class="flex justify-between gap-3 mt-6 pt-4 border-t border-slate-800">
-                    <button type="button" onclick="confirmDeleteDevTexture()" id="dev-delete-btn" class="bg-red-950 text-red-400 px-4 py-2 rounded text-sm hidden">Delete</button>
-                    <div class="flex gap-3 ml-auto">
-                        <button type="button" onclick="closeDevModal()" class="bg-slate-800 text-gray-300 px-5 py-2 rounded text-sm">Cancel</button>
-                        <button type="submit" class="bg-red-600 text-white px-5 py-2 rounded text-sm font-bold shadow">Save Texture</button>
-                    </div>
-                </div>
-            </form>
-        </div>
-    </div>
-
     <!-- Image Lightbox Modal with Zoom, Pan & Remarks -->
     <div id="image-modal" class="fixed inset-0 bg-black/95 hidden flex flex-col items-center justify-center p-4 z-50 backdrop-blur-md">
         <div class="absolute top-4 inset-x-6 flex justify-between items-center bg-slate-900 border border-slate-800 p-3 rounded-xl shadow-xl z-10 flex-wrap gap-4">
@@ -488,17 +374,11 @@
             initCustomDates();
             updateMonthYearSelectors();
             loadProjects();
-            loadDevTextures();
 
             const pasteDropZone = document.getElementById('paste-drop-zone');
             if (pasteDropZone) pasteDropZone.addEventListener('paste', handleImagePaste);
             const projectModal = document.getElementById('project-modal');
             if (projectModal) projectModal.addEventListener('paste', handleImagePaste);
-
-            const devPasteDropZone = document.getElementById('dev-paste-drop-zone');
-            if (devPasteDropZone) devPasteDropZone.addEventListener('paste', handleDevImagePaste);
-            const devModal = document.getElementById('dev-modal');
-            if (devModal) devModal.addEventListener('paste', handleDevImagePaste);
 
             const photoInput = document.getElementById('photo');
             if (photoInput) {
@@ -509,21 +389,6 @@
                             tempPastedPhotoUrl = e2.target.result;
                             document.getElementById('photo-preview').src = tempPastedPhotoUrl;
                             document.getElementById('photo-preview-container').classList.remove('hidden');
-                        };
-                        reader.readAsDataURL(e.target.files[0]);
-                    }
-                });
-            }
-
-            const devPhotoInput = document.getElementById('dev_photo_file');
-            if (devPhotoInput) {
-                devPhotoInput.addEventListener('change', (e) => {
-                    if (e.target.files && e.target.files[0]) {
-                        const reader = new FileReader();
-                        reader.onload = (e2) => {
-                            tempDevPhotoUrl = e2.target.result;
-                            document.getElementById('dev-photo-preview').src = tempDevPhotoUrl;
-                            document.getElementById('dev-photo-preview-container').classList.remove('hidden');
                         };
                         reader.readAsDataURL(e.target.files[0]);
                     }
@@ -557,10 +422,8 @@
         });
 
         let projects = [];
-        let devTextures = [];
         let currentDate = new Date();
         let tempPastedPhotoUrl = '';
-        let tempDevPhotoUrl = '';
         const machinesConfig = { "DMG 65": {}, "DMG 125": {}, "DMG 210": {}, "GF 1000": {}, "GF 1200": {}, "GF 4000": {} };
 
         let scale = 1, panning = false, pointX = 0, pointY = 0, startX = 0, startY = 0;
@@ -575,24 +438,6 @@
                 renderStats();
             } catch (err) {
                 console.error("Error loading projects", err);
-            }
-        }
-
-        async function loadDevTextures() {
-            try {
-                const res = await fetch('/api/dev-textures');
-                if (res.ok) {
-                    devTextures = await res.json();
-                } else {
-                    devTextures = [];
-                }
-                renderDevTextures();
-                renderApprovedTextures();
-            } catch (err) {
-                console.error("Error loading dev textures", err);
-                devTextures = [];
-                renderDevTextures();
-                renderApprovedTextures();
             }
         }
 
@@ -700,37 +545,11 @@
             }
         }
 
-        function handleDevImagePaste(e) {
-            const items = (e.clipboardData || e.originalEvent.clipboardData).items;
-            for (let i = 0; i < items.length; i++) {
-                if (items[i].type.indexOf('image') !== -1) {
-                    const blob = items[i].getAsFile();
-                    const reader = new FileReader();
-                    reader.onload = (event) => {
-                        tempDevPhotoUrl = event.target.result;
-                        document.getElementById('dev-photo-preview').src = tempDevPhotoUrl;
-                        document.getElementById('dev-photo-preview-container').classList.remove('hidden');
-                        document.getElementById('dev_photo_file').value = '';
-                    };
-                    reader.readAsDataURL(blob);
-                    e.preventDefault();
-                    break;
-                }
-            }
-        }
-
         function clearPhotoSelection() {
             tempPastedPhotoUrl = '';
             document.getElementById('photo').value = '';
             document.getElementById('photo-preview').src = '';
             document.getElementById('photo-preview-container').classList.add('hidden');
-        }
-
-        function clearDevPhotoSelection() {
-            tempDevPhotoUrl = '';
-            document.getElementById('dev_photo_file').value = '';
-            document.getElementById('dev-photo-preview').src = '';
-            document.getElementById('dev-photo-preview-container').classList.add('hidden');
         }
 
         function changeMonth(dir) {
@@ -741,7 +560,7 @@
         }
 
         function switchView(view) {
-            ['grid', 'table', 'dev', 'approved', 'stats'].forEach(v => {
+            ['grid', 'table', 'stats'].forEach(v => {
                 const viewEl = document.getElementById(`view-${v}`);
                 const btnEl = document.getElementById(`btn-${v}`);
                 if (viewEl) viewEl.classList.toggle('hidden', v !== view);
@@ -751,37 +570,7 @@
                         : 'bg-slate-800 text-gray-300 px-4 py-2 rounded font-bold text-xs border border-slate-700 uppercase';
                 }
             });
-
-            // Handle header elements visibility for scheduling vs standalone texture views
-            const monthYearContainer = document.getElementById('month-year-container');
-            const prevMonthBtn = document.getElementById('prev-month-btn');
-            const nextMonthBtn = document.getElementById('next-month-btn');
-            const todayBtn = document.getElementById('today-btn');
-            const headerAddBtn = document.getElementById('header-add-btn');
-
-            if (view === 'dev' || view === 'approved') {
-                if(monthYearContainer) monthYearContainer.classList.add('hidden');
-                if(prevMonthBtn) prevMonthBtn.classList.add('hidden');
-                if(nextMonthBtn) nextMonthBtn.classList.add('hidden');
-                if(todayBtn) todayBtn.classList.add('hidden');
-                if(headerAddBtn) {
-                    headerAddBtn.textContent = view === 'dev' ? '+ New Texture' : '+ New Texture';
-                    headerAddBtn.setAttribute('onclick', 'openDevModal()');
-                }
-            } else {
-                if(monthYearContainer) monthYearContainer.classList.remove('hidden');
-                if(prevMonthBtn) prevMonthBtn.classList.remove('hidden');
-                if(nextMonthBtn) nextMonthBtn.classList.remove('hidden');
-                if(todayBtn) todayBtn.classList.remove('hidden');
-                if(headerAddBtn) {
-                    headerAddBtn.textContent = '+ New Project';
-                    headerAddBtn.setAttribute('onclick', 'openModal()');
-                }
-            }
-
             if (view === 'table') renderTable();
-            if (view === 'dev') renderDevTextures();
-            if (view === 'approved') renderApprovedTextures();
             if (view === 'stats') renderStats();
         }
 
@@ -793,18 +582,10 @@
             else { wrapper.classList.add('hidden'); document.getElementById('mapping_confirmed').value = 'no'; }
         }
 
-        function toggleDevApprovalFields() {
-            const approved = document.getElementById('dev_approved').value;
-            const wrapper = document.getElementById('dev-target-machine-wrapper');
-            if (!wrapper) return;
-            if (approved === 'yes') wrapper.classList.remove('hidden');
-            else wrapper.classList.add('hidden');
-        }
-
         function openModal(project = null) {
             document.getElementById('project-form').reset();
             tempPastedPhotoUrl = '';
-            document.getElementById('modal-title').textContent = project ? 'Edit Project' : 'Add Mold to Schedule';
+            document.getElementById('modal-title').textContent = project ? 'Edit Project' : 'Add New Project';
             document.getElementById('project-id').value = project ? project.id : '';
             document.getElementById('delete-btn').classList.toggle('hidden', !project);
 
@@ -829,37 +610,6 @@
         }
 
         function closeModal() { document.getElementById('project-modal').classList.add('hidden'); }
-
-        function openDevModal(devTex = null) {
-            document.getElementById('dev-form').reset();
-            tempDevPhotoUrl = '';
-            document.getElementById('dev-modal-title').textContent = devTex ? 'Edit Texture in Development' : 'Add Texture in Development';
-            document.getElementById('dev-id').value = devTex ? devTex.id : '';
-            document.getElementById('dev-delete-btn').classList.toggle('hidden', !devTex);
-
-            if (devTex) {
-                ['dev_name', 'dev_grain', 'dev_client', 'dev_method', 'dev_status_info', 'dev_approved', 'dev_target_machine'].forEach(field => {
-                    const elId = field;
-                    if(document.getElementById(elId)) {
-                        const objKey = field.replace('dev_', '');
-                        document.getElementById(elId).value = devTex[objKey] || '';
-                    }
-                });
-                toggleDevApprovalFields();
-                if (devTex.photo) {
-                    tempDevPhotoUrl = devTex.photo;
-                    document.getElementById('dev-photo-preview').src = devTex.photo;
-                    document.getElementById('dev-photo-preview-container').classList.remove('hidden');
-                }
-            } else {
-                document.getElementById('dev_approved').value = 'no';
-                toggleDevApprovalFields();
-                document.getElementById('dev-photo-preview-container').classList.add('hidden');
-            }
-            document.getElementById('dev-modal').classList.remove('hidden');
-        }
-
-        function closeDevModal() { document.getElementById('dev-modal').classList.add('hidden'); }
 
         function openImageModal(id, event) {
             if(event) event.stopPropagation();
@@ -935,47 +685,7 @@
             loadProjects();
         }
 
-        async function saveDevTexture(e) {
-            if(e) e.preventDefault();
-            const idInput = document.getElementById('dev-id').value;
-            const id = idInput ? Number(idInput) : Date.now();
-            const existingDev = devTextures.find(x => x.id === id);
-
-            const isApprovedVal = document.getElementById('dev_approved').value;
-            const devData = {
-                id,
-                name: document.getElementById('dev_name').value.trim(),
-                grain: document.getElementById('dev_grain').value.trim(),
-                client: document.getElementById('dev_client').value.trim(),
-                method: document.getElementById('dev_method').value,
-                status_info: document.getElementById('dev_status_info').value.trim(),
-                approved: isApprovedVal,
-                target_machine: isApprovedVal === 'yes' ? document.getElementById('dev_target_machine').value : '',
-                photo: tempDevPhotoUrl || (existingDev ? existingDev.photo : '')
-            };
-
-            try {
-                const res = await fetch('/api/dev-textures', {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify(devData)
-                });
-                if (!res.ok) throw new Error("Failed to save dev texture");
-            } catch (err) {
-                console.error("API error, saving locally in memory", err);
-                if (existingDev) {
-                    Object.assign(existingDev, devData);
-                } else {
-                    devTextures.push(devData);
-                }
-            }
-
-            closeDevModal();
-            loadDevTextures();
-        }
-
         function editProject(id) { const p = projects.find(x => x.id === id); if (p) openModal(p); }
-        function editDevTexture(id) { const d = devTextures.find(x => x.id === id); if (d) openDevModal(d); }
 
         async function confirmDeleteProject() {
             const id = Number(document.getElementById('project-id').value);
@@ -986,125 +696,11 @@
             }
         }
 
-        async function confirmDeleteDevTexture() {
-            const id = Number(document.getElementById('dev-id').value);
-            if (confirm("Delete this texture?")) {
-                try {
-                    await fetch(`/api/dev-textures/${id}`, { method: 'DELETE' });
-                } catch(e) {
-                    devTextures = devTextures.filter(x => x.id !== id);
-                }
-                closeDevModal();
-                loadDevTextures();
-            }
-        }
-
         function populateClientFilterDropdown() {
             const select = document.getElementById('table-client-filter');
             if (!select) return;
             const clients = [...new Set(projects.map(p => p.client))].filter(Boolean).sort();
             select.innerHTML = `<option value="">All Clients</option>` + clients.map(c => `<option value="${c}">${c}</option>`).join('');
-        }
-
-        function renderDevTextures() {
-            const container = document.getElementById('dev-cards-container');
-            if (!container) return;
-            const search = document.getElementById('dev-search').value.toLowerCase();
-            const methodFilter = document.getElementById('dev-method-filter').value;
-
-            const filtered = devTextures.filter(d => {
-                if (d.approved === 'yes') return false; // Only show unapproved/in-development textures here
-                const matchesSearch = !search || [d.name, d.grain, d.client, d.status_info].some(x => (x || '').toLowerCase().includes(search));
-                const matchesMethod = !methodFilter || d.method === methodFilter;
-                return matchesSearch && matchesMethod;
-            });
-
-            if (filtered.length === 0) {
-                container.innerHTML = `<div class="col-span-full text-center py-12 text-gray-500 italic">No textures currently in development matching filters. Click "+ New Texture in Dev" to add one.</div>`;
-                return;
-            }
-
-            container.innerHTML = filtered.map(d => {
-                let badgeColor = 'bg-blue-950 text-blue-400 border-blue-800';
-                if (d.method === 'Rhino') badgeColor = 'bg-purple-950 text-purple-400 border-purple-800';
-                else if (d.method === 'Photoshop') badgeColor = 'bg-cyan-950 text-cyan-400 border-cyan-800';
-                else if (d.method === 'Machine Test') badgeColor = 'bg-amber-950 text-amber-400 border-amber-800';
-
-                return `
-                    <div class="bg-slate-900 border border-slate-800 rounded-xl p-4 flex flex-col justify-between shadow-lg relative">
-                        <div>
-                            <div class="flex justify-between items-start gap-2 mb-2">
-                                <h3 class="font-extrabold text-white text-base truncate">${d.name}</h3>
-                                <span class="px-2 py-0.5 rounded text-[11px] font-bold border shrink-0 ${badgeColor}">${d.method}</span>
-                            </div>
-                            <div class="flex gap-4 text-xs text-gray-400 mb-3">
-                                <div><strong class="text-gray-300">Grain:</strong> <span class="text-red-400 font-mono">${d.grain}</span></div>
-                                <div><strong class="text-gray-300">Client:</strong> ${d.client}</div>
-                            </div>
-                            ${d.photo ? `<div class="mb-3"><img src="${d.photo}" class="w-full h-36 object-cover rounded border border-slate-700"></div>` : ''}
-                            <div class="bg-slate-950 p-3 rounded-lg border border-slate-800/80 mb-4">
-                                <span class="text-[11px] font-bold text-red-500 uppercase block mb-1">Status / Info:</span>
-                                <p class="text-xs text-gray-200 whitespace-pre-wrap">${d.status_info}</p>
-                            </div>
-                        </div>
-                        <div class="flex justify-between items-center pt-3 border-t border-slate-800">
-                            <span class="text-[11px] text-amber-400 font-semibold">🔄 In Development</span>
-                            <button onclick="editDevTexture(${d.id})" class="bg-slate-800 hover:bg-slate-700 text-white px-3 py-1.5 rounded text-xs font-bold uppercase border border-slate-700">Edit / Update</button>
-                        </div>
-                    </div>
-                `;
-            }).join('');
-        }
-
-        function renderApprovedTextures() {
-            const container = document.getElementById('approved-cards-container');
-            if (!container) return;
-            const search = document.getElementById('approved-search').value.toLowerCase();
-            const machineFilter = document.getElementById('approved-machine-filter').value;
-
-            const filtered = devTextures.filter(d => {
-                if (d.approved !== 'yes') return false; // Only show approved textures here
-                const matchesSearch = !search || [d.name, d.grain, d.client, d.status_info].some(x => (x || '').toLowerCase().includes(search));
-                const matchesMachine = !machineFilter || d.target_machine === machineFilter;
-                return matchesSearch && matchesMachine;
-            });
-
-            if (filtered.length === 0) {
-                container.innerHTML = `<div class="col-span-full text-center py-12 text-gray-500 italic">No approved textures found matching filters. Mark a texture as approved in its details to list it here.</div>`;
-                return;
-            }
-
-            container.innerHTML = filtered.map(d => {
-                return `
-                    <div class="bg-slate-900 border border-slate-800 rounded-xl p-4 flex flex-col justify-between shadow-lg relative">
-                        <div>
-                            <div class="flex justify-between items-start gap-2 mb-2">
-                                <h3 class="font-extrabold text-white text-base truncate">${d.name}</h3>
-                                <span class="px-2 py-0.5 rounded text-[11px] font-bold bg-emerald-950 text-emerald-400 border border-emerald-800 shrink-0">✅ Approved</span>
-                            </div>
-                            <div class="flex gap-4 text-xs text-gray-400 mb-3">
-                                <div><strong class="text-gray-300">Grain:</strong> <span class="text-red-400 font-mono">${d.grain}</span></div>
-                                <div><strong class="text-gray-300">Client:</strong> ${d.client}</div>
-                            </div>
-                            ${d.photo ? `<div class="mb-3"><img src="${d.photo}" class="w-full h-36 object-cover rounded border border-slate-700"></div>` : ''}
-                            <div class="bg-slate-950 p-3 rounded-lg border border-slate-800/80 mb-4 space-y-2">
-                                <div>
-                                    <span class="text-[11px] font-bold text-emerald-500 uppercase block">Approved Machine:</span>
-                                    <span class="text-xs text-white font-bold bg-slate-900 px-2 py-0.5 rounded border border-slate-700 inline-block mt-1">${d.target_machine || 'General / Unspecified'}</span>
-                                </div>
-                                <div>
-                                    <span class="text-[11px] font-bold text-gray-400 uppercase block mb-1">Notes / Method (${d.method}):</span>
-                                    <p class="text-xs text-gray-300 whitespace-pre-wrap">${d.status_info}</p>
-                                </div>
-                            </div>
-                        </div>
-                        <div class="flex justify-between items-center pt-3 border-t border-slate-800">
-                            <span class="text-[11px] text-gray-400">Method: ${d.method}</span>
-                            <button onclick="editDevTexture(${d.id})" class="bg-slate-800 hover:bg-slate-700 text-white px-3 py-1.5 rounded text-xs font-bold uppercase border border-slate-700">Edit / View</button>
-                        </div>
-                    </div>
-                `;
-            }).join('');
         }
 
         function renderTimeline() {
@@ -1503,3 +1099,4 @@
     </script>
 </body>
 </html>
+```[cite: 5]
