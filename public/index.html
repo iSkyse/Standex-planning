@@ -1408,7 +1408,7 @@
 
             const periodType = document.getElementById('stat-period-type').value;
             let filtered = [...projects];
-            let labelText = "All Time (Global)";
+            let labelText = "All Time (Global)[cite: 8]";
 
             const yearVal = parseInt(document.getElementById('stat-year-select').value);
             const monthVal = parseInt(document.getElementById('stat-month-select').value);
@@ -1449,36 +1449,54 @@
 
             periodLabel.textContent = labelText;
 
-            const total = filtered.length;
-            const completed = filtered.filter(p => Boolean(p.date_reelle)).length;
-            const active = total - completed;
+            // Calculations
+            const totalProjects = filtered.length;
+            const completedProjects = filtered.filter(p => p.date_reelle).length;
+            const activeProjects = totalProjects - completedProjects;
 
             let onTimeCount = 0;
-            let finishedWithEst = filtered.filter(p => p.date_reelle && p.date_estimee);
-            finishedWithEst.forEach(p => {
-                if (p.date_reelle <= p.date_estimee) onTimeCount++;
+            let finishedWithDates = 0;
+            filtered.forEach(p => {
+                if (p.date_reelle) {
+                    finishedWithDates++;
+                    if (p.date_reelle <= p.date_estimee) {
+                        onTimeCount++;
+                    }
+                }
             });
-            const onTimeRate = finishedWithEst.length > 0 ? Math.round((onTimeCount / finishedWithEst.length) * 100) : 0;
+            const onTimeRate = finishedWithDates > 0 ? Math.round((onTimeCount / finishedWithDates) * 100) : 0;
 
-            totalEl.textContent = total;
-            completedEl.textContent = completed;
-            activeEl.textContent = active;
-            onTimeRate ? onTimeEl.textContent = `${onTimeRate}%` : onTimeEl.textContent = '0%';
+            totalEl.textContent = totalProjects;
+            completedEl.textContent = completedProjects;
+            activeEl.textContent = activeProjects;
+            onTimeEl.textContent = `${onTimeRate}%`;
 
-            let dmgDays = 0, gfDays = 0;
-            const machineCounts = { "DMG 65": 0, "DMG 125": 0, "DMG 210": 0, "GF 1000": 0, "GF 1200": 0, "GF 4000": 0 };
+            // Machine Days & Utilization
+            let dmgDays = 0;
+            let gfDays = 0;
+            const machineStats = {};
+
+            Object.keys(machinesConfig).forEach(m => {
+                machineStats[m] = { days: 0, count: 0 };
+            });
 
             filtered.forEach(p => {
-                if (p.date_reception && (p.date_reelle || p.date_estimee)) {
+                if (p.date_reception && (p.date_estimee || p.date_reelle)) {
                     const start = parseLocalDate(p.date_reception);
                     const end = parseLocalDate(p.date_reelle || p.date_estimee);
-                    const diffDays = Math.max(1, Math.round((end - start) / (1000 * 60 * 60 * 24)) + 1);
-                    
-                    if (machineCounts[p.machine] !== undefined) {
-                        machineCounts[p.machine] += diffDays;
+                    const diffTime = end - start;
+                    const days = Math.max(1, Math.round(diffTime / (1000 * 60 * 60 * 24)) + 1);
+
+                    if (machineStats[p.machine]) {
+                        machineStats[p.machine].days += days;
+                        machineStats[p.machine].count += 1;
                     }
-                    if (p.machine && p.machine.startsWith('DMG')) dmgDays += diffDays;
-                    if (p.machine && p.machine.startsWith('GF')) gfDays += diffDays;
+
+                    if (p.machine.startsWith('DMG')) {
+                        dmgDays += days;
+                    } else if (p.machine.startsWith('GF')) {
+                        gfDays += days;
+                    }
                 }
             });
 
@@ -1491,45 +1509,53 @@
             dmgShare.textContent = `${dmgPct}% (${dmgDays} days)`;
             gfShare.textContent = `${gfPct}% (${gfDays} days)`;
 
-            machinesList.innerHTML = Object.keys(machineCounts).map(m => {
-                const days = machineCounts[m];
-                const pct = totalParkDays > 0 ? Math.round((days / totalParkDays) * 100) : 0;
+            // Render Machines List
+            machinesList.innerHTML = Object.keys(machineStats).map(m => {
+                const data = machineStats[m];
+                const share = totalParkDays > 0 ? Math.round((data.days / totalParkDays) * 100) : 0;
                 return `
-                    <div>
-                        <div class="flex justify-between text-xs font-semibold mb-1">
-                            <span class="text-gray-300">${m}</span>
-                            <span class="text-white">${days} days (${pct}%)</span>
+                    <div class="bg-slate-950 border border-slate-800 p-3 rounded-lg flex justify-between items-center text-xs">
+                        <div>
+                            <span class="font-bold text-white">${m}</span>
+                            <span class="block text-[10px] text-gray-400">${data.count} projects</span>
                         </div>
-                        <div class="w-full bg-slate-950 rounded-full h-2 border border-slate-800 overflow-hidden">
-                            <div class="bg-red-600 h-2" style="width: ${pct}%"></div>
+                        <div class="text-right">
+                            <span class="font-bold text-red-500">${data.days} days</span>
+                            <span class="block text-[10px] text-gray-400">${share}% load</span>
                         </div>
                     </div>
                 `;
             }).join('');
 
+            // Client Analytics
             const clientStats = {};
             filtered.forEach(p => {
-                const cl = p.client || 'Unknown';
-                if (!clientStats[cl]) clientStats[cl] = { total: 0, late: 0 };
-                clientStats[cl].total++;
-                if (p.date_reelle && p.date_estimee && p.date_reelle > p.date_estimee) {
-                    clientStats[cl].late++;
+                const client = p.client || 'Unknown';
+                if (!clientStats[client]) {
+                    clientStats[client] = { total: 0, late: 0 };
+                }
+                clientStats[client].total += 1;
+                if (p.date_reelle && p.date_reelle > p.date_estimee) {
+                    clientStats[client].late += 1;
                 }
             });
 
-            clientsList.innerHTML = Object.keys(clientStats).map(cl => {
-                const st = clientStats[cl];
-                const latePct = st.total > 0 ? Math.round((st.late / st.total) * 100) : 0;
+            clientsList.innerHTML = Object.keys(clientStats).length === 0 ? '<p class="text-xs text-gray-500 italic">No client data available for this period.</p>' : Object.keys(clientStats).map(c => {
+                const stats = clientStats[c];
+                const latePct = stats.total > 0 ? Math.round((stats.late / stats.total) * 100) : 0;
                 return `
-                    <div class="bg-slate-950 p-3 rounded-lg border border-slate-800 flex justify-between items-center">
+                    <div class="bg-slate-950 border border-slate-800 p-3 rounded-lg flex justify-between items-center text-xs">
                         <div>
-                            <span class="font-bold text-white text-xs block">${cl}</span>
-                            <span class="text-[10px] text-gray-400">Total: ${st.total} molds | Late: ${st.late}</span>
+                            <span class="font-bold text-white">${c}</span>
+                            <span class="block text-[10px] text-gray-400">${stats.total} total molds</span>
                         </div>
-                        <span class="text-xs font-extrabold ${latePct > 0 ? 'text-red-500' : 'text-emerald-400'}">${latePct}% Late</span>
+                        <div class="text-right">
+                            <span class="font-bold text-amber-400">${stats.late} late molds</span>
+                            <span class="block text-[10px] text-gray-400">${latePct}% delay rate</span>
+                        </div>
                     </div>
                 `;
-            }).join('') || '<p class="text-xs text-gray-500">No client data.</p>';
+            }).join('');
         }
 
         function renderDevStats() {
@@ -1574,4 +1600,3 @@
     </script>
 </body>
 </html>
-```[cite: 10]
