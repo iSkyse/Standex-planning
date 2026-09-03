@@ -55,33 +55,33 @@
                 <div class="flex items-center gap-3">
                     <button onclick="showModeSelection()" class="bg-slate-800 hover:bg-slate-700 text-xs px-3 py-1.5 rounded font-bold border border-slate-700 uppercase">⬅ Switch Module</button>
                     <div class="border-l border-slate-800 pl-3">
-                        <h1 class="text-lg font-extrabold tracking-wide uppercase text-white">Engraving <span class="text-red-600 font-light">| Master Production Schedule</span>[cite: 8]</h1>
-                        <p class="text-[11px] text-gray-400">Laser Department Production Planning[cite: 8]</p>
+                        <h1 class="text-lg font-extrabold tracking-wide uppercase text-white">Engraving <span class="text-red-600 font-light">| Master Production Schedule</span></h1>
+                        <p class="text-[11px] text-gray-400">Laser Department Production Planning</p>
                     </div>
                 </div>
                 <div class="flex items-center gap-3">
-                    <button onclick="changeMonth(-1)" class="bg-slate-800 px-3 py-1 rounded text-sm hover:bg-slate-700 font-medium border border-slate-700">◀ Prev[cite: 8]</button>
+                    <button onclick="changeMonth(-1)" class="bg-slate-800 px-3 py-1 rounded text-sm hover:bg-slate-700 font-medium border border-slate-700">◀ Prev</button>
                     <div class="flex items-center gap-1 bg-slate-900 border border-slate-700 rounded px-2 py-1">
                         <select id="month-select" onchange="onMonthYearDropdownChange()" class="bg-slate-900 text-red-500 font-bold text-sm focus:outline-none cursor-pointer">
-                            <option value="0">January[cite: 8]</option><option value="1">February[cite: 8]</option><option value="2">March[cite: 8]</option><option value="3">April[cite: 8]</option>
-                            <option value="4">May[cite: 8]</option><option value="5">June[cite: 8]</option><option value="6">July[cite: 8]</option><option value="7">August[cite: 8]</option>
-                            <option value="8">September[cite: 8]</option><option value="9">October[cite: 8]</option><option value="10">November[cite: 8]</option><option value="11">December[cite: 8]</option>
+                            <option value="0">January</option><option value="1">February</option><option value="2">March</option><option value="3">April</option>
+                            <option value="4">May</option><option value="5">June</option><option value="6">July</option><option value="7">August</option>
+                            <option value="8">September</option><option value="9">October</option><option value="10">November</option><option value="11">December</option>
                         </select>
                         <select id="year-select" onchange="onMonthYearDropdownChange()" class="bg-slate-900 text-white font-bold text-sm focus:outline-none cursor-pointer">
                         </select>
                     </div>
-                    <button onclick="changeMonth(1)" class="bg-slate-800 px-3 py-1 rounded text-sm hover:bg-slate-700 font-medium border border-slate-700">Next ▶[cite: 8]</button>
-                    <button onclick="changeMonth(0)" class="bg-slate-900 px-3 py-1 rounded text-sm hover:bg-slate-800 ml-2 font-medium border border-slate-700">Today[cite: 8]</button>
+                    <button onclick="changeMonth(1)" class="bg-slate-800 px-3 py-1 rounded text-sm hover:bg-slate-700 font-medium border border-slate-700">Next ▶</button>
+                    <button onclick="changeMonth(0)" class="bg-slate-900 px-3 py-1 rounded text-sm hover:bg-slate-800 ml-2 font-medium border border-slate-700">Today</button>
 
-                    <button onclick="openModal()" class="bg-red-600 hover:bg-red-700 text-white px-5 py-2 rounded font-bold transition text-sm ml-4 shadow-lg uppercase tracking-wider">+ New Project[cite: 8]</button>
+                    <button onclick="openModal()" class="bg-red-600 hover:bg-red-700 text-white px-5 py-2 rounded font-bold transition text-sm ml-4 shadow-lg uppercase tracking-wider">+ New Project</button>
                 </div>
             </header>
 
             <main class="flex-grow p-4 flex flex-col overflow-hidden bg-slate-900">
                 <div class="flex gap-3 mb-3 shrink-0">
-                    <button onclick="switchView('grid')" id="btn-grid" class="bg-red-600 text-white px-4 py-2 rounded font-bold text-xs shadow tracking-wide uppercase">Timeline Schedule[cite: 8]</button>
-                    <button onclick="switchView('table')" id="btn-table" class="bg-slate-800 text-gray-300 px-4 py-2 rounded font-bold text-xs border border-slate-700 shadow-sm uppercase">Projects List View[cite: 8]</button>
-                    <button onclick="switchView('stats')" id="btn-stats" class="bg-slate-800 text-gray-300 px-4 py-2 rounded font-bold text-xs border border-slate-700 shadow-sm uppercase">Statistics[cite: 8]</button>
+                    <button onclick="switchView('grid')" id="btn-grid" class="bg-red-600 text-white px-4 py-2 rounded font-bold text-xs shadow tracking-wide uppercase">Timeline Schedule</button>
+                    <button onclick="switchView('table')" id="btn-table" class="bg-slate-800 text-gray-300 px-4 py-2 rounded font-bold text-xs border border-slate-700 shadow-sm uppercase">Projects List View</button>
+                    <button onclick="switchView('stats')" id="btn-stats" class="bg-slate-800 text-gray-300 px-4 py-2 rounded font-bold text-xs border border-slate-700 shadow-sm uppercase">Statistics</button>
                 </div>
 
                 <div id="view-grid" class="bg-slate-950 rounded-xl shadow-inner flex-grow overflow-auto border border-slate-800 relative">
@@ -102,7 +102,7 @@
                                 <option value="green">Low</option>
                             </select>
                         </div>
-                        <button onclick="exportToExcel()" class="bg-emerald-700 hover:bg-emerald-800 text-white px-3 py-2 rounded text-sm font-medium border border-emerald-600 shadow-sm flex items-center gap-1">📊 Export to Excel[cite: 8]</button>
+                        <button onclick="exportToExcel()" class="bg-emerald-700 hover:bg-emerald-800 text-white px-3 py-2 rounded text-sm font-medium border border-emerald-600 shadow-sm flex items-center gap-1">📊 Export to Excel</button>
                     </div>
                     <div class="flex-grow overflow-auto">
                         <table class="w-full text-left border-collapse">
@@ -119,61 +119,61 @@
                 <div id="view-stats" class="bg-slate-950 rounded-xl shadow hidden flex-grow overflow-auto border border-slate-800 p-6 flex flex-col">
                     <div class="bg-black/60 border border-slate-800 rounded-xl p-4 mb-6 flex flex-wrap items-center justify-between gap-4 shrink-0">
                         <div class="flex items-center gap-2">
-                            <span class="text-xs font-bold text-red-500 uppercase tracking-wide">Filter Period Type:[cite: 8]</span>
+                            <span class="text-xs font-bold text-red-500 uppercase tracking-wide">Filter Period Type:</span>
                             <select id="stat-period-type" onchange="onStatPeriodTypeChange()" class="bg-slate-900 border border-slate-700 text-white rounded px-3 py-1.5 text-xs font-semibold focus:outline-none">
-                                <option value="all">All Time (Global)[cite: 8]</option>
-                                <option value="year">By Year[cite: 8]</option>
-                                <option value="month">By Month[cite: 8]</option>
-                                <option value="week">By Week[cite: 8]</option>
-                                <option value="custom">Custom Period[cite: 8]</option>
+                                <option value="all">All Time (Global)</option>
+                                <option value="year">By Year</option>
+                                <option value="month">By Month</option>
+                                <option value="week">By Week</option>
+                                <option value="custom">Custom Period</option>
                             </select>
                         </div>
 
                         <div id="stat-dynamic-selectors" class="flex items-center gap-3 hidden flex-wrap">
                             <div id="wrapper-stat-year" class="hidden items-center gap-1.5">
-                                <span class="text-xs text-gray-400 font-semibold">Year:[cite: 8]</span>
+                                <span class="text-xs text-gray-400 font-semibold">Year:</span>
                                 <select id="stat-year-select" onchange="renderStats()" class="bg-slate-900 border border-slate-700 text-white rounded px-3 py-1.5 text-xs font-semibold focus:outline-none"></select>
                             </div>
                             <div id="wrapper-stat-month" class="hidden items-center gap-1.5">
-                                <span class="text-xs text-gray-400 font-semibold">Month:[cite: 8]</span>
+                                <span class="text-xs text-gray-400 font-semibold">Month:</span>
                                 <select id="stat-month-select" onchange="renderStats()" class="bg-slate-900 border border-slate-700 text-white rounded px-3 py-1.5 text-xs font-semibold focus:outline-none">
-                                    <option value="0">January[cite: 8]</option><option value="1">February[cite: 8]</option><option value="2">March[cite: 8]</option><option value="3">April[cite: 8]</option>
-                                    <option value="4">May[cite: 8]</option><option value="5">June[cite: 8]</option><option value="6">July[cite: 8]</option><option value="7">August[cite: 8]</option>
-                                    <option value="8">September[cite: 8]</option><option value="9">October[cite: 8]</option><option value="10">November[cite: 8]</option><option value="11">December[cite: 8]</option>
+                                    <option value="0">January</option><option value="1">February</option><option value="2">March</option><option value="3">April</option>
+                                    <option value="4">May</option><option value="5">June</option><option value="6">July</option><option value="7">August</option>
+                                    <option value="8">September</option><option value="9">October</option><option value="10">November</option><option value="11">December</option>
                                 </select>
                             </div>
                             <div id="wrapper-stat-week" class="hidden items-center gap-1.5">
-                                <span class="text-xs text-gray-400 font-semibold">Week:[cite: 8]</span>
+                                <span class="text-xs text-gray-400 font-semibold">Week:</span>
                                 <select id="stat-week-select" onchange="renderStats()" class="bg-slate-900 border border-slate-700 text-white rounded px-3 py-1.5 text-xs font-semibold focus:outline-none"></select>
                             </div>
                             <div id="wrapper-stat-custom" class="hidden items-center gap-2">
-                                <span class="text-xs text-gray-400 font-semibold">From:[cite: 8]</span>
+                                <span class="text-xs text-gray-400 font-semibold">From:</span>
                                 <input type="date" id="stat-custom-start" onchange="renderStats()" class="bg-slate-900 border border-slate-700 text-white rounded px-2 py-1 text-xs">
-                                <span class="text-xs text-gray-400 font-semibold">To:[cite: 8]</span>
+                                <span class="text-xs text-gray-400 font-semibold">To:</span>
                                 <input type="date" id="stat-custom-end" onchange="renderStats()" class="bg-slate-900 border border-slate-700 text-white rounded px-2 py-1 text-xs">
                             </div>
                         </div>
                     </div>
 
                     <div class="flex justify-between items-center mb-6 border-b border-slate-800 pb-3 shrink-0">
-                        <h2 class="text-xl font-extrabold text-white uppercase tracking-wide">Workshop Performance & Statistics[cite: 8]</h2>
-                        <span id="stat-active-period-label" class="text-xs font-bold text-amber-400 bg-amber-950/50 border border-amber-800 px-3 py-1 rounded-full">All Time[cite: 8]</span>
+                        <h2 class="text-xl font-extrabold text-white uppercase tracking-wide">Workshop Performance & Statistics</h2>
+                        <span id="stat-active-period-label" class="text-xs font-bold text-amber-400 bg-amber-950/50 border border-amber-800 px-3 py-1 rounded-full">All Time</span>
                     </div>
 
                     <div class="grid grid-cols-1 md:grid-cols-4 gap-5 mb-8 shrink-0">
-                        <div class="bg-slate-900 border border-slate-800 rounded-xl p-5"><span class="text-xs font-bold text-gray-400 uppercase">Total Projects[cite: 8]</span><div id="stat-total-projects" class="text-3xl font-black text-white mt-2">0</div></div>
-                        <div class="bg-slate-900 border border-slate-800 rounded-xl p-5"><span class="text-xs font-bold text-gray-400 uppercase">Completed Molds (Finished)[cite: 8]</span><div id="stat-completed-projects" class="text-3xl font-black text-emerald-400 mt-2">0</div></div>
-                        <div class="bg-slate-900 border border-slate-800 rounded-xl p-5"><span class="text-xs font-bold text-gray-400 uppercase">Active In Progress[cite: 8]</span><div id="stat-active-projects" class="text-3xl font-black text-amber-400 mt-2">0</div></div>
-                        <div class="bg-slate-900 border border-slate-800 rounded-xl p-5"><span class="text-xs font-bold text-gray-400 uppercase">On-Time Delivery Rate[cite: 8]</span><div id="stat-on-time" class="text-3xl font-black text-red-500 mt-2">0%[cite: 8]</div></div>
+                        <div class="bg-slate-900 border border-slate-800 rounded-xl p-5"><span class="text-xs font-bold text-gray-400 uppercase">Total Projects</span><div id="stat-total-projects" class="text-3xl font-black text-white mt-2">0</div></div>
+                        <div class="bg-slate-900 border border-slate-800 rounded-xl p-5"><span class="text-xs font-bold text-gray-400 uppercase">Completed Molds (Finished)</span><div id="stat-completed-projects" class="text-3xl font-black text-emerald-400 mt-2">0</div></div>
+                        <div class="bg-slate-900 border border-slate-800 rounded-xl p-5"><span class="text-xs font-bold text-gray-400 uppercase">Active In Progress</span><div id="stat-active-projects" class="text-3xl font-black text-amber-400 mt-2">0</div></div>
+                        <div class="bg-slate-900 border border-slate-800 rounded-xl p-5"><span class="text-xs font-bold text-gray-400 uppercase">On-Time Delivery Rate</span><div id="stat-on-time" class="text-3xl font-black text-red-500 mt-2">0%</div></div>
                     </div>
 
                     <div class="bg-slate-900 border border-slate-800 rounded-xl p-5 mb-6 shrink-0">
-                        <h3 class="text-sm font-bold text-gray-300 uppercase mb-3">Machine Park Comparison (DMG vs GF Utilization)[cite: 8]</h3>
+                        <h3 class="text-sm font-bold text-gray-300 uppercase mb-3">Machine Park Comparison (DMG vs GF Utilization)</h3>
                         <div class="grid grid-cols-1 md:grid-cols-2 gap-6 items-center">
                             <div>
                                 <div class="flex justify-between text-xs font-bold mb-1">
-                                    <span class="text-blue-400">DMG Park (DMG 65, 125, 210)[cite: 8]</span>
-                                    <span id="stat-dmg-share" class="text-white">0% (0 days)[cite: 8]</span>
+                                    <span class="text-blue-400">DMG Park (DMG 65, 125, 210)</span>
+                                    <span id="stat-dmg-share" class="text-white">0% (0 days)</span>
                                 </div>
                                 <div class="w-full bg-slate-950 rounded-full h-3 border border-slate-800 overflow-hidden flex">
                                     <div id="stat-dmg-bar" class="bg-blue-600 h-3 transition-all duration-500" style="width: 0%"></div>
@@ -181,8 +181,8 @@
                             </div>
                             <div>
                                 <div class="flex justify-between text-xs font-bold mb-1">
-                                    <span class="text-orange-400">GF Park (GF 1000, 1200, 4000)[cite: 8]</span>
-                                    <span id="stat-gf-share" class="text-white">0% (0 days)[cite: 8]</span>
+                                    <span class="text-orange-400">GF Park (GF 1000, 1200, 4000)</span>
+                                    <span id="stat-gf-share" class="text-white">0% (0 days)</span>
                                 </div>
                                 <div class="w-full bg-slate-950 rounded-full h-3 border border-slate-800 overflow-hidden flex">
                                     <div id="stat-gf-bar" class="bg-orange-600 h-3 transition-all duration-500" style="width: 0%"></div>
@@ -193,11 +193,11 @@
 
                     <div class="grid grid-cols-1 md:grid-cols-2 gap-6 flex-grow">
                         <div class="bg-slate-900 border border-slate-800 rounded-xl p-5 flex flex-col">
-                            <h3 class="text-sm font-bold text-gray-300 uppercase mb-4">Detailed Machine Occupation Time[cite: 8]</h3>
+                            <h3 class="text-sm font-bold text-gray-300 uppercase mb-4">Detailed Machine Occupation Time</h3>
                             <div id="stat-machines-list" class="space-y-3 flex-grow overflow-auto"></div>
                         </div>
                         <div class="bg-slate-900 border border-slate-800 rounded-xl p-5 flex flex-col">
-                            <h3 class="text-sm font-bold text-gray-300 uppercase mb-4">All Clients & Late Molds Analysis (%)[cite: 8]</h3>
+                            <h3 class="text-sm font-bold text-gray-300 uppercase mb-4">All Clients & Late Molds Analysis (%)</h3>
                             <div id="stat-clients-list" class="space-y-3 flex-grow overflow-auto"></div>
                         </div>
                     </div>
@@ -321,92 +321,92 @@
         </div>
     </div>
 
-    <!-- Production Modal Form[cite: 8] -->
+    <!-- Production Modal Form -->
     <div id="project-modal" class="fixed inset-0 bg-black/80 hidden flex items-center justify-center p-4 z-50 backdrop-blur-sm">
         <div class="bg-slate-900 border border-slate-800 rounded-2xl max-w-lg w-full p-7 shadow-2xl max-h-[90vh] overflow-y-auto modal-scroll">
             <div class="flex justify-between items-start mb-5 border-b border-slate-800 pb-3">
-                <h2 id="modal-title" class="text-xl font-extrabold text-white uppercase">Add Mold to Schedule[cite: 8]</h2>
+                <h2 id="modal-title" class="text-xl font-extrabold text-white uppercase">Add Mold to Schedule</h2>
                 <button onclick="closeModal()" class="text-gray-400 hover:text-white text-2xl">&times;</button>
             </div>
             <form id="project-form" onsubmit="saveProject(event)" class="space-y-4">
                 <input type="hidden" id="project-id">
                 <div class="grid grid-cols-2 gap-4">
-                    <div><label class="block text-xs font-bold text-gray-400 uppercase">PO[cite: 8]</label><input type="text" id="po" required class="w-full mt-1 p-2.5 bg-slate-950 border border-slate-700 rounded text-white"></div>
-                    <div><label class="block text-xs font-bold text-gray-400 uppercase">Project Name[cite: 8]</label><input type="text" id="project_name" required class="w-full mt-1 p-2.5 bg-slate-950 border border-slate-700 rounded text-white"></div>
+                    <div><label class="block text-xs font-bold text-gray-400 uppercase">PO</label><input type="text" id="po" required class="w-full mt-1 p-2.5 bg-slate-950 border border-slate-700 rounded text-white"></div>
+                    <div><label class="block text-xs font-bold text-gray-400 uppercase">Project Name</label><input type="text" id="project_name" required class="w-full mt-1 p-2.5 bg-slate-950 border border-slate-700 rounded text-white"></div>
                 </div>
                 <div class="grid grid-cols-2 gap-4">
-                    <div><label class="block text-xs font-bold text-gray-400 uppercase">Grain[cite: 8]</label><input type="text" id="grain" required class="w-full mt-1 p-2.5 bg-slate-950 border border-slate-700 rounded text-white"></div>
-                    <div><label class="block text-xs font-bold text-gray-400 uppercase">Client[cite: 8]</label><input type="text" id="client" required class="w-full mt-1 p-2.5 bg-slate-950 border border-slate-700 rounded text-white"></div>
+                    <div><label class="block text-xs font-bold text-gray-400 uppercase">Grain</label><input type="text" id="grain" required class="w-full mt-1 p-2.5 bg-slate-950 border border-slate-700 rounded text-white"></div>
+                    <div><label class="block text-xs font-bold text-gray-400 uppercase">Client</label><input type="text" id="client" required class="w-full mt-1 p-2.5 bg-slate-950 border border-slate-700 rounded text-white"></div>
                 </div>
                 <div class="grid grid-cols-2 gap-4">
                     <div>
-                        <label class="block text-xs font-bold text-gray-400 uppercase">Machine[cite: 8]</label>
+                        <label class="block text-xs font-bold text-gray-400 uppercase">Machine</label>
                         <select id="machine" class="w-full mt-1 p-2.5 bg-slate-950 border border-slate-700 rounded text-white">
-                            <option value="DMG 65">DMG 65[cite: 8]</option>
-                            <option value="DMG 125">DMG 125[cite: 8]</option>
-                            <option value="DMG 210">DMG 210[cite: 8]</option>
-                            <option value="GF 1000">GF 1000[cite: 8]</option>
-                            <option value="GF 1200">GF 1200[cite: 8]</option>
-                            <option value="GF 4000">GF 4000[cite: 8]</option>
+                            <option value="DMG 65">DMG 65</option>
+                            <option value="DMG 125">DMG 125</option>
+                            <option value="DMG 210">DMG 210</option>
+                            <option value="GF 1000">GF 1000</option>
+                            <option value="GF 1200">GF 1200</option>
+                            <option value="GF 4000">GF 4000</option>
                         </select>
                     </div>
                     <div>
-                        <label class="block text-xs font-bold text-gray-400 uppercase">Priority[cite: 8]</label>
+                        <label class="block text-xs font-bold text-gray-400 uppercase">Priority</label>
                         <select id="priority" class="w-full mt-1 p-2.5 bg-slate-950 border border-slate-700 rounded text-white">
-                            <option value="yellow">🟡 Standard[cite: 8]</option>
-                            <option value="red">🔴 Critical[cite: 8]</option>
-                            <option value="green">🟢 Low[cite: 8]</option>
+                            <option value="yellow">🟡 Standard</option>
+                            <option value="red">🔴 Critical</option>
+                            <option value="green">🟢 Low</option>
                         </select>
                     </div>
                 </div>
 
                 <div class="bg-slate-950 border border-slate-800 p-3 rounded-lg space-y-3">
-                    <span class="block text-xs font-bold text-red-500 uppercase tracking-wide">Mapping Status[cite: 8]</span>
+                    <span class="block text-xs font-bold text-red-500 uppercase tracking-wide">Mapping Status</span>
                     <div class="grid grid-cols-2 gap-4">
                         <div>
-                            <label class="block text-[11px] font-bold text-gray-400 uppercase">Mapping Done?[cite: 8]</label>
+                            <label class="block text-[11px] font-bold text-gray-400 uppercase">Mapping Done?</label>
                             <select id="mapping_done" onchange="toggleMappingConfirmation()" class="w-full mt-1 p-2 bg-slate-900 border border-slate-700 rounded text-xs text-white">
-                                <option value="no">No[cite: 8]</option>
-                                <option value="yes">Yes[cite: 8]</option>
+                                <option value="no">No</option>
+                                <option value="yes">Yes</option>
                             </select>
                         </div>
                         <div id="mapping-confirmed-wrapper" class="hidden">
-                            <label class="block text-[11px] font-bold text-gray-400 uppercase">Mapping Confirmed?[cite: 8]</label>
+                            <label class="block text-[11px] font-bold text-gray-400 uppercase">Mapping Confirmed?</label>
                             <select id="mapping_confirmed" class="w-full mt-1 p-2 bg-slate-900 border border-slate-700 rounded text-xs text-white">
-                                <option value="no">No[cite: 8]</option>
-                                <option value="yes">Yes[cite: 8]</option>
+                                <option value="no">No</option>
+                                <option value="yes">Yes</option>
                             </select>
                         </div>
                     </div>
                 </div>
 
                 <div class="grid grid-cols-3 gap-3">
-                    <div><label class="block text-xs font-bold text-gray-400 uppercase">Reception[cite: 8]</label><input type="date" id="date_reception" required class="w-full mt-1 p-2.5 bg-slate-950 border border-slate-700 rounded text-white"></div>
-                    <div><label class="block text-xs font-bold text-gray-400 uppercase">Est. End[cite: 8]</label><input type="date" id="date_estimee" required class="w-full mt-1 p-2.5 bg-slate-950 border border-slate-700 rounded text-white"></div>
-                    <div><label class="block text-xs font-bold text-gray-400 uppercase">Real End[cite: 8]</label><input type="date" id="date_reelle" class="w-full mt-1 p-2.5 bg-slate-950 border border-slate-700 rounded text-white"></div>
+                    <div><label class="block text-xs font-bold text-gray-400 uppercase">Reception</label><input type="date" id="date_reception" required class="w-full mt-1 p-2.5 bg-slate-950 border border-slate-700 rounded text-white"></div>
+                    <div><label class="block text-xs font-bold text-gray-400 uppercase">Est. End</label><input type="date" id="date_estimee" required class="w-full mt-1 p-2.5 bg-slate-950 border border-slate-700 rounded text-white"></div>
+                    <div><label class="block text-xs font-bold text-gray-400 uppercase">Real End</label><input type="date" id="date_reelle" class="w-full mt-1 p-2.5 bg-slate-950 border border-slate-700 rounded text-white"></div>
                 </div>
 
                 <div>
-                    <label class="block text-xs font-bold text-gray-400 uppercase">Remarks / Notes[cite: 8]</label>
+                    <label class="block text-xs font-bold text-gray-400 uppercase">Remarks / Notes</label>
                     <textarea id="remarques" rows="2" placeholder="Additional notes, instructions..." class="w-full mt-1 p-2.5 bg-slate-950 border border-slate-700 rounded text-white text-xs"></textarea>
                 </div>
 
                 <div>
-                    <label class="block text-xs font-bold text-gray-400 uppercase mb-1">Mold Photo <span class="text-gray-500 lowercase">(Click & press Ctrl+V)</span>[cite: 8]</label>
+                    <label class="block text-xs font-bold text-gray-400 uppercase mb-1">Mold Photo <span class="text-gray-500 lowercase">(Click & press Ctrl+V)</span></label>
                     <div id="paste-drop-zone" class="border-2 border-dashed border-slate-700 hover:border-red-600 rounded-lg p-4 bg-slate-950 text-center cursor-pointer" tabindex="0">
-                        <p class="text-xs text-gray-400 mb-2">Click here and press <strong class="text-white">Ctrl + V</strong> to paste screenshot[cite: 8]</p>
+                        <p class="text-xs text-gray-400 mb-2">Click here and press <strong class="text-white">Ctrl + V</strong> to paste screenshot</p>
                         <input type="file" id="photo" accept="image/*" class="text-xs text-gray-400">
                     </div>
                 </div>
                 <div id="photo-preview-container" class="hidden mt-2 text-center relative">
                     <img id="photo-preview" src="" alt="Preview" class="max-h-28 rounded border border-slate-700 mx-auto">
-                    <button type="button" onclick="clearPhotoSelection()" class="absolute top-1 right-2 bg-red-950 text-red-400 px-2 py-0.5 rounded text-[10px]">Remove[cite: 8]</button>
+                    <button type="button" onclick="clearPhotoSelection()" class="absolute top-1 right-2 bg-red-950 text-red-400 px-2 py-0.5 rounded text-[10px]">Remove</button>
                 </div>
                 <div class="flex justify-between gap-3 mt-6 pt-4 border-t border-slate-800">
-                    <button type="button" onclick="confirmDeleteProject()" id="delete-btn" class="bg-red-950 text-red-400 px-4 py-2 rounded text-sm hidden">Delete[cite: 8]</button>
+                    <button type="button" onclick="confirmDeleteProject()" id="delete-btn" class="bg-red-950 text-red-400 px-4 py-2 rounded text-sm hidden">Delete</button>
                     <div class="flex gap-3 ml-auto">
-                        <button type="button" onclick="closeModal()" class="bg-slate-800 text-gray-300 px-5 py-2 rounded text-sm">Cancel[cite: 8]</button>
-                        <button type="submit" class="bg-red-600 text-white px-5 py-2 rounded text-sm font-bold shadow">Save Project[cite: 8]</button>
+                        <button type="button" onclick="closeModal()" class="bg-slate-800 text-gray-300 px-5 py-2 rounded text-sm">Cancel</button>
+                        <button type="submit" class="bg-red-600 text-white px-5 py-2 rounded text-sm font-bold shadow">Save Project</button>
                     </div>
                 </div>
             </form>
@@ -490,15 +490,15 @@
         </div>
     </div>
 
-    <!-- Image Lightbox Modal[cite: 8] -->
+    <!-- Image Lightbox Modal -->
     <div id="image-modal" class="fixed inset-0 bg-black/95 hidden flex flex-col items-center justify-center p-4 z-50 backdrop-blur-md">
         <div class="absolute top-4 inset-x-6 flex justify-between items-center bg-slate-900 border border-slate-800 p-3 rounded-xl shadow-xl z-10 flex-wrap gap-4">
             <div class="flex gap-6 text-xs flex-wrap">
-                <div><span class="text-gray-400 block font-bold uppercase">PO[cite: 8]</span><span id="lb-po" class="text-red-500 font-bold text-sm"></span></div>
-                <div><span class="text-gray-400 block font-bold uppercase">Client[cite: 8]</span><span id="lb-client" class="text-white font-bold text-sm"></span></div>
-                <div><span class="text-gray-400 block font-bold uppercase">Project[cite: 8]</span><span id="lb-project" class="text-white font-bold text-sm"></span></div>
-                <div><span class="text-gray-400 block font-bold uppercase">Grain[cite: 8]</span><span id="lb-grain" class="text-white font-bold text-sm"></span></div>
-                <div><span class="text-gray-400 block font-bold uppercase">Priority[cite: 8]</span><span id="lb-priority" class="font-bold text-sm"></span></div>
+                <div><span class="text-gray-400 block font-bold uppercase">PO</span><span id="lb-po" class="text-red-500 font-bold text-sm"></span></div>
+                <div><span class="text-gray-400 block font-bold uppercase">Client</span><span id="lb-client" class="text-white font-bold text-sm"></span></div>
+                <div><span class="text-gray-400 block font-bold uppercase">Project</span><span id="lb-project" class="text-white font-bold text-sm"></span></div>
+                <div><span class="text-gray-400 block font-bold uppercase">Grain</span><span id="lb-grain" class="text-white font-bold text-sm"></span></div>
+                <div><span class="text-gray-400 block font-bold uppercase">Priority</span><span id="lb-priority" class="font-bold text-sm"></span></div>
             </div>
             <button onclick="closeImageModal()" class="text-gray-400 hover:text-white text-3xl font-light px-3">&times;</button>
         </div>
@@ -508,15 +508,15 @@
         </div>
 
         <div id="lb-remarques-box" class="w-full max-w-2xl bg-slate-900/90 border border-slate-700/80 rounded-xl p-3 my-2 text-xs text-gray-200 shadow-lg z-10 hidden">
-            <span class="text-red-500 font-bold uppercase block mb-1">Remarks:[cite: 8]</span>
+            <span class="text-red-500 font-bold uppercase block mb-1">Remarks:</span>
             <p id="lb-remarques-text" class="italic text-gray-300"></p>
         </div>
 
         <div class="absolute bottom-4 flex justify-between items-center w-full px-8 text-xs text-gray-400 z-10">
-            <span>💡 Use mouse wheel to zoom, click & drag to move image[cite: 8]</span>
+            <span>💡 Use mouse wheel to zoom, click & drag to move image</span>
             <div class="flex gap-3">
-                <button onclick="resetImageTransform()" class="bg-slate-800 px-4 py-2 rounded text-white font-bold border border-slate-700 hover:bg-slate-700">Reset View[cite: 8]</button>
-                <button onclick="closeImageModal()" class="bg-red-600 px-4 py-2 rounded text-white font-bold hover:bg-red-700">Close Viewer[cite: 8]</button>
+                <button onclick="resetImageTransform()" class="bg-slate-800 px-4 py-2 rounded text-white font-bold border border-slate-700 hover:bg-slate-700">Reset View</button>
+                <button onclick="closeImageModal()" class="bg-red-600 px-4 py-2 rounded text-white font-bold hover:bg-red-700">Close Viewer</button>
             </div>
         </div>
     </div>
@@ -601,24 +601,24 @@
             }
         });
 
-        let projects = [];[cite: 8]
+        let projects = [];
         let devTextures = [];
-        let currentDate = new Date();[cite: 8]
-        let tempPastedPhotoUrl = '';[cite: 8]
-        const machinesConfig = { "DMG 65": {}, "DMG 125": {}, "DMG 210": {}, "GF 1000": {}, "GF 1200": {}, "GF 4000": {} };[cite: 8]
+        let currentDate = new Date();
+        let tempPastedPhotoUrl = '';
+        const machinesConfig = { "DMG 65": {}, "DMG 125": {}, "DMG 210": {}, "GF 1000": {}, "GF 1200": {}, "GF 4000": {} };
 
-        let scale = 1, panning = false, pointX = 0, pointY = 0, startX = 0, startY = 0;[cite: 8]
+        let scale = 1, panning = false, pointX = 0, pointY = 0, startX = 0, startY = 0;
 
         async function loadProjects() {
             try {
-                const res = await fetch('/api/projects');[cite: 8]
-                projects = await res.json();[cite: 8]
-                renderTimeline();[cite: 8]
-                populateClientFilterDropdown();[cite: 8]
-                renderTable();[cite: 8]
-                renderStats();[cite: 8]
+                const res = await fetch('/api/projects');
+                projects = await res.json();
+                renderTimeline();
+                populateClientFilterDropdown();
+                renderTable();
+                renderStats();
             } catch (err) {
-                console.error("Error loading projects", err);[cite: 8]
+                console.error("Error loading projects", err);
             }
         }
 
@@ -639,78 +639,78 @@
         }
 
         function initYearDropdowns() {
-            let yearsHtml = '';[cite: 8]
-            for(let y = 2024; y <= 2035; y++) {[cite: 8]
-                yearsHtml += `<option value="${y}">${y}</option>`;[cite: 8]
+            let yearsHtml = '';
+            for(let y = 2024; y <= 2035; y++) {
+                yearsHtml += `<option value="${y}">${y}</option>`;
             }
-            const yearSelect = document.getElementById('year-select');[cite: 8]
-            const statYearSelect = document.getElementById('stat-year-select');[cite: 8]
+            const yearSelect = document.getElementById('year-select');
+            const statYearSelect = document.getElementById('stat-year-select');
             const devStatYear = document.getElementById('dev-stat-year');
-            if (yearSelect) yearSelect.innerHTML = yearsHtml;[cite: 8]
-            if (statYearSelect) statYearSelect.innerHTML = yearsHtml;[cite: 8]
+            if (yearSelect) yearSelect.innerHTML = yearsHtml;
+            if (statYearSelect) statYearSelect.innerHTML = yearsHtml;
             if (devStatYear) devStatYear.innerHTML = yearsHtml;
             
-            const currentYear = new Date().getFullYear();[cite: 8]
-            if (statYearSelect) statYearSelect.value = currentYear;[cite: 8]
+            const currentYear = new Date().getFullYear();
+            if (statYearSelect) statYearSelect.value = currentYear;
             if (devStatYear) devStatYear.value = currentYear;
-            const statMonthSelect = document.getElementById('stat-month-select');[cite: 8]
-            if (statMonthSelect) statMonthSelect.value = new Date().getMonth();[cite: 8]
+            const statMonthSelect = document.getElementById('stat-month-select');
+            if (statMonthSelect) statMonthSelect.value = new Date().getMonth();
             const devStatMonth = document.getElementById('dev-stat-month');
             if (devStatMonth) devStatMonth.value = new Date().getMonth();
         }
 
         function initWeekDropdown() {
-            const weekSelect = document.getElementById('stat-week-select');[cite: 8]
-            if (!weekSelect) return;[cite: 8]
-            let html = '';[cite: 8]
-            for (let w = 1; w <= 52; w++) html += `<option value="${w}">Week ${w}</option>`;[cite: 8]
-            weekSelect.innerHTML = html;[cite: 8]
+            const weekSelect = document.getElementById('stat-week-select');
+            if (!weekSelect) return;
+            let html = '';
+            for (let w = 1; w <= 52; w++) html += `<option value="${w}">Week ${w}</option>`;
+            weekSelect.innerHTML = html;
             
-            const now = new Date();[cite: 8]
-            const startOfYear = new Date(now.getFullYear(), 0, 1);[cite: 8]
-            const weekNum = Math.ceil((((now - startOfYear) / 86400000) + startOfYear.getDay() + 1) / 7);[cite: 8]
-            if (weekNum >= 1 && weekNum <= 52) weekSelect.value = weekNum;[cite: 8]
+            const now = new Date();
+            const startOfYear = new Date(now.getFullYear(), 0, 1);
+            const weekNum = Math.ceil((((now - startOfYear) / 86400000) + startOfYear.getDay() + 1) / 7);
+            if (weekNum >= 1 && weekNum <= 52) weekSelect.value = weekNum;
         }
 
         function initCustomDates() {
-            const startInput = document.getElementById('stat-custom-start');[cite: 8]
-            const endInput = document.getElementById('stat-custom-end');[cite: 8]
+            const startInput = document.getElementById('stat-custom-start');
+            const endInput = document.getElementById('stat-custom-end');
             const devStart = document.getElementById('dev-stat-start');
             const devEnd = document.getElementById('dev-stat-end');
-            if (!startInput || !endInput) return;[cite: 8]
-            const today = new Date();[cite: 8]
-            const firstDay = new Date(today.getFullYear(), 0, 1);[cite: 8]
+            if (!startInput || !endInput) return;
+            const today = new Date();
+            const firstDay = new Date(today.getFullYear(), 0, 1);
             const formattedFirst = firstDay.toISOString().split('T')[0];
             const formattedToday = today.toISOString().split('T')[0];
-            startInput.value = formattedFirst;[cite: 8]
-            endInput.value = formattedToday;[cite: 8]
+            startInput.value = formattedFirst;
+            endInput.value = formattedToday;
             if (devStart) devStart.value = formattedFirst;
             if (devEnd) devEnd.value = formattedToday;
         }
 
         function onStatPeriodTypeChange() {
-            const type = document.getElementById('stat-period-type').value;[cite: 8]
-            const container = document.getElementById('stat-dynamic-selectors');[cite: 8]
-            const wYear = document.getElementById('wrapper-stat-year');[cite: 8]
-            const wMonth = document.getElementById('wrapper-stat-month');[cite: 8]
-            const wWeek = document.getElementById('wrapper-stat-week');[cite: 8]
-            const wCustom = document.getElementById('wrapper-stat-custom');[cite: 8]
+            const type = document.getElementById('stat-period-type').value;
+            const container = document.getElementById('stat-dynamic-selectors');
+            const wYear = document.getElementById('wrapper-stat-year');
+            const wMonth = document.getElementById('wrapper-stat-month');
+            const wWeek = document.getElementById('wrapper-stat-week');
+            const wCustom = document.getElementById('wrapper-stat-custom');
 
-            wYear.classList.add('hidden');[cite: 8]
-            wMonth.classList.add('hidden');[cite: 8]
-            wWeek.classList.add('hidden');[cite: 8]
-            wCustom.classList.add('hidden');[cite: 8]
+            wYear.classList.add('hidden');
+            wMonth.classList.add('hidden');
+            wWeek.classList.add('hidden');
+            wCustom.classList.add('hidden');
 
-            if (type === 'all') {[cite: 8]
-                container.classList.add('hidden');[cite: 8]
-            } else {[cite: 8]
-                container.classList.remove('hidden');[cite: 8]
-                if (type === 'year') { wYear.classList.remove('hidden'); wYear.classList.add('flex'); }[cite: 8]
-                else if (type === 'month') { wYear.classList.remove('hidden'); wYear.classList.add('flex'); wMonth.classList.remove('hidden'); wMonth.classList.add('flex'); }[cite: 8]
-                else if (type === 'week') { wYear.classList.remove('hidden'); wYear.classList.add('flex'); wWeek.classList.remove('hidden'); wWeek.classList.add('flex'); }[cite: 8]
-                else if (type === 'custom') { wCustom.classList.remove('hidden'); wCustom.classList.add('flex'); }[cite: 8]
+            if (type === 'all') {
+                container.classList.add('hidden');
+            } else {
+                container.classList.remove('hidden');
+                if (type === 'year') { wYear.classList.remove('hidden'); wYear.classList.add('flex'); }
+                else if (type === 'month') { wYear.classList.remove('hidden'); wYear.classList.add('flex'); wMonth.classList.remove('hidden'); wMonth.classList.add('flex'); }
+                else if (type === 'week') { wYear.classList.remove('hidden'); wYear.classList.add('flex'); wWeek.classList.remove('hidden'); wWeek.classList.add('flex'); }
+                else if (type === 'custom') { wCustom.classList.remove('hidden'); wCustom.classList.add('flex'); }
             }
-            renderStats();[cite: 8]
+            renderStats();
         }
 
         function onDevStatPeriodChange() {
@@ -736,72 +736,72 @@
         }
 
         function updateMonthYearSelectors() {
-            const mSelect = document.getElementById('month-select');[cite: 8]
-            const ySelect = document.getElementById('year-select');[cite: 8]
-            if (mSelect) mSelect.value = currentDate.getMonth();[cite: 8]
-            if (ySelect) ySelect.value = currentDate.getFullYear();[cite: 8]
+            const mSelect = document.getElementById('month-select');
+            const ySelect = document.getElementById('year-select');
+            if (mSelect) mSelect.value = currentDate.getMonth();
+            if (ySelect) ySelect.value = currentDate.getFullYear();
         }
 
         function onMonthYearDropdownChange() {
-            const m = parseInt(document.getElementById('month-select').value);[cite: 8]
-            const y = parseInt(document.getElementById('year-select').value);[cite: 8]
-            currentDate = new Date(y, m, 1);[cite: 8]
-            renderTimeline();[cite: 8]
+            const m = parseInt(document.getElementById('month-select').value);
+            const y = parseInt(document.getElementById('year-select').value);
+            currentDate = new Date(y, m, 1);
+            renderTimeline();
         }
 
         function updateImageTransform() {
-            const img = document.getElementById('lb-img');[cite: 8]
-            if (img) img.style.transform = `translate(${pointX}px, ${pointY}px) scale(${scale})`;[cite: 8]
+            const img = document.getElementById('lb-img');
+            if (img) img.style.transform = `translate(${pointX}px, ${pointY}px) scale(${scale})`;
         }
 
-        function resetImageTransform() { scale = 1; pointX = 0; pointY = 0; updateImageTransform(); }[cite: 8]
+        function resetImageTransform() { scale = 1; pointX = 0; pointY = 0; updateImageTransform(); }
 
         function handleImagePaste(e) {
-            const items = (e.clipboardData || e.originalEvent.clipboardData).items;[cite: 8]
-            for (let i = 0; i < items.length; i++) {[cite: 8]
-                if (items[i].type.indexOf('image') !== -1) {[cite: 8]
-                    const blob = items[i].getAsFile();[cite: 8]
-                    const reader = new FileReader();[cite: 8]
-                    reader.onload = (event) => {[cite: 8]
-                        tempPastedPhotoUrl = event.target.result;[cite: 8]
-                        document.getElementById('photo-preview').src = tempPastedPhotoUrl;[cite: 8]
-                        document.getElementById('photo-preview-container').classList.remove('hidden');[cite: 8]
-                        document.getElementById('photo').value = '';[cite: 8]
+            const items = (e.clipboardData || e.originalEvent.clipboardData).items;
+            for (let i = 0; i < items.length; i++) {
+                if (items[i].type.indexOf('image') !== -1) {
+                    const blob = items[i].getAsFile();
+                    const reader = new FileReader();
+                    reader.onload = (event) => {
+                        tempPastedPhotoUrl = event.target.result;
+                        document.getElementById('photo-preview').src = tempPastedPhotoUrl;
+                        document.getElementById('photo-preview-container').classList.remove('hidden');
+                        document.getElementById('photo').value = '';
                     };
-                    reader.readAsDataURL(blob);[cite: 8]
-                    e.preventDefault();[cite: 8]
-                    break;[cite: 8]
+                    reader.readAsDataURL(blob);
+                    e.preventDefault();
+                    break;
                 }
             }
         }
 
         function clearPhotoSelection() {
-            tempPastedPhotoUrl = '';[cite: 8]
-            document.getElementById('photo').value = '';[cite: 8]
-            document.getElementById('photo-preview').src = '';[cite: 8]
-            document.getElementById('photo-preview-container').classList.add('hidden');[cite: 8]
+            tempPastedPhotoUrl = '';
+            document.getElementById('photo').value = '';
+            document.getElementById('photo-preview').src = '';
+            document.getElementById('photo-preview-container').classList.add('hidden');
         }
 
         function changeMonth(dir) {
-            if (dir === 0) currentDate = new Date();[cite: 8]
-            else currentDate.setMonth(currentDate.getMonth() + dir);[cite: 8]
-            updateMonthYearSelectors();[cite: 8]
-            renderTimeline();[cite: 8]
+            if (dir === 0) currentDate = new Date();
+            else currentDate.setMonth(currentDate.getMonth() + dir);
+            updateMonthYearSelectors();
+            renderTimeline();
         }
 
         function switchView(view) {
-            ['grid', 'table', 'stats'].forEach(v => {[cite: 8]
-                const viewEl = document.getElementById(`view-${v}`);[cite: 8]
-                const btnEl = document.getElementById(`btn-${v}`);[cite: 8]
-                if (viewEl) viewEl.classList.toggle('hidden', v !== view);[cite: 8]
-                if (btnEl) {[cite: 8]
-                    btnEl.className = v === view[cite: 8]
-                        ? 'bg-red-600 text-white px-4 py-2 rounded font-bold text-xs shadow uppercase'[cite: 8]
-                        : 'bg-slate-800 text-gray-300 px-4 py-2 rounded font-bold text-xs border border-slate-700 uppercase';[cite: 8]
+            ['grid', 'table', 'stats'].forEach(v => {
+                const viewEl = document.getElementById(`view-${v}`);
+                const btnEl = document.getElementById(`btn-${v}`);
+                if (viewEl) viewEl.classList.toggle('hidden', v !== view);
+                if (btnEl) {
+                    btnEl.className = v === view
+                        ? 'bg-red-600 text-white px-4 py-2 rounded font-bold text-xs shadow uppercase'
+                        : 'bg-slate-800 text-gray-300 px-4 py-2 rounded font-bold text-xs border border-slate-700 uppercase';
                 }
             });
-            if (view === 'table') renderTable();[cite: 8]
-            if (view === 'stats') renderStats();[cite: 8]
+            if (view === 'table') renderTable();
+            if (view === 'stats') renderStats();
         }
 
         function switchDevView(view) {
@@ -821,41 +821,41 @@
         }
 
         function toggleMappingConfirmation() {
-            const mappingDone = document.getElementById('mapping_done').value;[cite: 8]
-            const wrapper = document.getElementById('mapping-confirmed-wrapper');[cite: 8]
-            if (!wrapper) return;[cite: 8]
-            if (mappingDone === 'yes') wrapper.classList.remove('hidden');[cite: 8]
-            else { wrapper.classList.add('hidden'); document.getElementById('mapping_confirmed').value = 'no'; }[cite: 8]
+            const mappingDone = document.getElementById('mapping_done').value;
+            const wrapper = document.getElementById('mapping-confirmed-wrapper');
+            if (!wrapper) return;
+            if (mappingDone === 'yes') wrapper.classList.remove('hidden');
+            else { wrapper.classList.add('hidden'); document.getElementById('mapping_confirmed').value = 'no'; }
         }
 
         function openModal(project = null) {
-            document.getElementById('project-form').reset();[cite: 8]
-            tempPastedPhotoUrl = '';[cite: 8]
-            document.getElementById('modal-title').textContent = project ? 'Edit Project' : 'Add Mold to Schedule';[cite: 8]
-            document.getElementById('project-id').value = project ? project.id : '';[cite: 8]
-            document.getElementById('delete-btn').classList.toggle('hidden', !project);[cite: 8]
+            document.getElementById('project-form').reset();
+            tempPastedPhotoUrl = '';
+            document.getElementById('modal-title').textContent = project ? 'Edit Project' : 'Add Mold to Schedule';
+            document.getElementById('project-id').value = project ? project.id : '';
+            document.getElementById('delete-btn').classList.toggle('hidden', !project);
 
-            if (project) {[cite: 8]
-                ['po', 'project_name', 'grain', 'client', 'machine', 'priority', 'mapping_done', 'mapping_confirmed', 'date_reception', 'date_estimee', 'date_reelle', 'remarques'].forEach(field => {[cite: 8]
-                    if(document.getElementById(field)) document.getElementById(field).value = project[field] || '';[cite: 8]
+            if (project) {
+                ['po', 'project_name', 'grain', 'client', 'machine', 'priority', 'mapping_done', 'mapping_confirmed', 'date_reception', 'date_estimee', 'date_reelle', 'remarques'].forEach(field => {
+                    if(document.getElementById(field)) document.getElementById(field).value = project[field] || '';
                 });
-                toggleMappingConfirmation();[cite: 8]
-                if (project.photo) {[cite: 8]
-                    tempPastedPhotoUrl = project.photo;[cite: 8]
-                    document.getElementById('photo-preview').src = project.photo;[cite: 8]
-                    document.getElementById('photo-preview-container').classList.remove('hidden');[cite: 8]
+                toggleMappingConfirmation();
+                if (project.photo) {
+                    tempPastedPhotoUrl = project.photo;
+                    document.getElementById('photo-preview').src = project.photo;
+                    document.getElementById('photo-preview-container').classList.remove('hidden');
                 }
-            } else {[cite: 8]
-                document.getElementById('date_reception').value = new Date().toISOString().split('T')[0];[cite: 8]
-                document.getElementById('mapping_done').value = 'no';[cite: 8]
-                document.getElementById('mapping_confirmed').value = 'no';[cite: 8]
-                toggleMappingConfirmation();[cite: 8]
-                document.getElementById('photo-preview-container').classList.add('hidden');[cite: 8]
+            } else {
+                document.getElementById('date_reception').value = new Date().toISOString().split('T')[0];
+                document.getElementById('mapping_done').value = 'no';
+                document.getElementById('mapping_confirmed').value = 'no';
+                toggleMappingConfirmation();
+                document.getElementById('photo-preview-container').classList.add('hidden');
             }
-            document.getElementById('project-modal').classList.remove('hidden');[cite: 8]
+            document.getElementById('project-modal').classList.remove('hidden');
         }
 
-        function closeModal() { document.getElementById('project-modal').classList.add('hidden'); }[cite: 8]
+        function closeModal() { document.getElementById('project-modal').classList.add('hidden'); }
 
         function openDevModal(item = null) {
             document.getElementById('dev-form').reset();
@@ -924,317 +924,317 @@
             }
         }
 
-        function openImageModal(id, event) {[cite: 8]
-            if(event) event.stopPropagation();[cite: 8]
-            const p = projects.find(x => x.id === id);[cite: 8]
-            if (!p) return;[cite: 8]
+        function openImageModal(id, event) {
+            if(event) event.stopPropagation();
+            const p = projects.find(x => x.id === id);
+            if (!p) return;
             
-            document.getElementById('lb-po').textContent = p.po || '-';[cite: 8]
-            document.getElementById('lb-client').textContent = p.client || '-';[cite: 8]
-            document.getElementById('lb-project').textContent = p.project_name || '-';[cite: 8]
-            document.getElementById('lb-grain').textContent = p.grain || '-';[cite: 8]
+            document.getElementById('lb-po').textContent = p.po || '-';
+            document.getElementById('lb-client').textContent = p.client || '-';
+            document.getElementById('lb-project').textContent = p.project_name || '-';
+            document.getElementById('lb-grain').textContent = p.grain || '-';
             
-            let priorityText = '-', priorityColor = 'text-white';[cite: 8]
-            if (p.priority === 'red') { priorityText = 'Critical'; priorityColor = 'text-red-500'; }[cite: 8]
-            else if (p.priority === 'green') { priorityText = 'Low'; priorityColor = 'text-green-500'; }[cite: 8]
-            else if (p.priority === 'yellow') { priorityText = 'Standard'; priorityColor = 'text-amber-500'; }[cite: 8]
+            let priorityText = '-', priorityColor = 'text-white';
+            if (p.priority === 'red') { priorityText = 'Critical'; priorityColor = 'text-red-500'; }
+            else if (p.priority === 'green') { priorityText = 'Low'; priorityColor = 'text-green-500'; }
+            else if (p.priority === 'yellow') { priorityText = 'Standard'; priorityColor = 'text-amber-500'; }
             
-            const pSpan = document.getElementById('lb-priority');[cite: 8]
-            if (pSpan) { pSpan.textContent = priorityText; pSpan.className = "font-bold text-sm " + priorityColor; }[cite: 8]
+            const pSpan = document.getElementById('lb-priority');
+            if (pSpan) { pSpan.textContent = priorityText; pSpan.className = "font-bold text-sm " + priorityColor; }
 
-            const remBox = document.getElementById('lb-remarques-box');[cite: 8]
-            const remText = document.getElementById('lb-remarques-text');[cite: 8]
-            if (p.remarques && p.remarques.trim() !== '') {[cite: 8]
-                remText.textContent = p.remarques;[cite: 8]
-                remBox.classList.remove('hidden');[cite: 8]
-            } else {[cite: 8]
-                remBox.classList.add('hidden');[cite: 8]
+            const remBox = document.getElementById('lb-remarques-box');
+            const remText = document.getElementById('lb-remarques-text');
+            if (p.remarques && p.remarques.trim() !== '') {
+                remText.textContent = p.remarques;
+                remBox.classList.remove('hidden');
+            } else {
+                remBox.classList.add('hidden');
             }
 
-            const imgEl = document.getElementById('lb-img');[cite: 8]
-            if (p.photo) {[cite: 8]
-                imgEl.src = p.photo;[cite: 8]
-                imgEl.style.display = 'block';[cite: 8]
-            } else {[cite: 8]
-                imgEl.style.display = 'none';[cite: 8]
+            const imgEl = document.getElementById('lb-img');
+            if (p.photo) {
+                imgEl.src = p.photo;
+                imgEl.style.display = 'block';
+            } else {
+                imgEl.style.display = 'none';
             }
 
-            resetImageTransform();[cite: 8]
-            document.getElementById('image-modal').classList.remove('hidden');[cite: 8]
+            resetImageTransform();
+            document.getElementById('image-modal').classList.remove('hidden');
         }
 
-        function closeImageModal() { document.getElementById('image-modal').classList.add('hidden'); }[cite: 8]
+        function closeImageModal() { document.getElementById('image-modal').classList.add('hidden'); }
 
         async function saveProject(e) {
-            if(e) e.preventDefault();[cite: 8]
-            const idInput = document.getElementById('project-id').value;[cite: 8]
-            const id = idInput ? Number(idInput) : Date.now();[cite: 8]
-            const existingProj = projects.find(x => x.id === id);[cite: 8]
+            if(e) e.preventDefault();
+            const idInput = document.getElementById('project-id').value;
+            const id = idInput ? Number(idInput) : Date.now();
+            const existingProj = projects.find(x => x.id === id);
 
             const pData = {
                 id,
-                po: document.getElementById('po').value.trim(),[cite: 8]
-                project_name: document.getElementById('project_name').value.trim(),[cite: 8]
-                grain: document.getElementById('grain').value.trim(),[cite: 8]
-                client: document.getElementById('client').value.trim(),[cite: 8]
-                machine: document.getElementById('machine').value,[cite: 8]
-                priority: document.getElementById('priority').value,[cite: 8]
-                mapping_done: document.getElementById('mapping_done').value,[cite: 8]
-                mapping_confirmed: document.getElementById('mapping_done').value === 'yes' ? document.getElementById('mapping_confirmed').value : 'no',[cite: 8]
-                date_reception: document.getElementById('date_reception').value,[cite: 8]
-                date_estimee: document.getElementById('date_estimee').value,[cite: 8]
-                date_reelle: document.getElementById('date_reelle').value || null,[cite: 8]
-                remarques: document.getElementById('remarques').value.trim(),[cite: 8]
-                photo: tempPastedPhotoUrl || (existingProj ? existingProj.photo : '')[cite: 8]
+                po: document.getElementById('po').value.trim(),
+                project_name: document.getElementById('project_name').value.trim(),
+                grain: document.getElementById('grain').value.trim(),
+                client: document.getElementById('client').value.trim(),
+                machine: document.getElementById('machine').value,
+                priority: document.getElementById('priority').value,
+                mapping_done: document.getElementById('mapping_done').value,
+                mapping_confirmed: document.getElementById('mapping_done').value === 'yes' ? document.getElementById('mapping_confirmed').value : 'no',
+                date_reception: document.getElementById('date_reception').value,
+                date_estimee: document.getElementById('date_estimee').value,
+                date_reelle: document.getElementById('date_reelle').value || null,
+                remarques: document.getElementById('remarques').value.trim(),
+                photo: tempPastedPhotoUrl || (existingProj ? existingProj.photo : '')
             };
 
-            await fetch('/api/projects', {[cite: 8]
-                method: 'POST',[cite: 8]
-                headers: { 'Content-Type': 'application/json' },[cite: 8]
-                body: JSON.stringify(pData)[cite: 8]
+            await fetch('/api/projects', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(pData)
             });
 
-            closeModal();[cite: 8]
-            loadProjects();[cite: 8]
+            closeModal();
+            loadProjects();
         }
 
-        function editProject(id) { const p = projects.find(x => x.id === id); if (p) openModal(p); }[cite: 8]
+        function editProject(id) { const p = projects.find(x => x.id === id); if (p) openModal(p); }
 
         async function confirmDeleteProject() {
-            const id = Number(document.getElementById('project-id').value);[cite: 8]
-            if (confirm("Delete this project?")) {[cite: 8]
-                await fetch(`/api/projects/${id}`, { method: 'DELETE' });[cite: 8]
-                closeModal();[cite: 8]
-                loadProjects();[cite: 8]
+            const id = Number(document.getElementById('project-id').value);
+            if (confirm("Delete this project?")) {
+                await fetch(`/api/projects/${id}`, { method: 'DELETE' });
+                closeModal();
+                loadProjects();
             }
         }
 
         function populateClientFilterDropdown() {
-            const select = document.getElementById('table-client-filter');[cite: 8]
-            if (!select) return;[cite: 8]
-            const clients = [...new Set(projects.map(p => p.client))].filter(Boolean).sort();[cite: 8]
-            select.innerHTML = `<option value="">All Clients</option>` + clients.map(c => `<option value="${c}">${c}</option>`).join('');[cite: 8]
+            const select = document.getElementById('table-client-filter');
+            if (!select) return;
+            const clients = [...new Set(projects.map(p => p.client))].filter(Boolean).sort();
+            select.innerHTML = `<option value="">All Clients</option>` + clients.map(c => `<option value="${c}">${c}</option>`).join('');
         }
 
         function renderTimeline() {
-            const container = document.getElementById('timeline-container');[cite: 8]
-            if (!container) return;[cite: 8]
-            const year = currentDate.getFullYear();[cite: 8]
-            const month = currentDate.getMonth();[cite: 8]
-            const daysInMonth = new Date(year, month + 1, 0).getDate();[cite: 8]
+            const container = document.getElementById('timeline-container');
+            if (!container) return;
+            const year = currentDate.getFullYear();
+            const month = currentDate.getMonth();
+            const daysInMonth = new Date(year, month + 1, 0).getDate();
             
-            updateMonthYearSelectors();[cite: 8]
+            updateMonthYearSelectors();
 
-            let html = `<table class="w-full border-collapse text-xs relative"><thead><tr class="bg-black text-gray-300">`;[cite: 8]
-            html += `<th class="p-3 border border-slate-800 w-36 sticky left-0 bg-black z-20 text-red-500 font-bold uppercase">Machine</th>`;[cite: 8]
-            for (let d = 1; d <= daysInMonth; d++) html += `<th class="p-1 border border-slate-800 text-center w-10 text-gray-400">${d}</th>`;[cite: 8]
-            html += `</tr></thead><tbody>`;[cite: 8]
+            let html = `<table class="w-full border-collapse text-xs relative"><thead><tr class="bg-black text-gray-300">`;
+            html += `<th class="p-3 border border-slate-800 w-36 sticky left-0 bg-black z-20 text-red-500 font-bold uppercase">Machine</th>`;
+            for (let d = 1; d <= daysInMonth; d++) html += `<th class="p-1 border border-slate-800 text-center w-10 text-gray-400">${d}</th>`;
+            html += `</tr></thead><tbody>`;
 
-            Object.keys(machinesConfig).forEach(mach => {[cite: 8]
-                const machProjects = projects.filter(p => {[cite: 8]
-                    if (p.machine !== mach) return false;[cite: 8]
-                    const pStart = p.date_reception;[cite: 8]
-                    const pEnd = p.date_reelle || p.date_estimee;[cite: 8]
-                    const monthStart = `${year}-${String(month + 1).padStart(2, '0')}-01`;[cite: 8]
-                    const monthEnd = `${year}-${String(month + 1).padStart(2, '0')}-${String(daysInMonth).padStart(2, '0')}`;[cite: 8]
-                    return pStart <= monthEnd && pEnd >= monthStart;[cite: 8]
+            Object.keys(machinesConfig).forEach(mach => {
+                const machProjects = projects.filter(p => {
+                    if (p.machine !== mach) return false;
+                    const pStart = p.date_reception;
+                    const pEnd = p.date_reelle || p.date_estimee;
+                    const monthStart = `${year}-${String(month + 1).padStart(2, '0')}-01`;
+                    const monthEnd = `${year}-${String(month + 1).padStart(2, '0')}-${String(daysInMonth).padStart(2, '0')}`;
+                    return pStart <= monthEnd && pEnd >= monthStart;
                 });
 
-                const rows = [];[cite: 8]
-                machProjects.forEach(proj => {[cite: 8]
-                    const startD = Math.max(1, new Date(proj.date_reception) < new Date(year, month, 1) ? 1 : new Date(proj.date_reception).getDate());[cite: 8]
-                    const endD = Math.min(daysInMonth, new Date(proj.date_reelle || proj.date_estimee) > new Date(year, month, daysInMonth) ? daysInMonth : new Date(proj.date_reelle || proj.date_estimee).getDate());[cite: 8]
+                const rows = [];
+                machProjects.forEach(proj => {
+                    const startD = Math.max(1, new Date(proj.date_reception) < new Date(year, month, 1) ? 1 : new Date(proj.date_reception).getDate());
+                    const endD = Math.min(daysInMonth, new Date(proj.date_reelle || proj.date_estimee) > new Date(year, month, daysInMonth) ? daysInMonth : new Date(proj.date_reelle || proj.date_estimee).getDate());
                     
-                    let rIdx = 0;[cite: 8]
-                    while(true) {[cite: 8]
-                        if(!rows[rIdx]) rows[rIdx] = new Array(daysInMonth + 1).fill(false);[cite: 8]
-                        let clash = false;[cite: 8]
-                        for(let d = startD; d <= endD; d++) { if(rows[rIdx][d]) { clash = true; break; } }[cite: 8]
-                        if(!clash) {[cite: 8]
-                            for(let d = startD; d <= endD; d++) rows[rIdx][d] = true;[cite: 8]
-                            proj._startD = startD; proj._endD = endD; proj._rowIdx = rIdx;[cite: 8]
-                            break;[cite: 8]
+                    let rIdx = 0;
+                    while(true) {
+                        if(!rows[rIdx]) rows[rIdx] = new Array(daysInMonth + 1).fill(false);
+                        let clash = false;
+                        for(let d = startD; d <= endD; d++) { if(rows[rIdx][d]) { clash = true; break; } }
+                        if(!clash) {
+                            for(let d = startD; d <= endD; d++) rows[rIdx][d] = true;
+                            proj._startD = startD; proj._endD = endD; proj._rowIdx = rIdx;
+                            break;
                         }
-                        rIdx++;[cite: 8]
+                        rIdx++;
                     }
                 });
 
-                const totalSubRows = Math.max(1, rows.length);[cite: 8]
+                const totalSubRows = Math.max(1, rows.length);
 
-                for (let r = 0; r < totalSubRows; r++) {[cite: 8]
-                    html += `<tr class="border-b border-slate-800/80 h-10">`;[cite: 8]
-                    if (r === 0) {[cite: 8]
-                        html += `<td rowspan="${totalSubRows}" class="p-3 font-bold bg-slate-900 border border-slate-800 sticky left-0 z-20 align-middle" data-machine="${mach}" ondragover="allowDrop(event)" ondrop="dropOnMachine(event, '${mach}')"><span class="px-2 py-1 rounded text-white text-xs bg-slate-800 border border-slate-700 pointer-events-none">${mach}</span></td>`;[cite: 8]
+                for (let r = 0; r < totalSubRows; r++) {
+                    html += `<tr class="border-b border-slate-800/80 h-10">`;
+                    if (r === 0) {
+                        html += `<td rowspan="${totalSubRows}" class="p-3 font-bold bg-slate-900 border border-slate-800 sticky left-0 z-20 align-middle" data-machine="${mach}" ondragover="allowDrop(event)" ondrop="dropOnMachine(event, '${mach}')"><span class="px-2 py-1 rounded text-white text-xs bg-slate-800 border border-slate-700 pointer-events-none">${mach}</span></td>`;
                     }
 
-                    for (let day = 1; day <= daysInMonth; day++) {[cite: 8]
-                        const currentCellDate = `${year}-${String(month + 1).padStart(2, '0')}-${String(day).padStart(2, '0')}`;[cite: 8]
-                        const proj = machProjects.find(p => p._rowIdx === r && currentCellDate >= p.date_reception && currentCellDate <= (p.date_reelle || p.date_estimee));[cite: 8]
+                    for (let day = 1; day <= daysInMonth; day++) {
+                        const currentCellDate = `${year}-${String(month + 1).padStart(2, '0')}-${String(day).padStart(2, '0')}`;
+                        const proj = machProjects.find(p => p._rowIdx === r && currentCellDate >= p.date_reception && currentCellDate <= (p.date_reelle || p.date_estimee));
 
-                        if (proj && day === proj._startD) {[cite: 8]
-                            const spanCount = (proj._endD - proj._startD) + 1;[cite: 8]
-                            let bgPriority = 'bg-amber-600';[cite: 8]
-                            if (proj.priority === 'red') bgPriority = 'bg-red-600';[cite: 8]
-                            else if (proj.priority === 'green') bgPriority = 'bg-emerald-600';[cite: 8]
+                        if (proj && day === proj._startD) {
+                            const spanCount = (proj._endD - proj._startD) + 1;
+                            let bgPriority = 'bg-amber-600';
+                            if (proj.priority === 'red') bgPriority = 'bg-red-600';
+                            else if (proj.priority === 'green') bgPriority = 'bg-emerald-600';
                             
-                            html += `<td colspan="${spanCount}" class="border border-slate-800 p-0 relative shadow-md h-10">`;[cite: 8]
-                            html += `<div class="absolute inset-x-1 inset-y-1 px-2 rounded flex items-center gap-2 overflow-hidden timeline-bar ${bgPriority} text-white cursor-pointer" draggable="true" ondragstart="dragStartProject(event, ${proj.id})" onclick="editProject(${proj.id})" title="Click to edit">`;[cite: 8]
-                            html += `<div class="resize-handle resize-handle-left" onmousedown="initResize(event, ${proj.id}, 'left')"></div>`;[cite: 8]
-                            html += `<div class="resize-handle resize-handle-right" onmousedown="initResize(event, ${proj.id}, 'right')"></div>`;[cite: 8]
+                            html += `<td colspan="${spanCount}" class="border border-slate-800 p-0 relative shadow-md h-10">`;
+                            html += `<div class="absolute inset-x-1 inset-y-1 px-2 rounded flex items-center gap-2 overflow-hidden timeline-bar ${bgPriority} text-white cursor-pointer" draggable="true" ondragstart="dragStartProject(event, ${proj.id})" onclick="editProject(${proj.id})" title="Click to edit">`;
+                            html += `<div class="resize-handle resize-handle-left" onmousedown="initResize(event, ${proj.id}, 'left')"></div>`;
+                            html += `<div class="resize-handle resize-handle-right" onmousedown="initResize(event, ${proj.id}, 'right')"></div>`;
                             
-                            if (proj.photo) html += `<img src="${proj.photo}" class="project-bar-img shrink-0" onclick="openImageModal(${proj.id}, event)" title="View image and remarks">`;[cite: 8]
-                            html += `<div class="text-white font-medium text-[11px] whitespace-nowrap truncate pointer-events-none">PO: ${proj.po} | Client: ${proj.client} | Project: ${proj.project_name} ${proj.remarques ? ' | 📝' : ''}</div></div></td>`;[cite: 8]
-                            day += spanCount - 1;[cite: 8]
-                            continue;[cite: 8]
-                        } else if (!proj) {[cite: 8]
-                            html += `<td class="border border-slate-800/60 p-0 h-10 hover:bg-slate-900/50 w-10" data-date="${currentCellDate}" data-machine="${mach}" ondragover="allowDrop(event)" ondrop="dropOnDate(event, '${currentCellDate}', '${mach}')"></td>`;[cite: 8]
+                            if (proj.photo) html += `<img src="${proj.photo}" class="project-bar-img shrink-0" onclick="openImageModal(${proj.id}, event)" title="View image and remarks">`;
+                            html += `<div class="text-white font-medium text-[11px] whitespace-nowrap truncate pointer-events-none">PO: ${proj.po} | Client: ${proj.client} | Project: ${proj.project_name} ${proj.remarques ? ' | 📝' : ''}</div></div></td>`;
+                            day += spanCount - 1;
+                            continue;
+                        } else if (!proj) {
+                            html += `<td class="border border-slate-800/60 p-0 h-10 hover:bg-slate-900/50 w-10" data-date="${currentCellDate}" data-machine="${mach}" ondragover="allowDrop(event)" ondrop="dropOnDate(event, '${currentCellDate}', '${mach}')"></td>`;
                         }
                     }
-                    html += `</tr>`;[cite: 8]
+                    html += `</tr>`;
                 }
             });
-            container.innerHTML = html + `</tbody></table>`;[cite: 8]
+            container.innerHTML = html + `</tbody></table>`;
         }
 
         function exportToExcel() {
             try {
-                if (typeof XLSX === 'undefined') { alert("Excel library missing."); return; }[cite: 8]
-                const search = document.getElementById('table-search').value.toLowerCase();[cite: 8]
-                const clientFilter = document.getElementById('table-client-filter').value;[cite: 8]
-                const priorityFilter = document.getElementById('table-priority-filter').value;[cite: 8]
+                if (typeof XLSX === 'undefined') { alert("Excel library missing."); return; }
+                const search = document.getElementById('table-search').value.toLowerCase();
+                const clientFilter = document.getElementById('table-client-filter').value;
+                const priorityFilter = document.getElementById('table-priority-filter').value;
 
-                const filtered = projects.filter(p => {[cite: 8]
-                    const matchesSearch = !search || [p.po, p.project_name, p.grain, p.client, p.remarques].some(x => (x || '').toLowerCase().includes(search));[cite: 8]
-                    const matchesClient = !clientFilter || p.client === clientFilter;[cite: 8]
-                    const matchesPriority = !priorityFilter || p.priority === priorityFilter;[cite: 8]
-                    return matchesSearch && matchesClient && matchesPriority;[cite: 8]
+                const filtered = projects.filter(p => {
+                    const matchesSearch = !search || [p.po, p.project_name, p.grain, p.client, p.remarques].some(x => (x || '').toLowerCase().includes(search));
+                    const matchesClient = !clientFilter || p.client === clientFilter;
+                    const matchesPriority = !priorityFilter || p.priority === priorityFilter;
+                    return matchesSearch && matchesClient && matchesPriority;
                 });
 
-                const dataToExport = filtered.map(p => ({[cite: 8]
-                    "PO": p.po || '-', "Project Name": p.project_name || '-', "Grain": p.grain || '-',[cite: 8]
-                    "Client": p.client || '-', "Machine": p.machine || '-',[cite: 8]
-                    "Priority": p.priority === 'red' ? 'CRITICAL' : (p.priority === 'green' ? 'LOW' : 'STANDARD'),[cite: 8]
-                    "Mapping Done": p.mapping_done || 'no', "Mapping Confirmed": p.mapping_confirmed || 'no',[cite: 8]
-                    "Status": p.date_reelle ? 'FINISHED' : 'IN PROGRESS',[cite: 8]
-                    "Reception": p.date_reception || '-', "Est. End": p.date_estimee || '-', "Real End": p.date_reelle || '-',[cite: 8]
-                    "Remarks": p.remarques || '-'[cite: 8]
+                const dataToExport = filtered.map(p => ({
+                    "PO": p.po || '-', "Project Name": p.project_name || '-', "Grain": p.grain || '-',
+                    "Client": p.client || '-', "Machine": p.machine || '-',
+                    "Priority": p.priority === 'red' ? 'CRITICAL' : (p.priority === 'green' ? 'LOW' : 'STANDARD'),
+                    "Mapping Done": p.mapping_done || 'no', "Mapping Confirmed": p.mapping_confirmed || 'no',
+                    "Status": p.date_reelle ? 'FINISHED' : 'IN PROGRESS',
+                    "Reception": p.date_reception || '-', "Est. End": p.date_estimee || '-', "Real End": p.date_reelle || '-',
+                    "Remarks": p.remarques || '-'
                 }));
 
-                const worksheet = XLSX.utils.json_to_sheet(dataToExport);[cite: 8]
-                const workbook = XLSX.utils.book_new();[cite: 8]
-                XLSX.utils.book_append_sheet(workbook, worksheet, "Master Schedule");[cite: 8]
-                XLSX.writeFile(workbook, `Standex_Master_Schedule_${new Date().toISOString().split('T')[0]}.xlsx`);[cite: 8]
+                const worksheet = XLSX.utils.json_to_sheet(dataToExport);
+                const workbook = XLSX.utils.book_new();
+                XLSX.utils.book_append_sheet(workbook, worksheet, "Master Schedule");
+                XLSX.writeFile(workbook, `Standex_Master_Schedule_${new Date().toISOString().split('T')[0]}.xlsx`);
             } catch (error) {
-                console.error(error);[cite: 8]
-                alert("Error exporting Excel.");[cite: 8]
+                console.error(error);
+                alert("Error exporting Excel.");
             }
         }
 
-        let draggedProjectId = null;[cite: 8]
-        function dragStartProject(e, id) { draggedProjectId = id; e.dataTransfer.setData('text/plain', id); }[cite: 8]
-        function allowDrop(e) { e.preventDefault(); }[cite: 8]
-        function parseLocalDate(dateStr) { const parts = dateStr.split('-'); return new Date(parts[0], parts[1] - 1, parts[2]); }[cite: 8]
-        function formatLocalDate(dateObj) {[cite: 8]
-            const y = dateObj.getFullYear(), m = String(dateObj.getMonth() + 1).padStart(2, '0'), d = String(dateObj.getDate()).padStart(2, '0');[cite: 8]
-            return `${y}-${m}-${d}`;[cite: 8]
+        let draggedProjectId = null;
+        function dragStartProject(e, id) { draggedProjectId = id; e.dataTransfer.setData('text/plain', id); }
+        function allowDrop(e) { e.preventDefault(); }
+        function parseLocalDate(dateStr) { const parts = dateStr.split('-'); return new Date(parts[0], parts[1] - 1, parts[2]); }
+        function formatLocalDate(dateObj) {
+            const y = dateObj.getFullYear(), m = String(dateObj.getMonth() + 1).padStart(2, '0'), d = String(dateObj.getDate()).padStart(2, '0');
+            return `${y}-${m}-${d}`;
         }
 
         async function dropOnDate(e, targetDateStr, targetMachine) {
-            e.preventDefault();[cite: 8]
-            if (!draggedProjectId) return;[cite: 8]
-            const proj = projects.find(p => p.id === draggedProjectId);[cite: 8]
-            if (!proj) return;[cite: 8]
-            const diffDays = Math.round((parseLocalDate(targetDateStr) - parseLocalDate(proj.date_reception)) / (1000 * 60 * 60 * 24));[cite: 8]
+            e.preventDefault();
+            if (!draggedProjectId) return;
+            const proj = projects.find(p => p.id === draggedProjectId);
+            if (!proj) return;
+            const diffDays = Math.round((parseLocalDate(targetDateStr) - parseLocalDate(proj.date_reception)) / (1000 * 60 * 60 * 24));
             
-            const newEstEnd = new Date(parseLocalDate(proj.date_estimee));[cite: 8]
-            newEstEnd.setDate(newEstEnd.getDate() + diffDays);[cite: 8]
-            let newRealEnd = proj.date_reelle;[cite: 8]
-            if (proj.date_reelle) {[cite: 8]
-                const tempReal = new Date(parseLocalDate(proj.date_reelle));[cite: 8]
-                tempReal.setDate(tempReal.getDate() + diffDays);[cite: 8]
-                newRealEnd = formatLocalDate(tempReal);[cite: 8]
+            const newEstEnd = new Date(parseLocalDate(proj.date_estimee));
+            newEstEnd.setDate(newEstEnd.getDate() + diffDays);
+            let newRealEnd = proj.date_reelle;
+            if (proj.date_reelle) {
+                const tempReal = new Date(parseLocalDate(proj.date_reelle));
+                tempReal.setDate(tempReal.getDate() + diffDays);
+                newRealEnd = formatLocalDate(tempReal);
             }
 
-            proj.machine = targetMachine;[cite: 8]
-            proj.date_reception = targetDateStr;[cite: 8]
-            proj.date_estimee = formatLocalDate(newEstEnd);[cite: 8]
-            proj.date_reelle = newRealEnd;[cite: 8]
+            proj.machine = targetMachine;
+            proj.date_reception = targetDateStr;
+            proj.date_estimee = formatLocalDate(newEstEnd);
+            proj.date_reelle = newRealEnd;
 
-            await saveProjectDirect(proj);[cite: 8]
-            draggedProjectId = null;[cite: 8]
+            await saveProjectDirect(proj);
+            draggedProjectId = null;
         }
 
         async function dropOnMachine(e, targetMachine) {
-            e.preventDefault();[cite: 8]
-            if (!draggedProjectId) return;[cite: 8]
-            const proj = projects.find(p => p.id === draggedProjectId);[cite: 8]
-            if (!proj) return;[cite: 8]
-            proj.machine = targetMachine;[cite: 8]
-            await saveProjectDirect(proj);[cite: 8]
-            draggedProjectId = null;[cite: 8]
+            e.preventDefault();
+            if (!draggedProjectId) return;
+            const proj = projects.find(p => p.id === draggedProjectId);
+            if (!proj) return;
+            proj.machine = targetMachine;
+            await saveProjectDirect(proj);
+            draggedProjectId = null;
         }
 
         function initResize(e, projId, direction) {
-            e.stopPropagation(); e.preventDefault();[cite: 8]
-            const proj = projects.find(p => p.id === projId);[cite: 8]
-            if (!proj) return;[cite: 8]
-            const startX = e.clientX, cellWidth = 40;[cite: 8]
-            const initialReception = parseLocalDate(proj.date_reception);[cite: 8]
-            const targetField = proj.date_reelle ? 'date_reelle' : 'date_estimee';[cite: 8]
-            const initialTargetDate = parseLocalDate(proj[targetField]);[cite: 8]
+            e.stopPropagation(); e.preventDefault();
+            const proj = projects.find(p => p.id === projId);
+            if (!proj) return;
+            const startX = e.clientX, cellWidth = 40;
+            const initialReception = parseLocalDate(proj.date_reception);
+            const targetField = proj.date_reelle ? 'date_reelle' : 'date_estimee';
+            const initialTargetDate = parseLocalDate(proj[targetField]);
 
             function onMouseMove(moveEvent) {
-                const dayShift = Math.trunc((moveEvent.clientX - startX) / cellWidth);[cite: 8]
-                if (direction === 'left') {[cite: 8]
-                    let newDate = new Date(initialReception);[cite: 8]
-                    newDate.setDate(newDate.getDate() + dayShift);[cite: 8]
-                    if (newDate <= parseLocalDate(proj.date_reelle || proj.date_estimee)) {[cite: 8]
-                        proj.date_reception = formatLocalDate(newDate);[cite: 8]
-                        renderTimeline();[cite: 8]
+                const dayShift = Math.trunc((moveEvent.clientX - startX) / cellWidth);
+                if (direction === 'left') {
+                    let newDate = new Date(initialReception);
+                    newDate.setDate(newDate.getDate() + dayShift);
+                    if (newDate <= parseLocalDate(proj.date_reelle || proj.date_estimee)) {
+                        proj.date_reception = formatLocalDate(newDate);
+                        renderTimeline();
                     }
-                } else if (direction === 'right') {[cite: 8]
-                    let newDate = new Date(initialTargetDate);[cite: 8]
-                    newDate.setDate(newDate.getDate() + dayShift);[cite: 8]
-                    if (newDate >= parseLocalDate(proj.date_reception)) {[cite: 8]
-                        proj[targetField] = formatLocalDate(newDate);[cite: 8]
-                        renderTimeline();[cite: 8]
+                } else if (direction === 'right') {
+                    let newDate = new Date(initialTargetDate);
+                    newDate.setDate(newDate.getDate() + dayShift);
+                    if (newDate >= parseLocalDate(proj.date_reception)) {
+                        proj[targetField] = formatLocalDate(newDate);
+                        renderTimeline();
                     }
                 }
             }
 
             async function onMouseUp() {
-                window.removeEventListener('mousemove', onMouseMove);[cite: 8]
-                window.removeEventListener('mouseup', onMouseUp);[cite: 8]
-                await saveProjectDirect(proj);[cite: 8]
+                window.removeEventListener('mousemove', onMouseMove);
+                window.removeEventListener('mouseup', onMouseUp);
+                await saveProjectDirect(proj);
             }
-            window.addEventListener('mousemove', onMouseMove);[cite: 8]
-            window.addEventListener('mouseup', onMouseUp);[cite: 8]
+            window.addEventListener('mousemove', onMouseMove);
+            window.addEventListener('mouseup', onMouseUp);
         }
 
         async function saveProjectDirect(proj) {
-            await fetch('/api/projects', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(proj) });[cite: 8]
-            loadProjects();[cite: 8]
+            await fetch('/api/projects', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(proj) });
+            loadProjects();
         }
 
         function renderTable() {
-            const tbody = document.getElementById('projects-table-body');[cite: 8]
-            if (!tbody) return;[cite: 8]
-            const search = document.getElementById('table-search').value.toLowerCase();[cite: 8]
-            const clientFilter = document.getElementById('table-client-filter').value;[cite: 8]
-            const priorityFilter = document.getElementById('table-priority-filter').value;[cite: 8]
+            const tbody = document.getElementById('projects-table-body');
+            if (!tbody) return;
+            const search = document.getElementById('table-search').value.toLowerCase();
+            const clientFilter = document.getElementById('table-client-filter').value;
+            const priorityFilter = document.getElementById('table-priority-filter').value;
 
-            const filtered = projects.filter(p => {[cite: 8]
-                const matchesSearch = !search || [p.po, p.project_name, p.grain, p.client, p.remarques].some(x => (x || '').toLowerCase().includes(search));[cite: 8]
-                const matchesClient = !clientFilter || p.client === clientFilter;[cite: 8]
-                const matchesPriority = !priorityFilter || p.priority === priorityFilter;[cite: 8]
-                return matchesSearch && matchesClient && matchesPriority;[cite: 8]
+            const filtered = projects.filter(p => {
+                const matchesSearch = !search || [p.po, p.project_name, p.grain, p.client, p.remarques].some(x => (x || '').toLowerCase().includes(search));
+                const matchesClient = !clientFilter || p.client === clientFilter;
+                const matchesPriority = !priorityFilter || p.priority === priorityFilter;
+                return matchesSearch && matchesClient && matchesPriority;
             });
 
             tbody.innerHTML = filtered.map(p => {
-                const isFinished = Boolean(p.date_reelle);[cite: 8]
-                let mappingLabel = '<span class="text-gray-500">No</span>';[cite: 8]
-                if (p.mapping_done === 'yes') {[cite: 8]
-                    mappingLabel = p.mapping_confirmed === 'yes' ? '<span class="text-emerald-400 font-semibold">Done & Confirmed</span>' : '<span class="text-amber-400 font-semibold">Done (Not Confirmed)</span>';[cite: 8]
+                const isFinished = Boolean(p.date_reelle);
+                let mappingLabel = '<span class="text-gray-500">No</span>';
+                if (p.mapping_done === 'yes') {
+                    mappingLabel = p.mapping_confirmed === 'yes' ? '<span class="text-emerald-400 font-semibold">Done & Confirmed</span>' : '<span class="text-amber-400 font-semibold">Done (Not Confirmed)</span>';
                 }
 
                 return `
@@ -1346,7 +1346,7 @@
 
             const periodType = document.getElementById('stat-period-type').value;
             let filtered = [...projects];
-            let labelText = "All Time (Global)[cite: 8]";
+            let labelText = "All Time (Global)";
 
             const yearVal = parseInt(document.getElementById('stat-year-select').value);
             const monthVal = parseInt(document.getElementById('stat-month-select').value);
@@ -1423,8 +1423,8 @@
 
             dmgBar.style.width = `${dmgPct}%`;
             gfBar.style.width = `${gfPct}%`;
-            dmgShare.textContent = `${dmgPct}% (${dmgDays} days)[cite: 8]`;
-            gfShare.textContent = `${gfPct}% (${gfDays} days)[cite: 8]`;
+            dmgShare.textContent = `${dmgPct}% (${dmgDays} days)`;
+            gfShare.textContent = `${gfPct}% (${gfDays} days)`;
 
             machinesList.innerHTML = Object.keys(machineStats).map(m => {
                 const dCount = machineStats[m];
@@ -1432,8 +1432,8 @@
                 return `
                     <div>
                         <div class="flex justify-between text-xs font-bold mb-1">
-                            <span class="text-gray-300">${m}[cite: 8]</span>
-                            <span class="text-white">${dCount} days (${pct}%)[cite: 8]</span>
+                            <span class="text-gray-300">${m}</span>
+                            <span class="text-white">${dCount} days (${pct}%)</span>
                         </div>
                         <div class="w-full bg-slate-950 rounded-full h-2 border border-slate-800 overflow-hidden">
                             <div class="bg-red-600 h-2" style="width: ${pct}%"></div>
@@ -1458,12 +1458,10 @@
                 return `
                     <div class="bg-slate-950 p-3 rounded-lg border border-slate-800 flex justify-between items-center">
                         <div>
-                            <span class="text-white font-bold text-xs block">${c}[cite: 8]</span>
-                            <span class="text-[10px] text-gray-400">Total Molds: ${stats.total} | Late: ${stats.late}[cite: 8]</span>
+                            <span class="text-white font-bold text-xs block">${c}</span>
+                            <span class="text-[10px] text-gray-400">Total Molds: ${stats.total} | Late: ${stats.late}</span>
                         </div>
-                        <span class="text-xs font-bold px-2.5 py-1 rounded ${latePct > 20 ? 'bg-red-950 text-red-400 border border-red-800' : 'bg-slate-900 text-gray-300 border border-slate-800'}">
-                            ${latePct}% Late[cite: 8]
-                        </span>
+                        <span class="text-xs font-bold px-2.5 py-1 rounded ${latePct > 20 ? 'bg-red-950 text-red-400 border border-red-800' : 'bg-slate-900 text-gray-300 border border-slate-800'}">${latePct}% Late</span>
                     </div>
                 `;
             }).join('');
@@ -1509,13 +1507,9 @@
 
             periodLabel.textContent = labelText;
 
-            const totalCount = filtered.length;
-            const approvedCount = filtered.filter(item => item.approved === 'yes').length;
-            const injectedCount = filtered.filter(item => item.injected === 'yes').length;
-
-            totalEl.textContent = totalCount;
-            approvedEl.textContent = approvedCount;
-            injectedEl.textContent = injectedCount;
+            totalEl.textContent = filtered.length;
+            approvedEl.textContent = filtered.filter(item => item.approved === 'yes').length;
+            injectedEl.textContent = filtered.filter(item => item.injected === 'yes').length;
         }
     </script>
 </body>
