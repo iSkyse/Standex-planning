@@ -26,8 +26,30 @@
 </head>
 <body class="bg-slate-950 font-sans h-screen flex flex-col overflow-hidden text-gray-100">
 
+    <!-- PASSWORD LOCK SCREEN -->
+    <div id="auth-screen" class="fixed inset-0 bg-slate-950 z-50 flex items-center justify-center p-4">
+        <div class="bg-slate-900 border border-slate-800 rounded-2xl max-w-md w-full p-8 shadow-2xl text-center">
+            <div class="inline-flex p-3 bg-red-950/50 border border-red-800/50 rounded-full text-red-500 mb-4">
+                <svg xmlns="http://www.w3.org/2000/svg" class="h-8 w-8" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z" />
+                </svg>
+            </div>
+            <h2 class="text-xl font-extrabold text-white uppercase tracking-wide mb-1">Restricted Access</h2>
+            <p class="text-xs text-gray-400 mb-6">Enter password to access the system</p>
+            
+            <form onsubmit="checkPassword(event)" class="space-y-4">
+                <input type="password" id="site-password" placeholder="Password..." required autocomplete="current-password"
+                    class="w-full p-3 bg-slate-950 border border-slate-700 rounded text-white text-center text-sm focus:outline-none focus:border-red-600">
+                <button type="submit" class="w-full bg-red-600 hover:bg-red-700 text-white p-3 rounded font-bold text-sm uppercase tracking-wider transition shadow-lg">
+                    Unlock
+                </button>
+                <p id="auth-error" class="text-xs text-red-500 hidden font-semibold">Incorrect password.</p>
+            </form>
+        </div>
+    </div>
+
     <!-- MODE SELECTION SCREEN -->
-    <div id="mode-selection-screen" class="fixed inset-0 bg-slate-950 z-40 flex items-center justify-center p-4">
+    <div id="mode-selection-screen" class="fixed inset-0 bg-slate-950 z-40 flex items-center justify-center p-4" style="display:none;">
         <div class="bg-slate-900 border border-slate-800 rounded-2xl max-w-xl w-full p-10 shadow-2xl text-center">
             <h1 class="text-2xl font-extrabold text-white uppercase tracking-wide mb-2">Standex Engraving</h1>
             <p class="text-xs text-gray-400 mb-8">Please select the operational module you wish to access</p>
@@ -43,6 +65,7 @@
                     <span class="text-[11px] text-gray-400 text-center">Textures in Progress, Approved Textures & Dev Statistics</span>
                 </button>
             </div>
+            <button onclick="lockScreen()" class="mt-8 text-xs text-gray-500 hover:text-gray-300 underline">Lock Screen / Logout</button>
         </div>
     </div>
 
@@ -74,6 +97,7 @@
                     <button onclick="changeMonth(0)" class="bg-slate-900 px-3 py-1 rounded text-sm hover:bg-slate-800 ml-2 font-medium border border-slate-700">Today[cite: 8]</button>
 
                     <button onclick="openModal()" class="bg-red-600 hover:bg-red-700 text-white px-5 py-2 rounded font-bold transition text-sm ml-4 shadow-lg uppercase tracking-wider">+ New Project[cite: 8]</button>
+                    <button onclick="lockScreen()" title="Lock Screen" class="bg-slate-800 hover:bg-slate-700 text-gray-300 px-3 py-2 rounded text-sm border border-slate-700 ml-2">🔒[cite: 8]</button>
                 </div>
             </header>
 
@@ -217,6 +241,7 @@
                 </div>
                 <div class="flex items-center gap-3">
                     <button onclick="openDevModal()" class="bg-blue-600 hover:bg-blue-700 text-white px-5 py-2 rounded font-bold transition text-sm shadow-lg uppercase tracking-wider">+ New Development Texture</button>
+                    <button onclick="lockScreen()" title="Lock Screen" class="bg-slate-800 hover:bg-slate-700 text-gray-300 px-3 py-2 rounded text-sm border border-slate-700 ml-2">🔒</button>
                 </div>
             </header>
 
@@ -523,6 +548,35 @@
 
     <!-- SCRIPT -->
     <script>
+        const SITE_PASSWORD = "laser2026";[cite: 8]
+
+        function checkPassword(event) {
+            if (event) event.preventDefault();
+            const inputField = document.getElementById('site-password');
+            const authScreen = document.getElementById('auth-screen');
+            const modeScreen = document.getElementById('mode-selection-screen');
+            const errorText = document.getElementById('auth-error');
+
+            if (inputField && inputField.value === SITE_PASSWORD) {
+                authScreen.style.display = 'none';
+                modeScreen.style.display = 'flex';
+                sessionStorage.setItem('authenticated', 'true');
+                errorText.classList.add('hidden');
+            } else {
+                if (errorText) errorText.classList.remove('hidden');
+                if (inputField) inputField.value = '';
+            }
+        }
+
+        function lockScreen() {
+            sessionStorage.removeItem('authenticated');
+            document.getElementById('main-content').style.display = 'none';
+            document.getElementById('mode-selection-screen').style.display = 'none';
+            document.getElementById('auth-screen').style.display = 'flex';
+            const inputField = document.getElementById('site-password');
+            if (inputField) inputField.value = '';
+        }
+
         function selectMode(mode) {
             document.getElementById('mode-selection-screen').style.display = 'none';
             document.getElementById('main-content').style.display = 'flex';
@@ -545,8 +599,16 @@
         }
 
         document.addEventListener('DOMContentLoaded', () => {
+            const authScreen = document.getElementById('auth-screen');
             const modeScreen = document.getElementById('mode-selection-screen');
-            if (modeScreen) modeScreen.style.display = 'flex';
+
+            if (sessionStorage.getItem('authenticated') === 'true') {
+                if (authScreen) authScreen.style.display = 'none';
+                if (modeScreen) modeScreen.style.display = 'flex';
+            } else {
+                if (authScreen) authScreen.style.display = 'flex';
+                if (modeScreen) modeScreen.style.display = 'none';
+            }
 
             initYearDropdowns();
             initWeekDropdown();
@@ -1271,110 +1333,231 @@
             const tbody = document.getElementById('indev-table-body');
             if (!tbody) return;
             const search = document.getElementById('indev-search').value.toLowerCase();
-            const filtered = devTextures.filter(x => x.approved !== 'yes' && (!search || [x.name, x.client, x.developer, x.machine, x.technology].some(v => (v || '').toLowerCase().includes(search))));
 
-            tbody.innerHTML = filtered.map(x => `
-                <tr class="hover:bg-slate-900/80 transition border-b border-slate-800/60">
-                    <td class="p-3 font-bold text-white">${x.name}</td>
-                    <td class="p-3"><span class="px-2.5 py-1 rounded-full text-xs font-bold ${x.priority === 'red' ? 'bg-red-950 text-red-400' : (x.priority === 'green' ? 'bg-emerald-950 text-emerald-400' : 'bg-amber-950 text-amber-400')}">${x.priority.toUpperCase()}</span></td>
-                    <td class="p-3 text-gray-300">${x.developer}</td>
-                    <td class="p-3"><span class="px-2 py-1 rounded text-xs bg-slate-800 border border-slate-700 text-gray-300">${x.machine}</span></td>
-                    <td class="p-3 text-xs text-gray-400">${x.history || '-'}</td>
-                    <td class="p-3"><span class="px-2 py-1 rounded text-xs bg-amber-950 text-amber-400 border border-amber-800">IN DEV</span></td>
-                    <td class="p-3 text-right">
-                        <button onclick="editDevTexture(${x.id})" class="bg-slate-800 hover:bg-slate-700 text-white px-2.5 py-1 rounded text-xs border border-slate-700 font-semibold">Edit</button>
-                    </td>
-                </tr>
-            `).join('');
+            const filtered = devTextures.filter(item => {
+                if (item.approved === 'yes') return false;
+                return !search || [item.name, item.client, item.developer, item.machine, item.technology].some(x => (x || '').toLowerCase().includes(search));
+            });
+
+            tbody.innerHTML = filtered.map(item => {
+                return `
+                    <tr class="hover:bg-slate-900/80 transition border-b border-slate-800/60">
+                        <td class="p-3 font-bold text-white">${item.name || '-'} <span class="block text-[10px] text-gray-400 font-normal">Client: ${item.client || '-'}</span></td>
+                        <td class="p-3">
+                            <span class="px-2.5 py-1 rounded-full text-xs font-bold ${item.priority === 'red' ? 'bg-red-950 text-red-400' : (item.priority === 'green' ? 'bg-emerald-950 text-emerald-400' : 'bg-amber-950 text-amber-400')}">
+                                ${item.priority === 'red' ? 'CRITICAL' : (item.priority === 'green' ? 'LOW' : 'STANDARD')}
+                            </span>
+                        </td>
+                        <td class="p-3 text-gray-300 text-xs">${item.developer || '-'}</td>
+                        <td class="p-3"><span class="px-2 py-1 rounded text-xs bg-slate-800 border border-slate-700 text-blue-400">${item.machine || '-'}</span></td>
+                        <td class="p-3 text-xs text-gray-400 font-mono">${item.history || '-'}</td>
+                        <td class="p-3 text-xs">
+                            <span class="px-2 py-1 rounded font-semibold ${item.injected === 'yes' ? 'bg-blue-950 text-blue-300 border border-blue-800' : 'bg-slate-900 text-gray-400 border border-slate-800'}">
+                                ${item.injected === 'yes' ? 'Injected / Tested' : 'In Progress'}
+                            </span>
+                        </td>
+                        <td class="p-3 text-right">
+                            <button onclick="editDevTexture(${item.id})" class="bg-slate-800 hover:bg-slate-700 text-white px-2.5 py-1 rounded text-xs border border-slate-700 font-semibold">Edit</button>
+                        </td>
+                    </tr>
+                `;
+            }).join('');
         }
 
         function renderDevApproved() {
             const tbody = document.getElementById('approved-table-body');
             if (!tbody) return;
             const search = document.getElementById('approved-search').value.toLowerCase();
-            const filtered = devTextures.filter(x => x.approved === 'yes' && (!search || [x.name, x.client, x.machine, x.technology].some(v => (v || '').toLowerCase().includes(search))));
 
-            tbody.innerHTML = filtered.map(x => `
-                <tr class="hover:bg-slate-900/80 transition border-b border-slate-800/60">
-                    <td class="p-3 font-bold text-white">${x.name}</td>
-                    <td class="p-3 text-gray-300">${x.client}</td>
-                    <td class="p-3 text-xs text-gray-300">${x.machine} ${x.history ? ', ' + x.history : ''}</td>
-                    <td class="p-3 text-xs text-gray-300">${x.depth || '-'}</td>
-                    <td class="p-3 text-xs text-gray-300">${x.technology || '-'}</td>
-                    <td class="p-3 text-xs text-gray-400">${x.date}</td>
-                    <td class="p-3 text-right">
-                        <button onclick="editDevTexture(${x.id})" class="bg-slate-800 hover:bg-slate-700 text-white px-2.5 py-1 rounded text-xs border border-slate-700 font-semibold">Edit</button>
-                    </td>
-                </tr>
-            `).join('');
+            const filtered = devTextures.filter(item => {
+                if (item.approved !== 'yes') return false;
+                return !search || [item.name, item.client, item.technology].some(x => (x || '').toLowerCase().includes(search));
+            });
+
+            tbody.innerHTML = filtered.map(item => {
+                return `
+                    <tr class="hover:bg-slate-900/80 transition border-b border-slate-800/60">
+                        <td class="p-3 font-bold text-white">${item.name || '-'}</td>
+                        <td class="p-3 text-gray-300">${item.client || '-'}</td>
+                        <td class="p-3 text-xs text-emerald-400 font-semibold">${item.machine || '-'} ${item.history ? '(' + item.history + ')' : ''}</td>
+                        <td class="p-3 text-xs text-gray-300 font-mono">${item.depth || '-'}</td>
+                        <td class="p-3 text-xs text-gray-300">${item.technology || '-'}</td>
+                        <td class="p-3 text-xs text-gray-400">${item.date || '-'}</td>
+                        <td class="p-3 text-right">
+                            <button onclick="editDevTexture(${item.id})" class="bg-slate-800 hover:bg-slate-700 text-white px-2.5 py-1 rounded text-xs border border-slate-700 font-semibold">Edit</button>
+                        </td>
+                    </tr>
+                `;
+            }).join('');
         }
 
         function renderStats() {
             const totalEl = document.getElementById('stat-total-projects');
-            const compEl = document.getElementById('stat-completed-projects');
+            const completedEl = document.getElementById('stat-completed-projects');
             const activeEl = document.getElementById('stat-active-projects');
             const onTimeEl = document.getElementById('stat-on-time');
+            const periodLabel = document.getElementById('stat-active-period-label');
+            const dmgBar = document.getElementById('stat-dmg-bar');
+            const gfBar = document.getElementById('stat-gf-bar');
+            const dmgShare = document.getElementById('stat-dmg-share');
+            const gfShare = document.getElementById('stat-gf-share');
+            const machinesList = document.getElementById('stat-machines-list');
+            const clientsList = document.getElementById('stat-clients-list');
+
             if (!totalEl) return;
 
-            totalEl.textContent = projects.length;
-            const completed = projects.filter(p => p.date_reelle);
-            compEl.textContent = completed.length;
-            activeEl.textContent = projects.length - completed.length;
+            const periodType = document.getElementById('stat-period-type').value;
+            let filtered = [...projects];
+            let labelText = "All Time (Global)[cite: 8]";
+
+            const yearVal = parseInt(document.getElementById('stat-year-select').value);
+            const monthVal = parseInt(document.getElementById('stat-month-select').value);
+            const weekVal = parseInt(document.getElementById('stat-week-select').value);
+
+            if (periodType === 'year') {
+                labelText = `Year ${yearVal}`;
+                filtered = projects.filter(p => {
+                    const d = p.date_reception;
+                    return d && d.startsWith(String(yearVal));
+                });
+            } else if (periodType === 'month') {
+                labelText = `Month ${monthVal + 1} / ${yearVal}`;
+                const prefix = `${yearVal}-${String(monthVal + 1).padStart(2, '0')}`;
+                filtered = projects.filter(p => {
+                    const d = p.date_reception;
+                    return d && d.startsWith(prefix);
+                });
+            } else if (periodType === 'week') {
+                labelText = `Year ${yearVal} - Week ${weekVal}`;
+                filtered = projects.filter(p => {
+                    if (!p.date_reception) return false;
+                    const dt = parseLocalDate(p.date_reception);
+                    if (dt.getFullYear() !== yearVal) return false;
+                    const startOfYear = new Date(yearVal, 0, 1);
+                    const wNum = Math.ceil((((dt - startOfYear) / 86400000) + startOfYear.getDay() + 1) / 7);
+                    return wNum === weekVal;
+                });
+            } else if (periodType === 'custom') {
+                const startStr = document.getElementById('stat-custom-start').value;
+                const endStr = document.getElementById('stat-custom-end').value;
+                labelText = `From ${startStr} to ${endStr}`;
+                filtered = projects.filter(p => {
+                    const d = p.date_reception;
+                    return d && d >= startStr && d <= endStr;
+                });
+            }
+
+            periodLabel.textContent = labelText;
+
+            const total = filtered.length;
+            const completed = filtered.filter(p => Boolean(p.date_reelle)).length;
+            const active = total - completed;
 
             let onTimeCount = 0;
-            completed.forEach(p => {
-                if (p.date_reelle <= p.date_estimee) onTimeCount++;
+            let finishedWithEst = 0;
+            filtered.forEach(p => {
+                if (p.date_reelle && p.date_estimee) {
+                    finishedWithEst++;
+                    if (p.date_reelle <= p.date_estimee) onTimeCount++;
+                }
             });
-            const rate = completed.length > 0 ? Math.round((onTimeCount / completed.length) * 100) : 0;
-            onTimeEl.textContent = rate + '%';
+            const onTimeRate = finishedWithEst > 0 ? Math.round((onTimeCount / finishedWithEst) * 100) : 0;
 
-            let dmgDays = 0, gfDays = 0;
-            projects.forEach(p => {
-                const s = new Date(p.date_reception);
-                const e = new Date(p.date_reelle || p.date_estimee);
-                const diff = Math.max(1, Math.round((e - s) / (1000 * 60 * 60 * 24)) + 1);
-                if (p.machine.startsWith('DMG')) dmgDays += diff;
-                else if (p.machine.startsWith('GF')) gfDays += diff;
+            totalEl.textContent = total;
+            completedEl.textContent = completed;
+            activeEl.textContent = active;
+            onTimeEl.textContent = `${onTimeRate}%`;
+
+            let dmgDays = 0;
+            let gfDays = 0;
+            const machineCounts = {};
+            const clientStats = {};
+
+            filtered.forEach(p => {
+                const start = parseLocalDate(p.date_reception);
+                const end = parseLocalDate(p.date_reelle || p.date_estimee || p.date_reception);
+                const diffDays = Math.max(1, Math.round((end - start) / (1000 * 60 * 60 * 24)) + 1);
+
+                const mach = p.machine || 'Unknown';
+                machineCounts[mach] = (machineCounts[mach] || 0) + diffDays;
+
+                if (mach.startsWith('DMG')) dmgDays += diffDays;
+                else if (mach.startsWith('GF')) gfDays += diffDays;
+
+                const client = p.client || 'Unknown';
+                if (!clientStats[client]) clientStats[client] = { total: 0, late: 0 };
+                clientStats[client].total++;
+                if (p.date_reelle && p.date_estimee && p.date_reelle > p.date_estimee) {
+                    clientStats[client].late++;
+                }
             });
-            const totalDays = dmgDays + gfDays;
-            const dmgShare = totalDays > 0 ? Math.round((dmgDays / totalDays) * 100) : 0;
-            const gfShare = totalDays > 0 ? Math.round((gfDays / totalDays) * 100) : 0;
 
-            document.getElementById('stat-dmg-share').textContent = `${dmgShare}% (${dmgDays} days)`;
-            document.getElementById('stat-dmg-bar').style.width = `${dmgShare}%`;
-            document.getElementById('stat-gf-share').textContent = `${gfShare}% (${gfDays} days)`;
-            document.getElementById('stat-gf-bar').style.width = `${gfShare}%`;
+            const totalMachDays = dmgDays + gfDays || 1;
+            const dmgPct = Math.round((dmgDays / totalMachDays) * 100);
+            const gfPct = 100 - dmgPct;
 
-            const machList = document.getElementById('stat-machines-list');
-            const mCounts = {};
-            projects.forEach(p => { mCounts[p.machine] = (mCounts[p.machine] || 0) + 1; });
-            machList.innerHTML = Object.keys(machinesConfig).map(m => `
-                <div class="flex justify-between items-center text-xs bg-slate-950 p-2.5 rounded border border-slate-800">
+            dmgBar.style.width = `${dmgPct}%`;
+            gfBar.style.width = `${gfPct}%`;
+            dmgShare.textContent = `${dmgPct}% (${dmgDays} days)`;
+            gfShare.textContent = `${gfPct}% (${gfDays} days)`;
+
+            machinesList.innerHTML = Object.entries(machineCounts).map(([m, days]) => `
+                <div class="flex justify-between items-center bg-slate-950 p-2.5 rounded-lg border border-slate-800 text-xs">
                     <span class="font-bold text-white">${m}</span>
-                    <span class="text-gray-400">${mCounts[m] || 0} projects assigned</span>
+                    <span class="text-gray-300">${days} days allocated</span>
                 </div>
-            `).join('');
+            `).join('') || '<span class="text-xs text-gray-500">No machine data</span>';
 
-            const clientList = document.getElementById('stat-clients-list');
-            const cCounts = {};
-            projects.forEach(p => { if(p.client) cCounts[p.client] = (cCounts[p.client] || 0) + 1; });
-            clientList.innerHTML = Object.keys(cCounts).map(c => `
-                <div class="flex justify-between items-center text-xs bg-slate-950 p-2.5 rounded border border-slate-800">
-                    <span class="font-bold text-white">${c}</span>
-                    <span class="text-gray-400">${cCounts[c]} molds</span>
-                </div>
-            `).join('');
+            clientsList.innerHTML = Object.entries(clientStats).map(([client, st]) => {
+                const lateRate = st.total > 0 ? Math.round((st.late / st.total) * 100) : 0;
+                return `
+                    <div class="bg-slate-950 p-2.5 rounded-lg border border-slate-800 text-xs space-y-1">
+                        <div class="flex justify-between font-bold">
+                            <span class="text-white">${client}</span>
+                            <span class="text-gray-400">${st.total} molds (${lateRate}% late)</span>
+                        </div>
+                        <div class="w-full bg-slate-900 rounded-full h-2 overflow-hidden border border-slate-800 flex">
+                            <div class="bg-red-500 h-2" style="width: ${lateRate}%"></div>
+                        </div>
+                    </div>
+                `;
+            }).join('') || '<span class="text-xs text-gray-500">No client data</span>';
         }
 
         function renderDevStats() {
             const totalEl = document.getElementById('dev-stat-total');
-            const appEl = document.getElementById('dev-stat-approved');
-            const injEl = document.getElementById('dev-stat-injected');
+            const approvedEl = document.getElementById('dev-stat-approved');
+            const injectedEl = document.getElementById('dev-stat-injected');
+            const periodLabel = document.getElementById('dev-stat-period-label');
+
             if (!totalEl) return;
 
-            totalEl.textContent = devTextures.length;
-            appEl.textContent = devTextures.filter(x => x.approved === 'yes').length;
-            injEl.textContent = devTextures.filter(x => x.injected === 'yes').length;
+            const periodType = document.getElementById('dev-stat-period-type').value;
+            let filtered = [...devTextures];
+            let labelText = "All Time (Global)";
+
+            const yearVal = parseInt(document.getElementById('dev-stat-year').value);
+            const monthVal = parseInt(document.getElementById('dev-stat-month').value);
+
+            if (periodType === 'year') {
+                labelText = `Year ${yearVal}`;
+                filtered = devTextures.filter(item => item.date && item.date.startsWith(String(yearVal)));
+            } else if (periodType === 'month') {
+                labelText = `Month ${monthVal + 1} / ${yearVal}`;
+                const prefix = `${yearVal}-${String(monthVal + 1).padStart(2, '0')}`;
+                filtered = devTextures.filter(item => item.date && item.date.startsWith(prefix));
+            } else if (periodType === 'custom') {
+                const startStr = document.getElementById('dev-stat-start').value;
+                const endStr = document.getElementById('dev-stat-end').value;
+                labelText = `From ${startStr} to ${endStr}`;
+                filtered = devTextures.filter(item => item.date && item.date >= startStr && item.date <= endStr);
+            }
+
+            periodLabel.textContent = labelText;
+
+            totalEl.textContent = filtered.length;
+            approvedEl.textContent = filtered.filter(i => i.approved === 'yes').length;
+            injectedEl.textContent = filtered.filter(i => i.injected === 'yes').length;
         }
     </script>
 </body>
