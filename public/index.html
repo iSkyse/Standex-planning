@@ -857,7 +857,7 @@
                 const btnEl = document.getElementById(`btn-${v}`);[cite: 8]
                 if (viewEl) viewEl.classList.toggle('hidden', v !== view);[cite: 8]
                 if (btnEl) {[cite: 8]
-                    btnEl.className = v === view [cite: 8]
+                    btnEl.className = v === view[cite: 8]
                         ? 'bg-red-600 text-white px-4 py-2 rounded font-bold text-xs shadow uppercase'[cite: 8]
                         : 'bg-slate-800 text-gray-300 px-4 py-2 rounded font-bold text-xs border border-slate-700 uppercase';[cite: 8]
                 }
@@ -1320,8 +1320,10 @@
                         </td>
                         <td class="p-3 text-xs text-gray-400">${p.date_reception}</td>
                         <td class="p-3 text-xs text-gray-400">${p.date_estimee}</td>
-                        <td class="p-3 text-xs text-emerald-400 font-semibold">${p.date_reelle || '-'}</td>
-                        <td class="p-3 text-right"><button onclick="editProject(${p.id})" class="text-red-400 hover:text-red-300 text-xs font-bold uppercase">Edit</button></td>
+                        <td class="p-3 text-xs text-gray-400">${p.date_reelle || '-'}</td>
+                        <td class="p-3 text-right">
+                            <button onclick="editProject(${p.id})" class="bg-slate-800 hover:bg-slate-700 text-white px-2.5 py-1 rounded text-xs border border-slate-700 font-semibold mr-1">Edit</button>
+                        </td>
                     </tr>
                 `;
             }).join('');
@@ -1332,26 +1334,34 @@
             if (!tbody) return;
             const search = document.getElementById('indev-search').value.toLowerCase();
 
-            const filtered = devTextures.filter(t => {
-                if (t.approved === 'yes') return false;
-                return !search || [t.name, t.client, t.developer, t.machine, t.history, t.technology].some(x => (x || '').toLowerCase().includes(search));
+            const filtered = devTextures.filter(item => {
+                if (item.approved === 'yes') return false;
+                return !search || [item.name, item.client, item.developer, item.machine, item.technology].some(x => (x || '').toLowerCase().includes(search));
             });
 
-            tbody.innerHTML = filtered.map(t => `
-                <tr class="hover:bg-slate-900/80 transition border-b border-slate-800/60">
-                    <td class="p-3 font-bold text-white">${t.name} <span class="text-xs text-gray-400 block">${t.client}</span></td>
-                    <td class="p-3">
-                        <span class="px-2.5 py-1 rounded-full text-xs font-bold ${t.priority === 'red' ? 'bg-red-950 text-red-400' : (t.priority === 'green' ? 'bg-emerald-950 text-emerald-400' : 'bg-amber-950 text-amber-400')}">
-                            ${t.priority === 'red' ? 'CRITICAL' : (t.priority === 'green' ? 'LOW' : 'STANDARD')}
-                        </span>
-                    </td>
-                    <td class="p-3 text-gray-200">${t.developer || '-'}</td>
-                    <td class="p-3"><span class="px-2 py-1 rounded text-xs bg-slate-800 border border-slate-700 text-blue-400 font-semibold">${t.machine || '-'}</span></td>
-                    <td class="p-3 text-xs text-gray-300"><span class="bg-slate-900 border border-slate-800 px-2 py-1 rounded font-mono">${t.history || 'None'}</span></td>
-                    <td class="p-3 text-xs"><span class="text-amber-400 font-semibold">In Development</span> ${t.injected === 'yes' ? '<span class="ml-2 bg-blue-950 text-blue-400 px-1.5 py-0.5 rounded text-[10px]">Injected</span>' : ''}</td>
-                    <td class="p-3 text-right"><button onclick="editDevTexture(${t.id})" class="text-blue-400 hover:text-blue-300 text-xs font-bold uppercase">Edit</button></td>
-                </tr>
-            `).join('');
+            tbody.innerHTML = filtered.map(item => {
+                return `
+                    <tr class="hover:bg-slate-900/80 transition border-b border-slate-800/60">
+                        <td class="p-3 font-bold text-white">${item.name || '-'} <span class="block text-[10px] text-gray-400 font-normal">Client: ${item.client || '-'}</span></td>
+                        <td class="p-3">
+                            <span class="px-2.5 py-1 rounded-full text-xs font-bold ${item.priority === 'red' ? 'bg-red-950 text-red-400' : (item.priority === 'green' ? 'bg-emerald-950 text-emerald-400' : 'bg-amber-950 text-amber-400')}">
+                                ${item.priority === 'red' ? 'CRITICAL' : (item.priority === 'green' ? 'LOW' : 'STANDARD')}
+                            </span>
+                        </td>
+                        <td class="p-3 text-gray-300 text-xs">${item.developer || '-'}</td>
+                        <td class="p-3"><span class="px-2 py-1 rounded text-xs bg-slate-800 border border-slate-700 text-blue-400">${item.machine || '-'}</span></td>
+                        <td class="p-3 text-xs text-gray-400 font-mono">${item.history || '-'}</td>
+                        <td class="p-3 text-xs">
+                            <span class="px-2 py-1 rounded font-semibold ${item.injected === 'yes' ? 'bg-blue-950 text-blue-300 border border-blue-800' : 'bg-slate-900 text-gray-400 border border-slate-800'}">
+                                ${item.injected === 'yes' ? 'Injected / Tested' : 'In Progress'}
+                            </span>
+                        </td>
+                        <td class="p-3 text-right">
+                            <button onclick="editDevTexture(${item.id})" class="bg-slate-800 hover:bg-slate-700 text-white px-2.5 py-1 rounded text-xs border border-slate-700 font-semibold">Edit</button>
+                        </td>
+                    </tr>
+                `;
+            }).join('');
         }
 
         function renderDevApproved() {
@@ -1359,209 +1369,209 @@
             if (!tbody) return;
             const search = document.getElementById('approved-search').value.toLowerCase();
 
-            const filtered = devTextures.filter(t => {
-                if (t.approved !== 'yes') return false;
-                return !search || [t.name, t.client, t.machine, t.technology, t.depth].some(x => (x || '').toLowerCase().includes(search));
+            const filtered = devTextures.filter(item => {
+                if (item.approved !== 'yes') return false;
+                return !search || [item.name, item.client, item.technology].some(x => (x || '').toLowerCase().includes(search));
             });
 
-            tbody.innerHTML = filtered.map(t => `
-                <tr class="hover:bg-slate-900/80 transition border-b border-slate-800/60">
-                    <td class="p-3 font-bold text-white">${t.name}</td>
-                    <td class="p-3 text-gray-300">${t.client}</td>
-                    <td class="p-3"><span class="px-2 py-1 rounded text-xs bg-emerald-950 border border-emerald-800 text-emerald-400 font-semibold">${t.machine}</span> <span class="text-[11px] text-gray-400 block">Trials: ${t.history || '-'}</span></td>
-                    <td class="p-3 font-mono text-cyan-400">${t.depth || '-'}</td>
-                    <td class="p-3 text-gray-300">${t.technology || '-'}</td>
-                    <td class="p-3 text-xs text-gray-400">${t.date || '-'}</td>
-                    <td class="p-3 text-right"><button onclick="editDevTexture(${t.id})" class="text-blue-400 hover:text-blue-300 text-xs font-bold uppercase">Edit</button></td>
-                </tr>
-            `).join('');
-        }
-
-        function renderDevStats() {
-            const periodType = document.getElementById('dev-stat-period-type').value;
-            const yearSel = parseInt(document.getElementById('dev-stat-year').value);
-            const monthSel = parseInt(document.getElementById('dev-stat-month').value);
-            const startStr = document.getElementById('dev-stat-start').value;
-            const endStr = document.getElementById('dev-stat-end').value;
-
-            let periodLabelText = "All Time";
-
-            const filtered = devTextures.filter(t => {
-                if (!t.date) return true;
-                const d = parseLocalDate(t.date);
-                const y = d.getFullYear();
-                const m = d.getMonth();
-
-                if (periodType === 'all') return true;
-                if (periodType === 'year') { periodLabelText = `Year ${yearSel}`; return y === yearSel; }
-                if (periodType === 'month') {
-                    const monthNames = ["January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"];
-                    periodLabelText = `${monthNames[monthSel]} ${yearSel}`;
-                    return y === yearSel && m === monthSel;
-                }
-                if (periodType === 'custom') {
-                    periodLabelText = `From ${startStr || '...'} to ${endStr || '...'}`;
-                    if (!startStr || !endStr) return true;
-                    return t.date >= startStr && t.date <= endStr;
-                }
-                return true;
-            });
-
-            document.getElementById('dev-stat-period-label').textContent = periodLabelText;
-
-            const totalCount = filtered.length;
-            const approvedCount = filtered.filter(t => t.approved === 'yes').length;
-            const injectedCount = filtered.filter(t => t.injected === 'yes').length;
-
-            document.getElementById('dev-stat-total').textContent = totalCount;
-            document.getElementById('dev-stat-approved').textContent = approvedCount;
-            document.getElementById('dev-stat-injected').textContent = injectedCount;
-        }
-
-        function getIsoWeekNumber(d) {[cite: 8]
-            d = new Date(Date.UTC(d.getFullYear(), d.getMonth(), d.getDate()));[cite: 8]
-            d.setUTCDate(d.getUTCDate() + 4 - (d.getUTCDay()||7));[cite: 8]
-            var yearStart = new Date(Date.UTC(d.getUTCFullYear(),0,1));[cite: 8]
-            return Math.ceil((((d - yearStart) / 86400000) + 1)/7);[cite: 8]
+            tbody.innerHTML = filtered.map(item => {
+                return `
+                    <tr class="hover:bg-slate-900/80 transition border-b border-slate-800/60">
+                        <td class="p-3 font-bold text-white">${item.name || '-'}</td>
+                        <td class="p-3 text-gray-300">${item.client || '-'}</td>
+                        <td class="p-3 text-xs text-emerald-400 font-semibold">${item.machine || '-'} ${item.history ? '(' + item.history + ')' : ''}</td>
+                        <td class="p-3 text-xs text-gray-300 font-mono">${item.depth || '-'}</td>
+                        <td class="p-3 text-xs text-gray-300">${item.technology || '-'}</td>
+                        <td class="p-3 text-xs text-gray-400">${item.date || '-'}</td>
+                        <td class="p-3 text-right">
+                            <button onclick="editDevTexture(${item.id})" class="bg-slate-800 hover:bg-slate-700 text-white px-2.5 py-1 rounded text-xs border border-slate-700 font-semibold">Edit</button>
+                        </td>
+                    </tr>
+                `;
+            }).join('');
         }
 
         function renderStats() {
-            const periodType = document.getElementById('stat-period-type').value;[cite: 8]
-            const yearSel = parseInt(document.getElementById('stat-year-select').value);[cite: 8]
-            const monthSel = parseInt(document.getElementById('stat-month-select').value);[cite: 8]
-            const weekSel = parseInt(document.getElementById('stat-week-select').value);[cite: 8]
-            const customStart = document.getElementById('stat-custom-start').value;[cite: 8]
-            const customEnd = document.getElementById('stat-custom-end').value;[cite: 8]
+            const totalEl = document.getElementById('stat-total-projects');
+            const completedEl = document.getElementById('stat-completed-projects');
+            const activeEl = document.getElementById('stat-active-projects');
+            const onTimeEl = document.getElementById('stat-on-time');
+            const periodLabel = document.getElementById('stat-active-period-label');
+            const dmgBar = document.getElementById('stat-dmg-bar');
+            const gfBar = document.getElementById('stat-gf-bar');
+            const dmgShare = document.getElementById('stat-dmg-share');
+            const gfShare = document.getElementById('stat-gf-share');
+            const machinesList = document.getElementById('stat-machines-list');
+            const clientsList = document.getElementById('stat-clients-list');
 
-            let periodLabelText = "All Time";[cite: 8]
+            if (!totalEl) return;
 
-            const filteredProjects = projects.filter(p => {[cite: 8]
-                if (!p.date_reception) return false;[cite: 8]
-                const pDate = parseLocalDate(p.date_reception);[cite: 8]
-                const pYear = pDate.getFullYear();[cite: 8]
-                const pMonth = pDate.getMonth();[cite: 8]
+            const periodType = document.getElementById('stat-period-type').value;
+            let filtered = [...projects];
+            let labelText = "All Time (Global)";
 
-                if (periodType === 'all') return true;[cite: 8]
-                if (periodType === 'year') { periodLabelText = `Year ${yearSel}`; return pYear === yearSel; }[cite: 8]
-                if (periodType === 'month') {[cite: 8]
-                    const monthNames = ["January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"];[cite: 8]
-                    periodLabelText = `${monthNames[monthSel]} ${yearSel}`;[cite: 8]
-                    return pYear === yearSel && pMonth === monthSel;[cite: 8]
-                }
-                if (periodType === 'week') {[cite: 8]
-                    periodLabelText = `Week ${weekSel}, ${yearSel}`;[cite: 8]
-                    return pYear === yearSel && getIsoWeekNumber(pDate) === weekSel;[cite: 8]
-                }
-                if (periodType === 'custom') {[cite: 8]
-                    periodLabelText = `From ${customStart || '...'} to ${customEnd || '...'}`;[cite: 8]
-                    if (!customStart || !customEnd) return true;[cite: 8]
-                    return p.date_reception >= customStart && p.date_reception <= customEnd;[cite: 8]
-                }
-                return true;[cite: 8]
+            const yearVal = parseInt(document.getElementById('stat-year-select').value);
+            const monthVal = parseInt(document.getElementById('stat-month-select').value);
+            const weekVal = parseInt(document.getElementById('stat-week-select').value);
+
+            if (periodType === 'year') {
+                labelText = `Year ${yearVal}`;
+                filtered = projects.filter(p => {
+                    const d = p.date_reception;
+                    return d && d.startsWith(String(yearVal));
+                });
+            } else if (periodType === 'month') {
+                labelText = `Month ${monthVal + 1} / ${yearVal}`;
+                const prefix = `${yearVal}-${String(monthVal + 1).padStart(2, '0')}`;
+                filtered = projects.filter(p => {
+                    const d = p.date_reception;
+                    return d && d.startsWith(prefix);
+                });
+            } else if (periodType === 'week') {
+                labelText = `Year ${yearVal} - Week ${weekVal}`;
+                filtered = projects.filter(p => {
+                    if (!p.date_reception) return false;
+                    const dt = parseLocalDate(p.date_reception);
+                    if (dt.getFullYear() !== yearVal) return false;
+                    const startOfYear = new Date(yearVal, 0, 1);
+                    const wNum = Math.ceil((((dt - startOfYear) / 86400000) + startOfYear.getDay() + 1) / 7);
+                    return wNum === weekVal;
+                });
+            } else if (periodType === 'custom') {
+                const startStr = document.getElementById('stat-custom-start').value;
+                const endStr = document.getElementById('stat-custom-end').value;
+                labelText = `From ${startStr} to ${endStr}`;
+                filtered = projects.filter(p => {
+                    const d = p.date_reception;
+                    return d && d >= startStr && d <= endStr;
+                });
+            }
+
+            periodLabel.textContent = labelText;
+
+            const total = filtered.length;
+            const completed = filtered.filter(p => Boolean(p.date_reelle)).length;
+            const active = total - completed;
+
+            let onTimeCount = 0;
+            let finishedWithEst = filtered.filter(p => p.date_reelle && p.date_estimee);
+            finishedWithEst.forEach(p => {
+                if (p.date_reelle <= p.date_estimee) onTimeCount++;
             });
+            const onTimeRate = finishedWithEst.length > 0 ? Math.round((onTimeCount / finishedWithEst.length) * 100) : 0;
 
-            document.getElementById('stat-active-period-label').textContent = periodLabelText;[cite: 8]
+            totalEl.textContent = total;
+            completedEl.textContent = completed;
+            activeEl.textContent = active;
+            onTimeRate ? onTimeEl.textContent = `${onTimeRate}%` : onTimeEl.textContent = '0%';
 
-            const total = filteredProjects.length;[cite: 8]
-            const completedProjects = filteredProjects.filter(p => p.date_reelle);[cite: 8]
-            const completed = completedProjects.length;[cite: 8]
-            const active = total - completed;[cite: 8]
+            let dmgDays = 0, gfDays = 0;
+            const machineCounts = { "DMG 65": 0, "DMG 125": 0, "DMG 210": 0, "GF 1000": 0, "GF 1200": 0, "GF 4000": 0 };
 
-            let onTimeCount = 0;[cite: 8]
-            completedProjects.forEach(p => { if (p.date_reelle <= p.date_estimee) onTimeCount++; });[cite: 8]
-            const onTimeRate = completed > 0 ? Math.round((onTimeCount / completed) * 100) : (total === 0 ? 0 : 100);[cite: 8]
-
-            document.getElementById('stat-total-projects').textContent = total;[cite: 8]
-            document.getElementById('stat-completed-projects').textContent = completed;[cite: 8]
-            document.getElementById('stat-active-projects').textContent = active;[cite: 8]
-            document.getElementById('stat-on-time').textContent = `${onTimeRate}%`;[cite: 8]
-
-            const machineStats = {};[cite: 8]
-            Object.keys(machinesConfig).forEach(m => machineStats[m] = { count: 0, days: 0 });[cite: 8]
-            
-            let dmgTotalDays = 0;[cite: 8]
-            let gfTotalDays = 0;[cite: 8]
-
-            filteredProjects.forEach(p => {[cite: 8]
-                if (machineStats[p.machine] !== undefined) {[cite: 8]
-                    machineStats[p.machine].count++;[cite: 8]
-                    const start = parseLocalDate(p.date_reception);[cite: 8]
-                    const end = parseLocalDate(p.date_reelle || p.date_estimee);[cite: 8]
-                    const diffDays = Math.max(1, Math.round((end - start) / (1000 * 60 * 60 * 24)) + 1);[cite: 8]
-                    machineStats[p.machine].days += diffDays;[cite: 8]
-
-                    if (p.machine.startsWith("DMG")) {[cite: 8]
-                        dmgTotalDays += diffDays;[cite: 8]
-                    } else if (p.machine.startsWith("GF")) {[cite: 8]
-                        gfTotalDays += diffDays;[cite: 8]
+            filtered.forEach(p => {
+                if (p.date_reception && (p.date_reelle || p.date_estimee)) {
+                    const start = parseLocalDate(p.date_reception);
+                    const end = parseLocalDate(p.date_reelle || p.date_estimee);
+                    const diffDays = Math.max(1, Math.round((end - start) / (1000 * 60 * 60 * 24)) + 1);
+                    
+                    if (machineCounts[p.machine] !== undefined) {
+                        machineCounts[p.machine] += diffDays;
                     }
+                    if (p.machine && p.machine.startsWith('DMG')) dmgDays += diffDays;
+                    if (p.machine && p.machine.startsWith('GF')) gfDays += diffDays;
                 }
             });
 
-            const combinedParkDays = dmgTotalDays + gfTotalDays;[cite: 8]
-            const dmgSharePct = combinedParkDays > 0 ? Math.round((dmgTotalDays / combinedParkDays) * 100) : 0;[cite: 8]
-            const gfSharePct = combinedParkDays > 0 ? Math.round((gfTotalDays / combinedParkDays) * 100) : 0;[cite: 8]
+            const totalParkDays = dmgDays + gfDays;
+            const dmgPct = totalParkDays > 0 ? Math.round((dmgDays / totalParkDays) * 100) : 0;
+            const gfPct = totalParkDays > 0 ? Math.round((gfDays / totalParkDays) * 100) : 0;
 
-            document.getElementById('stat-dmg-share').textContent = `${dmgSharePct}% (${dmgTotalDays} days)`;[cite: 8]
-            document.getElementById('stat-dmg-bar').style.width = `${dmgSharePct}%`;[cite: 8]
-            document.getElementById('stat-gf-share').textContent = `${gfSharePct}% (${gfTotalDays} days)`;[cite: 8]
-            document.getElementById('stat-gf-bar').style.width = `${gfSharePct}%`;[cite: 8]
+            dmgBar.style.width = `${dmgPct}%`;
+            gfBar.style.width = `${gfPct}%`;
+            dmgShare.textContent = `${dmgPct}% (${dmgDays} days)`;
+            gfShare.textContent = `${gfPct}% (${gfDays} days)`;
 
-            const machListEl = document.getElementById('stat-machines-list');[cite: 8]
-            if (machListEl) {[cite: 8]
-                machListEl.innerHTML = Object.keys(machinesConfig).map(mach => {[cite: 8]
-                    const data = machineStats[mach];[cite: 8]
-                    const maxDays = Math.max(...Object.values(machineStats).map(d => d.days), 1);[cite: 8]
-                    const barPct = Math.round((data.days / maxDays) * 100);[cite: 8]
-                    return `
-                        <div class="bg-slate-950/40 p-3 rounded-lg border border-slate-800/80 mb-2">
-                            <div class="flex justify-between text-xs font-semibold mb-1">
-                                <span class="text-white font-bold">${mach}</span>
-                                <span class="text-red-400 font-mono">${data.days} days occupied (${data.count} molds)</span>
-                            </div>
-                            <div class="w-full bg-slate-950 rounded-full h-2 border border-slate-800">
-                                <div class="bg-red-600 h-2 rounded-full" style="width: ${barPct}%"></div>
-                            </div>
+            machinesList.innerHTML = Object.keys(machineCounts).map(m => {
+                const days = machineCounts[m];
+                const pct = totalParkDays > 0 ? Math.round((days / totalParkDays) * 100) : 0;
+                return `
+                    <div>
+                        <div class="flex justify-between text-xs font-semibold mb-1">
+                            <span class="text-gray-300">${m}</span>
+                            <span class="text-white">${days} days (${pct}%)</span>
                         </div>
-                    `;
-                }).join('');
-            }
+                        <div class="w-full bg-slate-950 rounded-full h-2 border border-slate-800 overflow-hidden">
+                            <div class="bg-red-600 h-2" style="width: ${pct}%"></div>
+                        </div>
+                    </div>
+                `;
+            }).join('');
 
-            const clientStats = {};[cite: 8]
-            filteredProjects.forEach(p => {[cite: 8]
-                if (!p.client) return;[cite: 8]
-                if (!clientStats[p.client]) clientStats[p.client] = { total: 0, late: 0 };[cite: 8]
-                clientStats[p.client].total++;[cite: 8]
-                if (p.date_reelle && p.date_reelle > p.date_estimee) {[cite: 8]
-                    clientStats[p.client].late++;[cite: 8]
+            const clientStats = {};
+            filtered.forEach(p => {
+                const cl = p.client || 'Unknown';
+                if (!clientStats[cl]) clientStats[cl] = { total: 0, late: 0 };
+                clientStats[cl].total++;
+                if (p.date_reelle && p.date_estimee && p.date_reelle > p.date_estimee) {
+                    clientStats[cl].late++;
                 }
             });
 
-            const sortedClients = Object.entries(clientStats).sort((a, b) => b[1].total - a[1].total);[cite: 8]
-            const clientListEl = document.getElementById('stat-clients-list');[cite: 8]
-            
-            if (clientListEl) {[cite: 8]
-                if (sortedClients.length === 0) {[cite: 8]
-                    clientListEl.innerHTML = `<p class="text-xs text-gray-500 italic">No client data available for this period.</p>`;[cite: 8]
-                } else {[cite: 8]
-                    clientListEl.innerHTML = sortedClients.map(([client, data]) => {[cite: 8]
-                        const volumePct = total > 0 ? Math.round((data.total / total) * 100) : 0;[cite: 8]
-                        const latePct = data.total > 0 ? Math.round((data.late / data.total) * 100) : 0;[cite: 8]
-                        return `
-                            <div class="bg-slate-950/40 p-3 rounded-lg border border-slate-800/80 mb-2">
-                                <div class="flex justify-between text-xs font-bold mb-1.5 items-center">
-                                    <span class="text-white">${client} <span class="text-gray-400 font-normal">(${data.total} molds - ${volumePct}%)</span></span>
-                                    <span class="text-red-400 bg-red-950/60 border border-red-900 px-2 py-0.5 rounded text-[11px]">⚠️ ${data.late} late (${latePct}% of client's molds)</span>
-                                </div>
-                                <div class="w-full bg-slate-950 rounded-full h-2 border border-slate-800">
-                                    <div class="bg-red-600 h-2 rounded-full" style="width: ${latePct}%"></div>
-                                </div>
-                            </div>
-                        `;
-                    }).join('');
-                }
+            clientsList.innerHTML = Object.keys(clientStats).map(cl => {
+                const st = clientStats[cl];
+                const latePct = st.total > 0 ? Math.round((st.late / st.total) * 100) : 0;
+                return `
+                    <div class="bg-slate-950 p-3 rounded-lg border border-slate-800 flex justify-between items-center">
+                        <div>
+                            <span class="font-bold text-white text-xs block">${cl}</span>
+                            <span class="text-[10px] text-gray-400">Total: ${st.total} molds | Late: ${st.late}</span>
+                        </div>
+                        <span class="text-xs font-extrabold ${latePct > 0 ? 'text-red-500' : 'text-emerald-400'}">${latePct}% Late</span>
+                    </div>
+                `;
+            }).join('') || '<p class="text-xs text-gray-500">No client data.</p>';
+        }
+
+        function renderDevStats() {
+            const totalEl = document.getElementById('dev-stat-total');
+            const approvedEl = document.getElementById('dev-stat-approved');
+            const injectedEl = document.getElementById('dev-stat-injected');
+            const periodLabel = document.getElementById('dev-stat-period-label');
+
+            if (!totalEl) return;
+
+            const periodType = document.getElementById('dev-stat-period-type').value;
+            let filtered = [...devTextures];
+            let labelText = "All Time (Global)";
+
+            const yearVal = parseInt(document.getElementById('dev-stat-year').value);
+            const monthVal = parseInt(document.getElementById('dev-stat-month').value);
+
+            if (periodType === 'year') {
+                labelText = `Year ${yearVal}`;
+                filtered = devTextures.filter(item => item.date && item.date.startsWith(String(yearVal)));
+            } else if (periodType === 'month') {
+                labelText = `Month ${monthVal + 1} / ${yearVal}`;
+                const prefix = `${yearVal}-${String(monthVal + 1).padStart(2, '0')}`;
+                filtered = devTextures.filter(item => item.date && item.date.startsWith(prefix));
+            } else if (periodType === 'custom') {
+                const startStr = document.getElementById('dev-stat-start').value;
+                const endStr = document.getElementById('dev-stat-end').value;
+                labelText = `From ${startStr} to ${endStr}`;
+                filtered = devTextures.filter(item => item.date && item.date >= startStr && item.date <= endStr);
             }
+
+            periodLabel.textContent = labelText;
+
+            const total = filtered.length;
+            const approved = filtered.filter(item => item.approved === 'yes').length;
+            const injected = filtered.filter(item => item.injected === 'yes').length;
+
+            totalEl.textContent = total;
+            approvedEl.textContent = approved;
+            injectedEl.textContent = injected;
         }
     </script>
 </body>
 </html>
+```[cite: 10]
