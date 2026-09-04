@@ -955,14 +955,23 @@
                 date_approval: approvalDate
             };
 
-            await fetch('/api/development', {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify(data)
-            });
+            try {
+                const res = await fetch('/api/development', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(data)
+                });
 
-            closeDevModal();
-            loadDevTextures();
+                if (!res.ok) {
+                    throw new Error(`Server returned status ${res.status}`);
+                }
+
+                closeDevModal();
+                await loadDevTextures();
+            } catch (err) {
+                console.error("Error saving development texture", err);
+                alert("Could not save the development texture. Check that the server is running and the /api/development route exists.\n\n" + err.message);
+            }
         }
 
         function editDevTexture(id) {
@@ -973,9 +982,17 @@
         async function confirmDeleteDev() {
             const id = Number(document.getElementById('dev-id').value);
             if (confirm("Delete this development texture record?")) {
-                await fetch(`/api/development/${id}`, { method: 'DELETE' });
-                closeDevModal();
-                loadDevTextures();
+                try {
+                    const res = await fetch(`/api/development/${id}`, { method: 'DELETE' });
+                    if (!res.ok) {
+                        throw new Error(`Server returned status ${res.status}`);
+                    }
+                    closeDevModal();
+                    await loadDevTextures();
+                } catch (err) {
+                    console.error("Error deleting development texture", err);
+                    alert("Could not delete the development texture. Check that the server is running.\n\n" + err.message);
+                }
             }
         }
 
@@ -1043,14 +1060,23 @@
                 photo: tempPastedPhotoUrl || (existingProj ? existingProj.photo : '')
             };
 
-            await fetch('/api/projects', {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify(pData)
-            });
+            try {
+                const res = await fetch('/api/projects', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(pData)
+                });
 
-            closeModal();
-            loadProjects();
+                if (!res.ok) {
+                    throw new Error(`Server returned status ${res.status}`);
+                }
+
+                closeModal();
+                await loadProjects();
+            } catch (err) {
+                console.error("Error saving project", err);
+                alert("Could not save the project. Check that the server is running and the /api/projects route exists.\n\n" + err.message);
+            }
         }
 
         function editProject(id) { const p = projects.find(x => x.id === id); if (p) openModal(p); }
@@ -1058,9 +1084,17 @@
         async function confirmDeleteProject() {
             const id = Number(document.getElementById('project-id').value);
             if (confirm("Delete this project?")) {
-                await fetch(`/api/projects/${id}`, { method: 'DELETE' });
-                closeModal();
-                loadProjects();
+                try {
+                    const res = await fetch(`/api/projects/${id}`, { method: 'DELETE' });
+                    if (!res.ok) {
+                        throw new Error(`Server returned status ${res.status}`);
+                    }
+                    closeModal();
+                    await loadProjects();
+                } catch (err) {
+                    console.error("Error deleting project", err);
+                    alert("Could not delete the project. Check that the server is running.\n\n" + err.message);
+                }
             }
         }
 
