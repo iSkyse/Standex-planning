@@ -902,7 +902,7 @@
 
             if (item) {
                 ['dev_name', 'dev_client', 'dev_priority', 'dev_state', 'dev_op', 'dev_type', 'dev_folder', 'dev_email', 'dev_developer', 'dev_machine', 'dev_history', 'dev_approved', 'dev_date_reception', 'dev_date_approval'].forEach(field => {
-                    const elId = field.replace('dev_', '').replace('date_reception', 'date_reception').replace('date_approval', 'date_approval');
+                    const elId = field.replace('dev_', '');
                     const element = document.getElementById(field);
                     if (element) {
                         element.value = item[elId] || '';
