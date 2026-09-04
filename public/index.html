@@ -1504,10 +1504,10 @@
                     <div>
                         <div class="flex justify-between text-xs font-bold mb-1">
                             <span class="text-gray-300">${m}</span>
-                            <span class="text-white">${dCount} days (${pct}%)</span>
+                            <span class="text-white">${pct}% (${dCount} days)</span>
                         </div>
-                        <div class="w-full bg-slate-950 rounded-full h-2 border border-slate-800 overflow-hidden">
-                            <div class="bg-red-600 h-2" style="width: ${pct}%"></div>
+                        <div class="w-full bg-slate-950 rounded-full h-2.5 border border-slate-800 overflow-hidden flex">
+                            <div class="bg-red-600 h-2.5" style="width: ${pct}%"></div>
                         </div>
                     </div>
                 `;
@@ -1524,15 +1524,17 @@
             });
 
             clientsList.innerHTML = Object.keys(clientStats).map(c => {
-                const stats = clientStats[c];
-                const latePct = stats.total > 0 ? Math.round((stats.late / stats.total) * 100) : 0;
+                const stat = clientStats[c];
+                const latePct = stat.total > 0 ? Math.round((stat.late / stat.total) * 100) : 0;
                 return `
-                    <div class="bg-slate-950 p-3 rounded-lg border border-slate-800 flex justify-between items-center">
-                        <div>
-                            <span class="text-white font-bold text-xs block">${c}</span>
-                            <span class="text-[10px] text-gray-400">Total Molds: ${stats.total} | Late: ${stats.late}</span>
+                    <div class="bg-slate-950 border border-slate-800 rounded-lg p-3">
+                        <div class="flex justify-between text-xs font-bold mb-1">
+                            <span class="text-white">${c}</span>
+                            <span class="text-gray-400">${stat.total} molds (${latePct}% late)</span>
                         </div>
-                        <span class="text-xs font-bold px-2.5 py-1 rounded ${latePct > 20 ? 'bg-red-950 text-red-400 border border-red-800' : 'bg-slate-900 text-gray-300 border border-slate-800'}">${latePct}% Late</span>
+                        <div class="w-full bg-slate-900 rounded-full h-2 border border-slate-800 overflow-hidden flex">
+                            <div class="bg-amber-500 h-2" style="width: ${latePct}%"></div>
+                        </div>
                     </div>
                 `;
             }).join('');
@@ -1542,7 +1544,6 @@
             const totalEl = document.getElementById('dev-stat-total');
             const approvedEl = document.getElementById('dev-stat-approved');
             const periodLabel = document.getElementById('dev-stat-period-label');
-
             if (!totalEl) return;
 
             const periodType = document.getElementById('dev-stat-period-type').value;
@@ -1576,7 +1577,6 @@
             }
 
             periodLabel.textContent = labelText;
-
             totalEl.textContent = filtered.length;
             approvedEl.textContent = filtered.filter(item => item.approved === 'yes').length;
         }
