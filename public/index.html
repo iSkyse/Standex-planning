@@ -237,7 +237,7 @@
                         <table class="w-full text-left border-collapse">
                             <thead class="bg-black text-blue-400 text-xs uppercase sticky top-0 z-10 border-b border-slate-800">
                                 <tr>
-                                    <th class="p-3">Texture Name</th><th class="p-3">Priority</th><th class="p-3">Developer</th><th class="p-3">OP</th><th class="p-3">Folder Name</th><th class="p-3">Email</th><th class="p-3">Current Machine</th><th class="p-3">Machine Trial History</th><th class="p-3">Reception Date</th><th class="p-3">Status / Action</th><th class="p-3 text-right">Actions</th>
+                                    <th class="p-3">Order</th><th class="p-3">Texture Name</th><th class="p-3">Priority</th><th class="p-3">Developer</th><th class="p-3">OP</th><th class="p-3">Folder Name</th><th class="p-3">Email</th><th class="p-3">Current Machine</th><th class="p-3">Machine Trial History</th><th class="p-3">Reception Date</th><th class="p-3">Status / Action</th><th class="p-3 text-right">Actions</th>
                                 </tr>
                             </thead>
                             <tbody id="indev-table-body" class="text-sm divide-y divide-slate-800/60 text-gray-300"></tbody>
@@ -1421,6 +1421,15 @@
                 return !search || [item.name, item.client, item.developer, item.machine, item.op, item.folder, item.email, item.email_file_name].some(x => (x || '').toLowerCase().includes(search));
             });
 
+            filtered.sort((a, b) => {
+                const aHas = a.order !== undefined && a.order !== null && a.order !== '';
+                const bHas = b.order !== undefined && b.order !== null && b.order !== '';
+                if (aHas && bHas) return Number(a.order) - Number(b.order);
+                if (aHas && !bHas) return -1;
+                if (!aHas && bHas) return 1;
+                return 0;
+            });
+
             tbody.innerHTML = filtered.map(item => {
                 let priorityColorClass = 'bg-amber-950 text-amber-400 border border-amber-800';
                 if (item.priority === 'CRITICAL') priorityColorClass = 'bg-red-950 text-red-400 border border-red-800';
@@ -1430,6 +1439,9 @@
 
                 return `
                     <tr class="hover:bg-slate-900/80 transition border-b border-slate-800/60">
+                        <td class="p-3">
+                            <input type="number" value="${item.order ?? ''}" onchange="updateDevOrder(${item.id}, this.value)" class="w-16 p-1.5 bg-slate-900 border border-slate-700 rounded text-white text-xs text-center focus:outline-none focus:border-blue-600" placeholder="-">
+                        </td>
                         <td class="p-3 font-bold text-white">${item.name || '-'} <span class="block text-[10px] text-gray-400 font-normal">Client: ${item.client || '-'} | Type: ${item.type || '-'}</span></td>
                         <td class="p-3">
                             <span class="px-2.5 py-1 rounded-full text-xs font-bold ${priorityColorClass}">
@@ -1456,6 +1468,31 @@
                     </tr>
                 `;
             }).join('');
+        }
+
+        async function updateDevOrder(id, value) {
+            const item = devTextures.find(x => x.id === id);
+            if (!item) return;
+            const newOrder = value === '' ? '' : Number(value);
+            const previousOrder = item.order;
+            item.order = newOrder;
+
+            try {
+                const res = await fetch('/api/development', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(item)
+                });
+                if (!res.ok) {
+                    throw new Error(`Server returned status ${res.status}`);
+                }
+                renderDevInDev();
+            } catch (err) {
+                console.error("Error updating order", err);
+                item.order = previousOrder;
+                alert("Could not update the order. Check that the server is running.\n\n" + err.message);
+                renderDevInDev();
+            }
         }
 
         function renderDevApproved() {
