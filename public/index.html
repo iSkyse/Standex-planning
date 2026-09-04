@@ -505,12 +505,12 @@
                         <input type="text" id="dev_folder" placeholder="Folder name..." class="w-full mt-1 p-2.5 bg-slate-950 border border-slate-700 rounded text-white">
                     </div>
                     <div>
-                        <label class="block text-xs font-bold text-gray-400 uppercase">Email (Email)</label>
+                        <label class="block text-xs font-bold text-gray-400 uppercase">Email</label>
                         <div id="dev-email-drop" onclick="document.getElementById('dev-email-file-input').click()" class="w-full mt-1 p-2 bg-slate-950 border-2 border-dashed border-slate-700 rounded text-white text-[10.5px] text-center cursor-pointer hover:border-gray-500 transition leading-snug">
                             <span id="dev-email-drop-text">📎 Drop the email here from Outlook<br>(or click to choose a .msg/.eml file)</span>
                         </div>
                         <input type="file" id="dev-email-file-input" accept=".msg,.eml" class="hidden">
-                        <input type="text" id="dev_email" placeholder="...or paste a link here" class="w-full mt-1 p-1.5 bg-slate-950 border border-slate-700 rounded text-white text-[11px]">
+                        <input type="hidden" id="dev_email" value="">
                     </div>
                 </div>
                 <div class="grid grid-cols-2 gap-4">
