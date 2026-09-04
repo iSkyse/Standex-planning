@@ -467,8 +467,8 @@
                         <input type="text" id="dev_folder" placeholder="Folder name..." class="w-full mt-1 p-2.5 bg-slate-950 border border-slate-700 rounded text-white">
                     </div>
                     <div>
-                        <label class="block text-xs font-bold text-gray-400 uppercase">Email</label>
-                        <input type="email" id="dev_email" placeholder="client@example.com" class="w-full mt-1 p-2.5 bg-slate-950 border border-slate-700 rounded text-white">
+                        <label class="block text-xs font-bold text-gray-400 uppercase">Email Link (Courriel)</label>
+                        <input type="url" id="dev_email" placeholder="https://outlook.office.com/mail/id/..." class="w-full mt-1 p-2.5 bg-slate-950 border border-slate-700 rounded text-white">
                     </div>
                 </div>
                 <div class="grid grid-cols-2 gap-4">
@@ -1385,7 +1385,7 @@
                         <td class="p-3 text-gray-200 text-xs font-mono">${item.op || '-'}</td>
                         <td class="p-3 text-gray-300 text-xs font-mono">${item.folder || '-'}</td>
                         <td class="p-3 text-xs">
-                            ${item.email ? `<a href="mailto:${item.email}" class="bg-blue-950/60 hover:bg-blue-900 text-blue-400 border border-blue-800 px-3 py-1.5 rounded-lg text-xs font-mono transition inline-flex items-center gap-1.5 shadow">📧 ${item.email}</a>` : '-'}
+                            ${item.email ? `<a href="${item.email}" target="_blank" rel="noopener noreferrer" class="bg-blue-950/60 hover:bg-blue-900 text-blue-400 border border-blue-800 px-3 py-1.5 rounded-lg text-xs font-mono transition inline-flex items-center gap-1.5 shadow">📧 View Email</a>` : '-'}
                         </td>
                         <td class="p-3"><span class="px-2 py-1 rounded text-xs bg-slate-800 border border-slate-700 text-blue-400">${item.machine || '-'}</span></td>
                         <td class="p-3 text-xs text-gray-400 font-mono">${item.history || '-'}</td>
@@ -1421,7 +1421,7 @@
                         <td class="p-3 text-gray-200 text-xs font-mono">${item.op || '-'}</td>
                         <td class="p-3 text-gray-300 text-xs font-mono">${item.folder || '-'}</td>
                         <td class="p-3 text-xs">
-                            ${item.email ? `<a href="mailto:${item.email}" class="bg-blue-950/60 hover:bg-blue-900 text-blue-400 border border-blue-800 px-3 py-1.5 rounded-lg text-xs font-mono transition inline-flex items-center gap-1.5 shadow">📧 ${item.email}</a>` : '-'}
+                            ${item.email ? `<a href="${item.email}" target="_blank" rel="noopener noreferrer" class="bg-blue-950/60 hover:bg-blue-900 text-blue-400 border border-blue-800 px-3 py-1.5 rounded-lg text-xs font-mono transition inline-flex items-center gap-1.5 shadow">📧 View Email</a>` : '-'}
                         </td>
                         <td class="p-3 text-xs text-emerald-400 font-semibold">${item.machine || '-'} ${item.history ? '(' + item.history + ')' : ''}</td>
                         <td class="p-3 text-xs text-gray-400 font-mono">${item.date_reception || item.date || '-'}</td>
