@@ -237,7 +237,7 @@
                         <table class="w-full text-left border-collapse">
                             <thead class="bg-black text-blue-400 text-xs uppercase sticky top-0 z-10 border-b border-slate-800">
                                 <tr>
-                                    <th class="p-3">Texture Name</th><th class="p-3">Priority</th><th class="p-3">Developer</th><th class="p-3">Current Machine</th><th class="p-3">Machine Trial History</th><th class="p-3">Status / Action</th><th class="p-3 text-right">Actions</th>
+                                    <th class="p-3">Texture Name</th><th class="p-3">Priority</th><th class="p-3">Developer</th><th class="p-3">OP</th><th class="p-3">Folder Name</th><th class="p-3">Email</th><th class="p-3">Current Machine</th><th class="p-3">Machine Trial History</th><th class="p-3">Status / Action</th><th class="p-3 text-right">Actions</th>
                                 </tr>
                             </thead>
                             <tbody id="indev-table-body" class="text-sm divide-y divide-slate-800/60 text-gray-300"></tbody>
@@ -255,7 +255,7 @@
                         <table class="w-full text-left border-collapse">
                             <thead class="bg-black text-emerald-400 text-xs uppercase sticky top-0 z-10 border-b border-slate-800">
                                 <tr>
-                                    <th class="p-3">Texture Name</th><th class="p-3">Client</th><th class="p-3">Approved Machines</th><th class="p-3">Depth</th><th class="p-3">Technology</th><th class="p-3">Approval Date</th><th class="p-3 text-right">Actions</th>
+                                    <th class="p-3">Texture Name</th><th class="p-3">Client</th><th class="p-3">OP</th><th class="p-3">Folder Name</th><th class="p-3">Email</th><th class="p-3">Approved Machines</th><th class="p-3">Depth</th><th class="p-3">Technology</th><th class="p-3">Approval Date</th><th class="p-3 text-right">Actions</th>
                                 </tr>
                             </thead>
                             <tbody id="approved-table-body" class="text-sm divide-y divide-slate-800/60 text-gray-300"></tbody>
@@ -430,17 +430,56 @@
                     <div>
                         <label class="block text-xs font-bold text-gray-400 uppercase">Priority</label>
                         <select id="dev_priority" class="w-full mt-1 p-2.5 bg-slate-950 border border-slate-700 rounded text-white">
-                            <option value="yellow">🟡 Standard</option>
-                            <option value="red">🔴 Critical</option>
-                            <option value="green">🟢 Low</option>
+                            <option value="URGENTE">URGENTE</option>
+                            <option value="IMPORTANTE">IMPORTANTE</option>
+                            <option value="MEDIA">MEDIA</option>
+                            <option value="BAIXA">BAIXA</option>
                         </select>
                     </div>
+                    <div>
+                        <label class="block text-xs font-bold text-gray-400 uppercase">State</label>
+                        <select id="dev_state" class="w-full mt-1 p-2.5 bg-slate-950 border border-slate-700 rounded text-white text-xs">
+                            <option value="EM CURSO">EM CURSO</option>
+                            <option value="EM ESPERA">EM ESPERA</option>
+                            <option value="REPROVADO">REPROVADO</option>
+                            <option value="A INJECTAR">A INJECTAR</option>
+                            <option value="A AGUARDAR FEEDBACK">A AGUARDAR FEEDBACK</option>
+                            <option value="CONCLUIDO">CONCLUIDO</option>
+                            <option value="SEM EFEITO">SEM EFEITO</option>
+                            <option value="A GRAVAR">A GRAVAR</option>
+                            <option value="A ESPERA DE DISPONIBLIDADE DA MAQUINA">A ESPERA DE DISPONIBLIDADE DA MAQUINA</option>
+                        </select>
+                    </div>
+                </div>
+                <div class="grid grid-cols-2 gap-4">
+                    <div>
+                        <label class="block text-xs font-bold text-gray-400 uppercase">OP</label>
+                        <input type="text" id="dev_op" placeholder="OP..." class="w-full mt-1 p-2.5 bg-slate-950 border border-slate-700 rounded text-white">
+                    </div>
+                    <div>
+                        <label class="block text-xs font-bold text-gray-400 uppercase">Development Type</label>
+                        <select id="dev_type" class="w-full mt-1 p-2.5 bg-slate-950 border border-slate-700 rounded text-white">
+                            <option value="NANO">NANO</option>
+                            <option value="FEMTO">FEMTO</option>
+                            <option value="AX">AX</option>
+                        </select>
+                    </div>
+                </div>
+                <div class="grid grid-cols-2 gap-4">
+                    <div>
+                        <label class="block text-xs font-bold text-gray-400 uppercase">Folder Name</label>
+                        <input type="text" id="dev_folder" placeholder="Folder name..." class="w-full mt-1 p-2.5 bg-slate-950 border border-slate-700 rounded text-white">
+                    </div>
+                    <div>
+                        <label class="block text-xs font-bold text-gray-400 uppercase">Email</label>
+                        <input type="email" id="dev_email" placeholder="client@example.com" class="w-full mt-1 p-2.5 bg-slate-950 border border-slate-700 rounded text-white">
+                    </div>
+                </div>
+                <div class="grid grid-cols-2 gap-4">
                     <div>
                         <label class="block text-xs font-bold text-gray-400 uppercase">Developer (Who)</label>
                         <input type="text" id="dev_developer" required placeholder="Name..." class="w-full mt-1 p-2.5 bg-slate-950 border border-slate-700 rounded text-white">
                     </div>
-                </div>
-                <div class="grid grid-cols-2 gap-4">
                     <div>
                         <label class="block text-xs font-bold text-gray-400 uppercase">Current Machine</label>
                         <select id="dev_machine" class="w-full mt-1 p-2.5 bg-slate-950 border border-slate-700 rounded text-white">
@@ -452,14 +491,17 @@
                             <option value="GF 4000">GF 4000</option>
                         </select>
                     </div>
+                </div>
+                <div class="grid grid-cols-2 gap-4">
                     <div>
                         <label class="block text-xs font-bold text-gray-400 uppercase">Machine Trial History (Comma separated)</label>
                         <input type="text" id="dev_history" placeholder="e.g. DMG 65, GF 1000" class="w-full mt-1 p-2.5 bg-slate-950 border border-slate-700 rounded text-white text-xs">
                     </div>
+                    <div><label class="block text-xs font-bold text-gray-400 uppercase">Depth (e.g. 0.05mm)</label><input type="text" id="dev_depth" class="w-full mt-1 p-2.5 bg-slate-950 border border-slate-700 rounded text-white"></div>
                 </div>
                 <div class="grid grid-cols-2 gap-4">
-                    <div><label class="block text-xs font-bold text-gray-400 uppercase">Depth (e.g. 0.05mm)</label><input type="text" id="dev_depth" class="w-full mt-1 p-2.5 bg-slate-950 border border-slate-700 rounded text-white"></div>
                     <div><label class="block text-xs font-bold text-gray-400 uppercase">Technology</label><input type="text" id="dev_technology" placeholder="Laser / Chemical / etc." class="w-full mt-1 p-2.5 bg-slate-950 border border-slate-700 rounded text-white"></div>
+                    <div><label class="block text-xs font-bold text-gray-400 uppercase">Approval / Event Date</label><input type="date" id="dev_date" class="w-full mt-1 p-2.5 bg-slate-950 border border-slate-700 rounded text-white"></div>
                 </div>
                 <div class="grid grid-cols-2 gap-4 bg-slate-950 p-3 rounded-lg border border-slate-800">
                     <div>
@@ -477,7 +519,6 @@
                         </select>
                     </div>
                 </div>
-                <div><label class="block text-xs font-bold text-gray-400 uppercase">Approval / Event Date</label><input type="date" id="dev_date" class="w-full mt-1 p-2.5 bg-slate-950 border border-slate-700 rounded text-white"></div>
 
                 <div class="flex justify-between gap-3 mt-6 pt-4 border-t border-slate-800">
                     <button type="button" onclick="confirmDeleteDev()" id="dev-delete-btn" class="bg-red-950 text-red-400 px-4 py-2 rounded text-sm hidden">Delete</button>
@@ -864,7 +905,7 @@
             document.getElementById('dev-delete-btn').classList.toggle('hidden', !item);
 
             if (item) {
-                ['dev_name', 'dev_client', 'dev_priority', 'dev_developer', 'dev_machine', 'dev_history', 'dev_depth', 'dev_technology', 'dev_approved', 'dev_injected', 'dev_date'].forEach(field => {
+                ['dev_name', 'dev_client', 'dev_priority', 'dev_state', 'dev_op', 'dev_type', 'dev_folder', 'dev_email', 'dev_developer', 'dev_machine', 'dev_history', 'dev_depth', 'dev_technology', 'dev_approved', 'dev_injected', 'dev_date'].forEach(field => {
                     const elId = field.replace('dev_', '');
                     if (document.getElementById(field)) {
                         document.getElementById(field).value = item[elId] || '';
@@ -874,6 +915,9 @@
                 document.getElementById('dev_date').value = new Date().toISOString().split('T')[0];
                 document.getElementById('dev_approved').value = 'no';
                 document.getElementById('dev_injected').value = 'no';
+                document.getElementById('dev_priority').value = 'URGENTE';
+                document.getElementById('dev_state').value = 'EM CURSO';
+                document.getElementById('dev_type').value = 'NANO';
             }
             document.getElementById('dev-modal').classList.remove('hidden');
         }
@@ -890,6 +934,11 @@
                 name: document.getElementById('dev_name').value.trim(),
                 client: document.getElementById('dev_client').value.trim(),
                 priority: document.getElementById('dev_priority').value,
+                state: document.getElementById('dev_state').value,
+                op: document.getElementById('dev_op').value.trim(),
+                type: document.getElementById('dev_type').value,
+                folder: document.getElementById('dev_folder').value.trim(),
+                email: document.getElementById('dev_email').value.trim(),
                 developer: document.getElementById('dev_developer').value.trim(),
                 machine: document.getElementById('dev_machine').value,
                 history: document.getElementById('dev_history').value.trim(),
@@ -1274,24 +1323,29 @@
 
             const filtered = devTextures.filter(item => {
                 if (item.approved === 'yes') return false;
-                return !search || [item.name, item.client, item.developer, item.machine, item.technology].some(x => (x || '').toLowerCase().includes(search));
+                return !search || [item.name, item.client, item.developer, item.machine, item.technology, item.op, item.folder, item.email].some(x => (x || '').toLowerCase().includes(search));
             });
 
             tbody.innerHTML = filtered.map(item => {
                 return `
                     <tr class="hover:bg-slate-900/80 transition border-b border-slate-800/60">
-                        <td class="p-3 font-bold text-white">${item.name || '-'} <span class="block text-[10px] text-gray-400 font-normal">Client: ${item.client || '-'}</span></td>
+                        <td class="p-3 font-bold text-white">${item.name || '-'} <span class="block text-[10px] text-gray-400 font-normal">Client: ${item.client || '-'} | Type: ${item.type || '-'}</span></td>
                         <td class="p-3">
-                            <span class="px-2.5 py-1 rounded-full text-xs font-bold ${item.priority === 'red' ? 'bg-red-950 text-red-400' : (item.priority === 'green' ? 'bg-emerald-950 text-emerald-400' : 'bg-amber-950 text-amber-400')}">
-                                ${item.priority === 'red' ? 'CRITICAL' : (item.priority === 'green' ? 'LOW' : 'STANDARD')}
+                            <span class="px-2.5 py-1 rounded-full text-xs font-bold ${item.priority === 'URGENTE' ? 'bg-red-950 text-red-400 border border-red-800' : item.priority === 'IMPORTANTE' ? 'bg-orange-950 text-orange-400 border border-orange-800' : 'bg-amber-950 text-amber-400 border border-amber-800'}">
+                                ${item.priority || 'URGENTE'}
                             </span>
                         </td>
                         <td class="p-3 text-gray-300 text-xs">${item.developer || '-'}</td>
+                        <td class="p-3 text-gray-200 text-xs font-mono">${item.op || '-'}</td>
+                        <td class="p-3 text-gray-300 text-xs font-mono">${item.folder || '-'}</td>
+                        <td class="p-3 text-xs">
+                            ${item.email ? `<a href="mailto:${item.email}" class="text-blue-400 hover:underline font-mono">${item.email}</a>` : '-'}
+                        </td>
                         <td class="p-3"><span class="px-2 py-1 rounded text-xs bg-slate-800 border border-slate-700 text-blue-400">${item.machine || '-'}</span></td>
                         <td class="p-3 text-xs text-gray-400 font-mono">${item.history || '-'}</td>
                         <td class="p-3 text-xs">
-                            <span class="px-2 py-1 rounded font-semibold ${item.injected === 'yes' ? 'bg-blue-950 text-blue-300 border border-blue-800' : 'bg-slate-900 text-gray-400 border border-slate-800'}">
-                                ${item.injected === 'yes' ? 'Injected / Tested' : 'In Progress'}
+                            <span class="px-2 py-1 rounded font-semibold bg-slate-900 text-gray-300 border border-slate-800">
+                                ${item.state || 'EM CURSO'}
                             </span>
                         </td>
                         <td class="p-3 text-right">
@@ -1309,14 +1363,19 @@
 
             const filtered = devTextures.filter(item => {
                 if (item.approved !== 'yes') return false;
-                return !search || [item.name, item.client, item.technology].some(x => (x || '').toLowerCase().includes(search));
+                return !search || [item.name, item.client, item.technology, item.op, item.folder, item.email].some(x => (x || '').toLowerCase().includes(search));
             });
 
             tbody.innerHTML = filtered.map(item => {
                 return `
                     <tr class="hover:bg-slate-900/80 transition border-b border-slate-800/60">
-                        <td class="p-3 font-bold text-white">${item.name || '-'}</td>
+                        <td class="p-3 font-bold text-white">${item.name || '-'} <span class="block text-[10px] text-gray-400 font-normal">Type: ${item.type || '-'}</span></td>
                         <td class="p-3 text-gray-300">${item.client || '-'}</td>
+                        <td class="p-3 text-gray-200 text-xs font-mono">${item.op || '-'}</td>
+                        <td class="p-3 text-gray-300 text-xs font-mono">${item.folder || '-'}</td>
+                        <td class="p-3 text-xs">
+                            ${item.email ? `<a href="mailto:${item.email}" class="text-blue-400 hover:underline font-mono">${item.email}</a>` : '-'}
+                        </td>
                         <td class="p-3 text-xs text-emerald-400 font-semibold">${item.machine || '-'} ${item.history ? '(' + item.history + ')' : ''}</td>
                         <td class="p-3 text-xs text-gray-300 font-mono">${item.depth || '-'}</td>
                         <td class="p-3 text-xs text-gray-300">${item.technology || '-'}</td>
@@ -1514,4 +1573,4 @@
     </script>
 </body>
 </html>
-```[cite: 5, 6]
+```[cite: 1]
