@@ -216,7 +216,7 @@
                     </div>
                 </div>
                 <div class="flex items-center gap-3">
-                    <button onclick="openDevModal()" class="bg-blue-600 hover:bg-blue-700 text-white px-5 py-2 rounded font-bold transition text-sm shadow-lg uppercase tracking-wider">+ New Development Texture</button>
+                    <button id="btn-dev-action" onclick="openDevModal()" class="bg-blue-600 hover:bg-blue-700 text-white px-5 py-2 rounded font-bold transition text-sm shadow-lg uppercase tracking-wider">+ New Development Texture</button>
                 </div>
             </header>
 
@@ -302,14 +302,26 @@
                         <span id="dev-stat-period-label" class="text-xs font-bold text-blue-400 bg-blue-950/50 border border-blue-800 px-3 py-1 rounded-full">All Time</span>
                     </div>
 
-                    <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
+                    <div class="grid grid-cols-2 md:grid-cols-5 gap-6 mb-6">
                         <div class="bg-slate-900 border border-slate-800 rounded-xl p-5">
                             <span class="text-xs font-bold text-gray-400 uppercase">Total Textures in Dev</span>
                             <div id="dev-stat-total" class="text-3xl font-black text-white mt-2">0</div>
                         </div>
                         <div class="bg-slate-900 border border-slate-800 rounded-xl p-5">
+                            <span class="text-xs font-bold text-gray-400 uppercase">In Development</span>
+                            <div id="dev-stat-indev" class="text-3xl font-black text-amber-400 mt-2">0</div>
+                        </div>
+                        <div class="bg-slate-900 border border-slate-800 rounded-xl p-5">
                             <span class="text-xs font-bold text-gray-400 uppercase">Approved by Client</span>
                             <div id="dev-stat-approved" class="text-3xl font-black text-emerald-400 mt-2">0</div>
+                        </div>
+                        <div class="bg-slate-900 border border-slate-800 rounded-xl p-5">
+                            <span class="text-xs font-bold text-gray-400 uppercase">Plates To Inject</span>
+                            <div id="dev-stat-toinject" class="text-3xl font-black text-blue-400 mt-2">0</div>
+                        </div>
+                        <div class="bg-slate-900 border border-slate-800 rounded-xl p-5">
+                            <span class="text-xs font-bold text-gray-400 uppercase">Pending</span>
+                            <div id="dev-stat-pending" class="text-3xl font-black text-orange-400 mt-2">0</div>
                         </div>
                     </div>
                 </div>
@@ -877,6 +889,30 @@
             if (view === 'indev') renderDevInDev();
             if (view === 'approved') renderDevApproved();
             if (view === 'stats') renderDevStats();
+
+            const actionBtn = document.getElementById('btn-dev-action');
+            if (actionBtn) {
+                if (view === 'approved') {
+                    actionBtn.textContent = '+ Add Approved Texture';
+                    actionBtn.setAttribute('onclick', 'openApprovedTextureModal()');
+                    actionBtn.classList.remove('hidden');
+                } else if (view === 'stats') {
+                    actionBtn.classList.add('hidden');
+                } else {
+                    actionBtn.textContent = '+ New Development Texture';
+                    actionBtn.setAttribute('onclick', 'openDevModal()');
+                    actionBtn.classList.remove('hidden');
+                }
+            }
+        }
+
+        function openApprovedTextureModal() {
+            openDevModal();
+            const approvedSelect = document.getElementById('dev_approved');
+            if (approvedSelect) {
+                approvedSelect.value = 'yes';
+                onDevApprovalChange();
+            }
         }
 
         function toggleMappingConfirmation() {
@@ -1705,6 +1741,9 @@
             periodLabel.textContent = labelText;
             totalEl.textContent = filtered.length;
             approvedEl.textContent = filtered.filter(item => item.approved === 'yes').length;
+            document.getElementById('dev-stat-indev').textContent = filtered.filter(item => item.approved !== 'yes').length;
+            document.getElementById('dev-stat-toinject').textContent = filtered.filter(item => item.state === 'TO BE INJECTED').length;
+            document.getElementById('dev-stat-pending').textContent = filtered.filter(item => item.state === 'WAITING FEEDBACK').length;
         }
     </script>
 </body>
