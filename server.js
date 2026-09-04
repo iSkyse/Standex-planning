@@ -1,6 +1,7 @@
 const express = require('express');
 const bodyParser = require('body-parser');
 const path = require('path');
+const fs = require('fs');
 
 const app = express();
 const PORT = process.env.PORT || 3000;
@@ -8,9 +9,38 @@ const PORT = process.env.PORT || 3000;
 app.use(bodyParser.json({ limit: '10mb' }));
 app.use(express.static(path.join(__dirname, 'public')));
 
-// Stockage temporaire en mémoire vive (évite les pertes de données)
-let projects = [];
-let devTextures = [];
+// Chemin vers le fichier de stockage persistant
+// Si tu utilises un disque persistant sur Render, pointe vers ce disque (ex: '/opt/render/project/src/storage/data.json')
+const DATA_FILE = path.join(__dirname, 'data.json');
+
+// Fonctions de chargement et de sauvegarde
+function loadData() {
+    try {
+        if (fs.existsSync(DATA_FILE)) {
+            const rawData = fs.readFileSync(DATA_FILE, 'utf8');
+            const data = JSON.parse(rawData);
+            return {
+                projects: data.projects || [],
+                devTextures: data.devTextures || []
+            };
+        }
+    } catch (error) {
+        console.error("Erreur lors de la lecture du fichier de données :", error);
+    }
+    return { projects: [], devTextures: [] };
+}
+
+function saveData() {
+    try {
+        const data = { projects, devTextures };
+        fs.writeFileSync(DATA_FILE, JSON.stringify(data, null, 2), 'utf8');
+    } catch (error) {
+        console.error("Erreur lors de l'écriture du fichier de données :", error);
+    }
+}
+
+// Initialisation des données depuis le fichier
+let { projects, devTextures } = loadData();
 
 // Route pour récupérer tous les projets
 app.get('/api/projects', (req, res) => {
@@ -37,52 +67,12 @@ app.post('/api/projects', (req, res) => {
         projects.push(projectData);
     }
 
-    res.json({ success: true, project: projectData });
-});
+    // Sauvegarde automatique sur le disque à chaque modification
+    saveData();
 
-// Route pour supprimer un projet
-app.delete('/api/projects/:id', (req, res) => {
-    const id = Number(req.params.id);
-    projects = projects.filter(p => p.id !== id);
-    res.json({ success: true });
-});
-
-// Route pour récupérer tous les développements de texture
-app.get('/api/development', (req, res) => {
-    res.json(devTextures);
-});
-
-// Route pour ajouter ou modifier un développement de texture
-app.post('/api/development', (req, res) => {
-    const devData = req.body;
-
-    if (!devData.id) {
-        devData.id = Date.now();
-    }
-
-    // Assurer des valeurs par défaut valides
-    devData.priority = devData.priority || 'CRITICAL';
-    devData.state = devData.state || 'IN PROGRESS';
-    devData.approved = devData.approved || 'no';
-    devData.date_approval = devData.date_approval || '';
-
-    const index = devTextures.findIndex(d => d.id === Number(devData.id));
-    if (index !== -1) {
-        devTextures[index] = { ...devTextures[index], ...devData };
-    } else {
-        devTextures.push(devData);
-    }
-
-    res.json({ success: true, development: devData });
-});
-
-// Route pour supprimer un développement de texture
-app.delete('/api/development/:id', (req, res) => {
-    const id = Number(req.params.id);
-    devTextures = devTextures.filter(d => d.id !== id);
-    res.json({ success: true });
+    res.json({ success: true, project: projects[index !== -1 ? index : projects.length - 1] });
 });
 
 app.listen(PORT, () => {
-    console.log(`Server running on port ${PORT}`);
+    console.log(`Serveur démarré sur le port ${PORT}`);
 });
