@@ -9,13 +9,18 @@ const PORT = process.env.PORT || 3000;
 app.use(bodyParser.json({ limit: '10mb' }));
 app.use(express.static(path.join(__dirname, 'public')));
 
-// Chemin vers le fichier de stockage persistant
-// Si tu utilises un disque persistant sur Render, pointe vers ce disque (ex: '/opt/render/project/src/storage/data.json')
-const DATA_FILE = path.join(__dirname, 'data.json');
+// Chemin vers le fichier de stockage sur le disque persistant Render
+const DATA_FILE = path.join('/data', 'data.json');
 
 // Fonctions de chargement et de sauvegarde
 function loadData() {
     try {
+        // S'assure que le dossier /data existe (au cas où)
+        const dir = path.dirname(DATA_FILE);
+        if (!fs.existsSync(dir)) {
+            fs.mkdirSync(dir, { recursive: true });
+        }
+
         if (fs.existsSync(DATA_FILE)) {
             const rawData = fs.readFileSync(DATA_FILE, 'utf8');
             const data = JSON.parse(rawData);
@@ -32,6 +37,10 @@ function loadData() {
 
 function saveData() {
     try {
+        const dir = path.dirname(DATA_FILE);
+        if (!fs.existsSync(dir)) {
+            fs.mkdirSync(dir, { recursive: true });
+        }
         const data = { projects, devTextures };
         fs.writeFileSync(DATA_FILE, JSON.stringify(data, null, 2), 'utf8');
     } catch (error) {
@@ -39,7 +48,7 @@ function saveData() {
     }
 }
 
-// Initialisation des données depuis le fichier
+// Initialisation des données depuis le disque persistant
 let { projects, devTextures } = loadData();
 
 // Route pour récupérer tous les projets
@@ -67,7 +76,7 @@ app.post('/api/projects', (req, res) => {
         projects.push(projectData);
     }
 
-    // Sauvegarde automatique sur le disque à chaque modification
+    // Sauvegarde automatique sur le disque persistant
     saveData();
 
     res.json({ success: true, project: projects[index !== -1 ? index : projects.length - 1] });
