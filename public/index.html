@@ -505,9 +505,9 @@
                         <input type="text" id="dev_folder" placeholder="Folder name..." class="w-full mt-1 p-2.5 bg-slate-950 border border-slate-700 rounded text-white">
                     </div>
                     <div>
-                        <label class="block text-xs font-bold text-gray-400 uppercase">Email (Courriel)</label>
+                        <label class="block text-xs font-bold text-gray-400 uppercase">Email (Email)</label>
                         <div id="dev-email-drop" onclick="document.getElementById('dev-email-file-input').click()" class="w-full mt-1 p-2 bg-slate-950 border-2 border-dashed border-slate-700 rounded text-white text-[10.5px] text-center cursor-pointer hover:border-gray-500 transition leading-snug">
-                            <span id="dev-email-drop-text">📎 Glisse le courriel ici depuis Outlook<br>(ou clique pour choisir un fichier .msg/.eml)</span>
+                            <span id="dev-email-drop-text">📎 Drop the email here from Outlook<br>(or click to choose a .msg/.eml file)</span>
                         </div>
                         <input type="file" id="dev-email-file-input" accept=".msg,.eml" class="hidden">
                         <input type="text" id="dev_email" placeholder="...ou colle un lien ici" class="w-full mt-1 p-1.5 bg-slate-950 border border-slate-700 rounded text-white text-[11px]">
@@ -711,7 +711,7 @@
                     if (e.dataTransfer.files && e.dataTransfer.files[0]) {
                         handleDevEmailFile(e.dataTransfer.files[0]);
                     } else {
-                        alert("Aucun fichier détecté. Assure-toi de glisser le mail directement depuis la liste des messages Outlook (pas depuis le corps du texte).");
+                        alert("No file detected. Make sure to drag the email directly from the Outlook message list (not from the body text).");
                     }
                 });
             }
@@ -1037,10 +1037,10 @@
             const reader = new FileReader();
             reader.onload = (e) => {
                 tempDevEmailFile = { name: file.name, dataUrl: e.target.result };
-                document.getElementById('dev-email-drop-text').innerHTML = `📎 ${file.name} <span class="text-emerald-400">(prêt à enregistrer)</span>`;
+                document.getElementById('dev-email-drop-text').innerHTML = `📎 ${file.name} <span class="text-emerald-400">(ready to save)</span>`;
             };
             reader.onerror = () => {
-                alert("Impossible de lire ce fichier. Réessaie.");
+                alert("Unable to read this file. Please try again.");
             };
             reader.readAsDataURL(file);
         }
@@ -1138,10 +1138,10 @@
 
             if (item && item.email_file && item.email_file_name) {
                 tempDevEmailFile = { name: item.email_file_name, dataUrl: item.email_file };
-                document.getElementById('dev-email-drop-text').innerHTML = `📎 ${item.email_file_name} <span class="text-gray-400">(déjà attaché — glisse un nouveau fichier pour remplacer)</span>`;
+                document.getElementById('dev-email-drop-text').innerHTML = `📎 ${item.email_file_name} <span class="text-gray-400">(already attached — drag a new file to replace)</span>`;
             } else {
                 tempDevEmailFile = null;
-                document.getElementById('dev-email-drop-text').innerHTML = '📎 Glisse le courriel ici depuis Outlook<br>(ou clique pour choisir un fichier .msg/.eml)';
+                document.getElementById('dev-email-drop-text').innerHTML = '📎 Drop the email here from Outlook<br>(or click to choose a .msg/.eml file)';
             }
             document.getElementById('dev-email-file-input').value = '';
             document.getElementById('dev-modal').classList.remove('hidden');
