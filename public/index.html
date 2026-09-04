@@ -467,8 +467,12 @@
                         <input type="text" id="dev_folder" placeholder="Folder name..." class="w-full mt-1 p-2.5 bg-slate-950 border border-slate-700 rounded text-white">
                     </div>
                     <div>
-                        <label class="block text-xs font-bold text-gray-400 uppercase">Email Link (Courriel)</label>
-                        <input type="url" id="dev_email" placeholder="https://outlook.office.com/mail/id/..." class="w-full mt-1 p-2.5 bg-slate-950 border border-slate-700 rounded text-white">
+                        <label class="block text-xs font-bold text-gray-400 uppercase">Email (Courriel)</label>
+                        <div id="dev-email-drop" onclick="document.getElementById('dev-email-file-input').click()" class="w-full mt-1 p-2 bg-slate-950 border-2 border-dashed border-slate-700 rounded text-white text-[10.5px] text-center cursor-pointer hover:border-blue-600 transition leading-snug">
+                            <span id="dev-email-drop-text">📎 Glisse le courriel ici depuis Outlook<br>(ou clique pour choisir un fichier .msg/.eml)</span>
+                        </div>
+                        <input type="file" id="dev-email-file-input" accept=".msg,.eml" class="hidden">
+                        <input type="text" id="dev_email" placeholder="...ou colle un lien ici" class="w-full mt-1 p-1.5 bg-slate-950 border border-slate-700 rounded text-white text-[11px]">
                     </div>
                 </div>
                 <div class="grid grid-cols-2 gap-4">
@@ -602,6 +606,33 @@
                 });
             }
 
+            const devEmailFileInput = document.getElementById('dev-email-file-input');
+            if (devEmailFileInput) {
+                devEmailFileInput.addEventListener('change', (e) => {
+                    if (e.target.files && e.target.files[0]) handleDevEmailFile(e.target.files[0]);
+                });
+            }
+
+            const devEmailDrop = document.getElementById('dev-email-drop');
+            if (devEmailDrop) {
+                devEmailDrop.addEventListener('dragover', (e) => {
+                    e.preventDefault();
+                    devEmailDrop.classList.add('border-blue-600');
+                });
+                devEmailDrop.addEventListener('dragleave', () => {
+                    devEmailDrop.classList.remove('border-blue-600');
+                });
+                devEmailDrop.addEventListener('drop', (e) => {
+                    e.preventDefault();
+                    devEmailDrop.classList.remove('border-blue-600');
+                    if (e.dataTransfer.files && e.dataTransfer.files[0]) {
+                        handleDevEmailFile(e.dataTransfer.files[0]);
+                    } else {
+                        alert("Aucun fichier détecté. Assure-toi de glisser le mail directement depuis la liste des messages Outlook (pas depuis le corps du texte).");
+                    }
+                });
+            }
+
             const container = document.getElementById('lb-img-container');
             if (container) {
                 container.addEventListener('mousedown', (e) => {
@@ -632,6 +663,7 @@
         let devTextures = [];
         let currentDate = new Date();
         let tempPastedPhotoUrl = '';
+        let tempDevEmailFile = null;
         const machinesConfig = { "DMG 65": {}, "DMG 125": {}, "DMG 210": {}, "GF 1000": {}, "GF 1200": {}, "GF 4000": {} };
 
         let scale = 1, panning = false, pointX = 0, pointY = 0, startX = 0, startY = 0;
@@ -894,6 +926,18 @@
 
         function closeModal() { document.getElementById('project-modal').classList.add('hidden'); }
 
+        function handleDevEmailFile(file) {
+            const reader = new FileReader();
+            reader.onload = (e) => {
+                tempDevEmailFile = { name: file.name, dataUrl: e.target.result };
+                document.getElementById('dev-email-drop-text').innerHTML = `📎 ${file.name} <span class="text-emerald-400">(prêt à enregistrer)</span>`;
+            };
+            reader.onerror = () => {
+                alert("Impossible de lire ce fichier. Réessaie.");
+            };
+            reader.readAsDataURL(file);
+        }
+
         function openDevModal(item = null) {
             document.getElementById('dev-form').reset();
             document.getElementById('dev-modal-title').textContent = item ? 'Edit Texture Development' : 'Add New Texture Development';
@@ -919,6 +963,15 @@
                 document.getElementById('dev_state').value = 'IN PROGRESS';
                 document.getElementById('dev_type').value = 'NANO';
             }
+
+            if (item && item.email_file && item.email_file_name) {
+                tempDevEmailFile = { name: item.email_file_name, dataUrl: item.email_file };
+                document.getElementById('dev-email-drop-text').innerHTML = `📎 ${item.email_file_name} <span class="text-gray-400">(déjà attaché — glisse un nouveau fichier pour remplacer)</span>`;
+            } else {
+                tempDevEmailFile = null;
+                document.getElementById('dev-email-drop-text').innerHTML = '📎 Glisse le courriel ici depuis Outlook<br>(ou clique pour choisir un fichier .msg/.eml)';
+            }
+            document.getElementById('dev-email-file-input').value = '';
             document.getElementById('dev-modal').classList.remove('hidden');
         }
 
@@ -952,7 +1005,9 @@
                 history: document.getElementById('dev_history').value.trim(),
                 approved: document.getElementById('dev_approved').value,
                 date_reception: document.getElementById('dev_date_reception').value || new Date().toISOString().split('T')[0],
-                date_approval: approvalDate
+                date_approval: approvalDate,
+                email_file: tempDevEmailFile ? tempDevEmailFile.dataUrl : '',
+                email_file_name: tempDevEmailFile ? tempDevEmailFile.name : ''
             };
 
             try {
@@ -1363,7 +1418,7 @@
 
             const filtered = devTextures.filter(item => {
                 if (item.approved === 'yes') return false;
-                return !search || [item.name, item.client, item.developer, item.machine, item.op, item.folder, item.email].some(x => (x || '').toLowerCase().includes(search));
+                return !search || [item.name, item.client, item.developer, item.machine, item.op, item.folder, item.email, item.email_file_name].some(x => (x || '').toLowerCase().includes(search));
             });
 
             tbody.innerHTML = filtered.map(item => {
@@ -1385,7 +1440,7 @@
                         <td class="p-3 text-gray-200 text-xs font-mono">${item.op || '-'}</td>
                         <td class="p-3 text-gray-300 text-xs font-mono">${item.folder || '-'}</td>
                         <td class="p-3 text-xs">
-                            ${item.email ? `<a href="${item.email}" target="_blank" rel="noopener noreferrer" class="bg-blue-950/60 hover:bg-blue-900 text-blue-400 border border-blue-800 px-3 py-1.5 rounded-lg text-xs font-mono transition inline-flex items-center gap-1.5 shadow">📧 View Email</a>` : '-'}
+                            ${item.email_file ? `<a href="${item.email_file}" download="${item.email_file_name || 'email.msg'}" class="bg-blue-950/60 hover:bg-blue-900 text-blue-400 border border-blue-800 px-3 py-1.5 rounded-lg text-xs font-mono transition inline-flex items-center gap-1.5 shadow">📎 Email</a>` : (item.email ? `<a href="${item.email}" target="_blank" rel="noopener noreferrer" class="bg-blue-950/60 hover:bg-blue-900 text-blue-400 border border-blue-800 px-3 py-1.5 rounded-lg text-xs font-mono transition inline-flex items-center gap-1.5 shadow">📧 View Email</a>` : '-')}
                         </td>
                         <td class="p-3"><span class="px-2 py-1 rounded text-xs bg-slate-800 border border-slate-700 text-blue-400">${item.machine || '-'}</span></td>
                         <td class="p-3 text-xs text-gray-400 font-mono">${item.history || '-'}</td>
@@ -1410,7 +1465,7 @@
 
             const filtered = devTextures.filter(item => {
                 if (item.approved !== 'yes') return false;
-                return !search || [item.name, item.client, item.op, item.folder, item.email].some(x => (x || '').toLowerCase().includes(search));
+                return !search || [item.name, item.client, item.op, item.folder, item.email, item.email_file_name].some(x => (x || '').toLowerCase().includes(search));
             });
 
             tbody.innerHTML = filtered.map(item => {
@@ -1421,7 +1476,7 @@
                         <td class="p-3 text-gray-200 text-xs font-mono">${item.op || '-'}</td>
                         <td class="p-3 text-gray-300 text-xs font-mono">${item.folder || '-'}</td>
                         <td class="p-3 text-xs">
-                            ${item.email ? `<a href="${item.email}" target="_blank" rel="noopener noreferrer" class="bg-blue-950/60 hover:bg-blue-900 text-blue-400 border border-blue-800 px-3 py-1.5 rounded-lg text-xs font-mono transition inline-flex items-center gap-1.5 shadow">📧 View Email</a>` : '-'}
+                            ${item.email_file ? `<a href="${item.email_file}" download="${item.email_file_name || 'email.msg'}" class="bg-blue-950/60 hover:bg-blue-900 text-blue-400 border border-blue-800 px-3 py-1.5 rounded-lg text-xs font-mono transition inline-flex items-center gap-1.5 shadow">📎 Email</a>` : (item.email ? `<a href="${item.email}" target="_blank" rel="noopener noreferrer" class="bg-blue-950/60 hover:bg-blue-900 text-blue-400 border border-blue-800 px-3 py-1.5 rounded-lg text-xs font-mono transition inline-flex items-center gap-1.5 shadow">📧 View Email</a>` : '-')}
                         </td>
                         <td class="p-3 text-xs text-emerald-400 font-semibold">${item.machine || '-'} ${item.history ? '(' + item.history + ')' : ''}</td>
                         <td class="p-3 text-xs text-gray-400 font-mono">${item.date_reception || item.date || '-'}</td>
