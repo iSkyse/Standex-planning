@@ -21,6 +21,32 @@
         .resize-handle { position: absolute; top: 0; bottom: 0; width: 12px; cursor: ew-resize; z-index: 20; }
         .resize-handle-left { left: 0; }
         .resize-handle-right { right: 0; }
+        .machine-multiselect-menu {
+            max-height: 220px;
+            overflow-y: auto;
+            scrollbar-width: thin;
+        }
+        .machine-trial-chip {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            background: #374151;
+            color: #e5e7eb;
+            border: 1px solid #6b7280;
+            border-radius: 9999px;
+            padding: 4px 9px;
+            font-size: 11px;
+            font-weight: 700;
+        }
+        .machine-trial-chip button {
+            color: #9ca3af;
+            font-weight: 900;
+            line-height: 1;
+        }
+        .machine-trial-chip button:hover {
+            color: #f3f4f6;
+        }
+
     </style>
     <meta name="robots" content="noindex, nofollow">
 </head>
@@ -37,9 +63,9 @@
                     <span class="text-lg font-bold text-white group-hover:text-red-500 uppercase">Production</span>
                     <span class="text-[11px] text-gray-400 text-center">Master Schedule, Machine Timeline & Workshop Planning</span>
                 </button>
-                <button onclick="selectMode('development')" class="bg-slate-950 hover:bg-blue-950/40 border-2 border-slate-700 hover:border-blue-600 rounded-xl p-6 transition flex flex-col items-center justify-center gap-3 group">
+                <button onclick="selectMode('development')" class="bg-slate-950 hover:bg-gray-800/60 border-2 border-slate-700 hover:border-gray-500 rounded-xl p-6 transition flex flex-col items-center justify-center gap-3 group">
                     <span class="text-3xl">🔬</span>
-                    <span class="text-lg font-bold text-white group-hover:text-blue-500 uppercase">Development</span>
+                    <span class="text-lg font-bold text-white group-hover:text-gray-300 uppercase">Development</span>
                     <span class="text-[11px] text-gray-400 text-center">Textures in Progress, Approved Textures & Dev Statistics</span>
                 </button>
             </div>
@@ -207,22 +233,22 @@
 
         <!-- DEVELOPMENT MODULE -->
         <div id="module-development" class="flex flex-col h-full overflow-hidden" style="display:none;">
-            <header class="bg-black text-white p-3 shadow-xl flex justify-between items-center shrink-0 border-b-2 border-blue-600">
+            <header class="bg-black text-white p-3 shadow-xl flex justify-between items-center shrink-0 border-b-2 border-gray-500">
                 <div class="flex items-center gap-3">
                     <button onclick="showModeSelection()" class="bg-slate-800 hover:bg-slate-700 text-xs px-3 py-1.5 rounded font-bold border border-slate-700 uppercase">⬅ Switch Module</button>
                     <div class="border-l border-slate-800 pl-3">
-                        <h1 class="text-lg font-extrabold tracking-wide uppercase text-white">Engraving <span class="text-blue-500 font-light">| Texture Development Hub</span></h1>
+                        <h1 class="text-lg font-extrabold tracking-wide uppercase text-white">Engraving <span class="text-gray-300 font-light">| Texture Development Hub</span></h1>
                         <p class="text-[11px] text-gray-400">R&D, In-Progress Textures, Trials & Approvals</p>
                     </div>
                 </div>
                 <div class="flex items-center gap-3">
-                    <button id="btn-dev-action" onclick="openDevModal()" class="bg-blue-600 hover:bg-blue-700 text-white px-5 py-2 rounded font-bold transition text-sm shadow-lg uppercase tracking-wider">+ New Development Texture</button>
+                    <button id="btn-dev-action" onclick="openDevModal()" class="bg-gray-600 hover:bg-gray-500 text-white px-5 py-2 rounded font-bold transition text-sm shadow-lg uppercase tracking-wider">+ New Development Texture</button>
                 </div>
             </header>
 
             <main class="flex-grow p-4 flex flex-col overflow-hidden bg-slate-900">
                 <div class="flex gap-3 mb-3 shrink-0">
-                    <button onclick="switchDevView('indev')" id="btn-dev-indev" class="bg-blue-600 text-white px-4 py-2 rounded font-bold text-xs shadow tracking-wide uppercase">In Development</button>
+                    <button onclick="switchDevView('indev')" id="btn-dev-indev" class="bg-gray-600 text-white px-4 py-2 rounded font-bold text-xs shadow tracking-wide uppercase">In Development</button>
                     <button onclick="switchDevView('approved')" id="btn-dev-approved" class="bg-slate-800 text-gray-300 px-4 py-2 rounded font-bold text-xs border border-slate-700 shadow-sm uppercase">Approved Textures</button>
                     <button onclick="switchDevView('stats')" id="btn-dev-stats" class="bg-slate-800 text-gray-300 px-4 py-2 rounded font-bold text-xs border border-slate-700 shadow-sm uppercase">Development Statistics</button>
                 </div>
@@ -235,7 +261,7 @@
                     </div>
                     <div class="flex-grow overflow-auto">
                         <table class="w-full text-left border-collapse">
-                            <thead class="bg-black text-blue-400 text-xs uppercase sticky top-0 z-10 border-b border-slate-800">
+                            <thead class="bg-black text-gray-300 text-xs uppercase sticky top-0 z-10 border-b border-slate-800">
                                 <tr>
                                     <th class="p-3">Order</th><th class="p-3">Texture Name</th><th class="p-3">Priority</th><th class="p-3">Developer</th><th class="p-3">OP</th><th class="p-3">Folder Name</th><th class="p-3">Email</th><th class="p-3">Current Machine</th><th class="p-3">Machine Trial History</th><th class="p-3">Reception Date</th><th class="p-3">Status / Action</th><th class="p-3 text-right">Actions</th>
                                 </tr>
@@ -267,7 +293,7 @@
                 <div id="view-dev-stats" class="bg-slate-950 rounded-xl shadow hidden flex-grow overflow-auto border border-slate-800 p-6 flex flex-col">
                     <div class="bg-black/60 border border-slate-800 rounded-xl p-4 mb-6 flex flex-wrap items-center justify-between gap-4 shrink-0">
                         <div class="flex items-center gap-2">
-                            <span class="text-xs font-bold text-blue-400 uppercase tracking-wide">Stat Period Type:</span>
+                            <span class="text-xs font-bold text-gray-300 uppercase tracking-wide">Stat Period Type:</span>
                             <select id="dev-stat-period-type" onchange="onDevStatPeriodChange()" class="bg-slate-900 border border-slate-700 text-white rounded px-3 py-1.5 text-xs font-semibold focus:outline-none">
                                 <option value="all">All Time (Global)</option>
                                 <option value="year">By Year</option>
@@ -299,7 +325,7 @@
 
                     <div class="flex justify-between items-center mb-6 border-b border-slate-800 pb-3 shrink-0">
                         <h2 class="text-xl font-extrabold text-white uppercase tracking-wide">Development Performance & Metrics</h2>
-                        <span id="dev-stat-period-label" class="text-xs font-bold text-blue-400 bg-blue-950/50 border border-blue-800 px-3 py-1 rounded-full">All Time</span>
+                        <span id="dev-stat-period-label" class="text-xs font-bold text-gray-300 bg-gray-800/70 border border-gray-600 px-3 py-1 rounded-full">All Time</span>
                     </div>
 
                     <div class="grid grid-cols-2 md:grid-cols-5 gap-6 mb-6">
@@ -317,7 +343,7 @@
                         </div>
                         <div class="bg-slate-900 border border-slate-800 rounded-xl p-5">
                             <span class="text-xs font-bold text-gray-400 uppercase">Plates To Inject</span>
-                            <div id="dev-stat-toinject" class="text-3xl font-black text-blue-400 mt-2">0</div>
+                            <div id="dev-stat-toinject" class="text-3xl font-black text-gray-300 mt-2">0</div>
                         </div>
                         <div class="bg-slate-900 border border-slate-800 rounded-xl p-5">
                             <span class="text-xs font-bold text-gray-400 uppercase">Pending</span>
@@ -480,7 +506,7 @@
                     </div>
                     <div>
                         <label class="block text-xs font-bold text-gray-400 uppercase">Email (Courriel)</label>
-                        <div id="dev-email-drop" onclick="document.getElementById('dev-email-file-input').click()" class="w-full mt-1 p-2 bg-slate-950 border-2 border-dashed border-slate-700 rounded text-white text-[10.5px] text-center cursor-pointer hover:border-blue-600 transition leading-snug">
+                        <div id="dev-email-drop" onclick="document.getElementById('dev-email-file-input').click()" class="w-full mt-1 p-2 bg-slate-950 border-2 border-dashed border-slate-700 rounded text-white text-[10.5px] text-center cursor-pointer hover:border-gray-500 transition leading-snug">
                             <span id="dev-email-drop-text">📎 Glisse le courriel ici depuis Outlook<br>(ou clique pour choisir un fichier .msg/.eml)</span>
                         </div>
                         <input type="file" id="dev-email-file-input" accept=".msg,.eml" class="hidden">
@@ -506,8 +532,45 @@
                 </div>
                 <div class="grid grid-cols-2 gap-4">
                     <div>
-                        <label class="block text-xs font-bold text-gray-400 uppercase">Machine Trial History (Comma separated)</label>
-                        <input type="text" id="dev_history" placeholder="e.g. DMG 65, GF 1000" class="w-full mt-1 p-2.5 bg-slate-950 border border-slate-700 rounded text-white text-xs">
+                        <label class="block text-xs font-bold text-gray-400 uppercase">Machine Trial History</label>
+                        <div id="dev-history-multiselect" class="relative mt-1">
+                            <button type="button" onclick="toggleMachineTrialDropdown()" id="dev-history-select-button"
+                                class="w-full min-h-[42px] p-2.5 bg-slate-950 border border-slate-700 rounded text-white text-xs text-left flex items-center justify-between gap-2 focus:outline-none focus:border-gray-500">
+                                <span id="dev-history-select-label" class="text-gray-400">Select trial machines...</span>
+                                <span class="text-gray-500">▼</span>
+                            </button>
+
+                            <div id="dev-history-dropdown"
+                                class="hidden absolute left-0 right-0 top-full mt-1 z-50 bg-slate-900 border border-slate-700 rounded-lg shadow-2xl p-2 machine-multiselect-menu">
+                                <label class="flex items-center gap-2 p-2 rounded hover:bg-slate-800 cursor-pointer text-xs text-gray-200">
+                                    <input type="checkbox" value="DMG 65" onchange="updateMachineTrialSelection()" class="accent-gray-500">
+                                    <span>DMG 65</span>
+                                </label>
+                                <label class="flex items-center gap-2 p-2 rounded hover:bg-slate-800 cursor-pointer text-xs text-gray-200">
+                                    <input type="checkbox" value="DMG 125" onchange="updateMachineTrialSelection()" class="accent-gray-500">
+                                    <span>DMG 125</span>
+                                </label>
+                                <label class="flex items-center gap-2 p-2 rounded hover:bg-slate-800 cursor-pointer text-xs text-gray-200">
+                                    <input type="checkbox" value="DMG 210" onchange="updateMachineTrialSelection()" class="accent-gray-500">
+                                    <span>DMG 210</span>
+                                </label>
+                                <label class="flex items-center gap-2 p-2 rounded hover:bg-slate-800 cursor-pointer text-xs text-gray-200">
+                                    <input type="checkbox" value="GF 1000" onchange="updateMachineTrialSelection()" class="accent-gray-500">
+                                    <span>GF 1000</span>
+                                </label>
+                                <label class="flex items-center gap-2 p-2 rounded hover:bg-slate-800 cursor-pointer text-xs text-gray-200">
+                                    <input type="checkbox" value="GF 1200" onchange="updateMachineTrialSelection()" class="accent-gray-500">
+                                    <span>GF 1200</span>
+                                </label>
+                                <label class="flex items-center gap-2 p-2 rounded hover:bg-slate-800 cursor-pointer text-xs text-gray-200">
+                                    <input type="checkbox" value="GF 4000" onchange="updateMachineTrialSelection()" class="accent-gray-500">
+                                    <span>GF 4000</span>
+                                </label>
+                            </div>
+
+                            <div id="dev-history-selected" class="flex flex-wrap gap-2 mt-2 min-h-[24px]"></div>
+                            <input type="hidden" id="dev_history" value="">
+                        </div>
                     </div>
                     <div><label class="block text-xs font-bold text-gray-400 uppercase">Reception Date</label><input type="date" id="dev_date_reception" class="w-full mt-1 p-2.5 bg-slate-950 border border-slate-700 rounded text-white"></div>
                 </div>
@@ -618,6 +681,14 @@
                 });
             }
 
+            document.addEventListener('click', (e) => {
+                const wrapper = document.getElementById('dev-history-multiselect');
+                const dropdown = document.getElementById('dev-history-dropdown');
+                if (wrapper && dropdown && !wrapper.contains(e.target)) {
+                    dropdown.classList.add('hidden');
+                }
+            });
+
             const devEmailFileInput = document.getElementById('dev-email-file-input');
             if (devEmailFileInput) {
                 devEmailFileInput.addEventListener('change', (e) => {
@@ -629,14 +700,14 @@
             if (devEmailDrop) {
                 devEmailDrop.addEventListener('dragover', (e) => {
                     e.preventDefault();
-                    devEmailDrop.classList.add('border-blue-600');
+                    devEmailDrop.classList.add('border-gray-500');
                 });
                 devEmailDrop.addEventListener('dragleave', () => {
-                    devEmailDrop.classList.remove('border-blue-600');
+                    devEmailDrop.classList.remove('border-gray-500');
                 });
                 devEmailDrop.addEventListener('drop', (e) => {
                     e.preventDefault();
-                    devEmailDrop.classList.remove('border-blue-600');
+                    devEmailDrop.classList.remove('border-gray-500');
                     if (e.dataTransfer.files && e.dataTransfer.files[0]) {
                         handleDevEmailFile(e.dataTransfer.files[0]);
                     } else {
@@ -882,7 +953,7 @@
                 if (viewEl) viewEl.classList.toggle('hidden', v !== view);
                 if (btnEl) {
                     btnEl.className = v === view 
-                        ? 'bg-blue-600 text-white px-4 py-2 rounded font-bold text-xs shadow uppercase'
+                        ? 'bg-gray-600 text-white px-4 py-2 rounded font-bold text-xs shadow uppercase'
                         : 'bg-slate-800 text-gray-300 px-4 py-2 rounded font-bold text-xs border border-slate-700 uppercase';
                 }
             });
@@ -974,6 +1045,69 @@
             reader.readAsDataURL(file);
         }
 
+
+        function toggleMachineTrialDropdown() {
+            const dropdown = document.getElementById('dev-history-dropdown');
+            if (dropdown) dropdown.classList.toggle('hidden');
+        }
+
+        function getMachineTrialSelections() {
+            return Array.from(document.querySelectorAll('#dev-history-dropdown input[type="checkbox"]:checked'))
+                .map(cb => cb.value);
+        }
+
+        function updateMachineTrialSelection() {
+            const selected = getMachineTrialSelections();
+            const hiddenInput = document.getElementById('dev_history');
+            const selectedContainer = document.getElementById('dev-history-selected');
+            const label = document.getElementById('dev-history-select-label');
+
+            if (hiddenInput) hiddenInput.value = selected.join(', ');
+
+            if (label) {
+                label.textContent = selected.length
+                    ? `${selected.length} machine${selected.length > 1 ? 's' : ''} selected`
+                    : 'Select trial machines...';
+                label.className = selected.length
+                    ? 'text-gray-200'
+                    : 'text-gray-400';
+            }
+
+            if (selectedContainer) {
+                selectedContainer.innerHTML = selected.map(machine => `
+                    <span class="machine-trial-chip">
+                        ${machine}
+                        <button type="button" onclick="removeMachineTrialMachine('${machine}')" title="Remove ${machine}">&times;</button>
+                    </span>
+                `).join('');
+            }
+        }
+
+        function setMachineTrialSelection(history) {
+            let selected = [];
+            if (Array.isArray(history)) {
+                selected = history;
+            } else if (typeof history === 'string' && history.trim()) {
+                selected = history.split(',').map(x => x.trim()).filter(Boolean);
+            }
+
+            const validMachines = Object.keys(machinesConfig);
+            selected = selected.filter(machine => validMachines.includes(machine));
+
+            document.querySelectorAll('#dev-history-dropdown input[type="checkbox"]').forEach(cb => {
+                cb.checked = selected.includes(cb.value);
+            });
+
+            updateMachineTrialSelection();
+        }
+
+        function removeMachineTrialMachine(machine) {
+            const checkbox = Array.from(document.querySelectorAll('#dev-history-dropdown input[type="checkbox"]'))
+                .find(cb => cb.value === machine);
+            if (checkbox) checkbox.checked = false;
+            updateMachineTrialSelection();
+        }
+
         function openDevModal(item = null) {
             document.getElementById('dev-form').reset();
             document.getElementById('dev-modal-title').textContent = item ? 'Edit Texture Development' : 'Add New Texture Development';
@@ -981,13 +1115,14 @@
             document.getElementById('dev-delete-btn').classList.toggle('hidden', !item);
 
             if (item) {
-                ['dev_name', 'dev_client', 'dev_priority', 'dev_state', 'dev_op', 'dev_type', 'dev_folder', 'dev_email', 'dev_developer', 'dev_machine', 'dev_history', 'dev_approved', 'dev_date_reception', 'dev_date_approval'].forEach(field => {
+                ['dev_name', 'dev_client', 'dev_priority', 'dev_state', 'dev_op', 'dev_type', 'dev_folder', 'dev_email', 'dev_developer', 'dev_machine', 'dev_approved', 'dev_date_reception', 'dev_date_approval'].forEach(field => {
                     const elId = field.replace('dev_', '');
                     const element = document.getElementById(field);
                     if (element) {
                         element.value = item[elId] || '';
                     }
                 });
+                setMachineTrialSelection(item.history || '');
                 if(!item.date_reception && item.date) {
                     document.getElementById('dev_date_reception').value = item.date;
                 }
@@ -998,6 +1133,7 @@
                 document.getElementById('dev_priority').value = 'CRITICAL';
                 document.getElementById('dev_state').value = 'IN PROGRESS';
                 document.getElementById('dev_type').value = 'NANO';
+                setMachineTrialSelection('');
             }
 
             if (item && item.email_file && item.email_file_name) {
@@ -1038,7 +1174,7 @@
                 email: document.getElementById('dev_email').value.trim(),
                 developer: document.getElementById('dev_developer').value.trim(),
                 machine: document.getElementById('dev_machine').value,
-                history: document.getElementById('dev_history').value.trim(),
+                history: getMachineTrialSelections().join(', '),
                 approved: document.getElementById('dev_approved').value,
                 date_reception: document.getElementById('dev_date_reception').value || new Date().toISOString().split('T')[0],
                 date_approval: approvalDate,
@@ -1476,7 +1612,7 @@
                 return `
                     <tr class="hover:bg-slate-900/80 transition border-b border-slate-800/60">
                         <td class="p-3">
-                            <input type="number" value="${item.order ?? ''}" onchange="updateDevOrder(${item.id}, this.value)" class="w-16 p-1.5 bg-slate-900 border border-slate-700 rounded text-white text-xs text-center focus:outline-none focus:border-blue-600" placeholder="-">
+                            <input type="number" value="${item.order ?? ''}" onchange="updateDevOrder(${item.id}, this.value)" class="w-16 p-1.5 bg-slate-900 border border-slate-700 rounded text-white text-xs text-center focus:outline-none focus:border-gray-500" placeholder="-">
                         </td>
                         <td class="p-3 font-bold text-white">${item.name || '-'} <span class="block text-[10px] text-gray-400 font-normal">Client: ${item.client || '-'} | Type: ${item.type || '-'}</span></td>
                         <td class="p-3">
@@ -1488,10 +1624,12 @@
                         <td class="p-3 text-gray-200 text-xs font-mono">${item.op || '-'}</td>
                         <td class="p-3 text-gray-300 text-xs font-mono">${item.folder || '-'}</td>
                         <td class="p-3 text-xs">
-                            ${item.email_file ? `<a href="${item.email_file}" download="${item.email_file_name || 'email.msg'}" class="bg-blue-950/60 hover:bg-blue-900 text-blue-400 border border-blue-800 px-3 py-1.5 rounded-lg text-xs font-mono transition inline-flex items-center gap-1.5 shadow">📎 Email</a>` : (item.email ? `<a href="${item.email}" target="_blank" rel="noopener noreferrer" class="bg-blue-950/60 hover:bg-blue-900 text-blue-400 border border-blue-800 px-3 py-1.5 rounded-lg text-xs font-mono transition inline-flex items-center gap-1.5 shadow">📧 View Email</a>` : '-')}
+                            ${item.email_file ? `<a href="${item.email_file}" download="${item.email_file_name || 'email.msg'}" class="bg-gray-800/70 hover:bg-gray-700 text-gray-300 border border-gray-600 px-3 py-1.5 rounded-lg text-xs font-mono transition inline-flex items-center gap-1.5 shadow">📎 Email</a>` : (item.email ? `<a href="${item.email}" target="_blank" rel="noopener noreferrer" class="bg-gray-800/70 hover:bg-gray-700 text-gray-300 border border-gray-600 px-3 py-1.5 rounded-lg text-xs font-mono transition inline-flex items-center gap-1.5 shadow">📧 View Email</a>` : '-')}
                         </td>
-                        <td class="p-3"><span class="px-2 py-1 rounded text-xs bg-slate-800 border border-slate-700 text-blue-400">${item.machine || '-'}</span></td>
-                        <td class="p-3 text-xs text-gray-400 font-mono">${item.history || '-'}</td>
+                        <td class="p-3"><span class="px-2 py-1 rounded text-xs bg-slate-800 border border-slate-700 text-gray-300">${item.machine || '-'}</span></td>
+                        <td class="p-3 text-xs text-gray-400">
+                            ${item.history ? String(item.history).split(',').map(m => m.trim()).filter(Boolean).map(m => `<span class="inline-block px-2 py-1 mr-1 mb-1 rounded-full bg-gray-800 border border-gray-600 text-gray-300">${m}</span>`).join('') : '-'}
+                        </td>
                         <td class="p-3 text-xs text-gray-400 font-mono">${item.date_reception || item.date || '-'}</td>
                         <td class="p-3 text-xs">
                             <span class="px-2 py-1 rounded font-semibold bg-slate-900 text-gray-300 border border-slate-800">
@@ -1549,9 +1687,12 @@
                         <td class="p-3 text-gray-200 text-xs font-mono">${item.op || '-'}</td>
                         <td class="p-3 text-gray-300 text-xs font-mono">${item.folder || '-'}</td>
                         <td class="p-3 text-xs">
-                            ${item.email_file ? `<a href="${item.email_file}" download="${item.email_file_name || 'email.msg'}" class="bg-blue-950/60 hover:bg-blue-900 text-blue-400 border border-blue-800 px-3 py-1.5 rounded-lg text-xs font-mono transition inline-flex items-center gap-1.5 shadow">📎 Email</a>` : (item.email ? `<a href="${item.email}" target="_blank" rel="noopener noreferrer" class="bg-blue-950/60 hover:bg-blue-900 text-blue-400 border border-blue-800 px-3 py-1.5 rounded-lg text-xs font-mono transition inline-flex items-center gap-1.5 shadow">📧 View Email</a>` : '-')}
+                            ${item.email_file ? `<a href="${item.email_file}" download="${item.email_file_name || 'email.msg'}" class="bg-gray-800/70 hover:bg-gray-700 text-gray-300 border border-gray-600 px-3 py-1.5 rounded-lg text-xs font-mono transition inline-flex items-center gap-1.5 shadow">📎 Email</a>` : (item.email ? `<a href="${item.email}" target="_blank" rel="noopener noreferrer" class="bg-gray-800/70 hover:bg-gray-700 text-gray-300 border border-gray-600 px-3 py-1.5 rounded-lg text-xs font-mono transition inline-flex items-center gap-1.5 shadow">📧 View Email</a>` : '-')}
                         </td>
-                        <td class="p-3 text-xs text-emerald-400 font-semibold">${item.machine || '-'} ${item.history ? '(' + item.history + ')' : ''}</td>
+                        <td class="p-3 text-xs text-emerald-400 font-semibold">
+                            <span class="inline-block px-2 py-1 rounded-full bg-slate-800 border border-slate-700">${item.machine || '-'}</span>
+                            ${item.history ? `<div class="mt-1">${String(item.history).split(',').map(m => m.trim()).filter(Boolean).map(m => `<span class="inline-block px-2 py-1 mr-1 mb-1 rounded-full bg-gray-800 border border-gray-600 text-gray-300 text-[10px]">${m}</span>`).join('')}</div>` : ''}
+                        </td>
                         <td class="p-3 text-xs text-gray-400 font-mono">${item.date_reception || item.date || '-'}</td>
                         <td class="p-3 text-xs text-emerald-400 font-mono font-bold">${item.date_approval || '-'}</td>
                         <td class="p-3 text-right">
