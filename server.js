@@ -26,13 +26,14 @@ function loadData() {
             const data = JSON.parse(rawData);
             return {
                 projects: data.projects || [],
-                devTextures: data.devTextures || []
+                devTextures: data.devTextures || [],
+                developers: data.developers && data.developers.length ? data.developers : ['José Silva', 'Rita Dias', 'Cristiana Reis', 'José Pedro']
             };
         }
     } catch (error) {
         console.error("Erreur lors de la lecture du fichier de données :", error);
     }
-    return { projects: [], devTextures: [] };
+    return { projects: [], devTextures: [], developers: ['José Silva', 'Rita Dias', 'Cristiana Reis', 'José Pedro'] };
 }
 
 function saveData() {
@@ -41,7 +42,7 @@ function saveData() {
         if (!fs.existsSync(dir)) {
             fs.mkdirSync(dir, { recursive: true });
         }
-        const data = { projects, devTextures };
+        const data = { projects, devTextures, developers };
         fs.writeFileSync(DATA_FILE, JSON.stringify(data, null, 2), 'utf8');
     } catch (error) {
         console.error("Erreur lors de l'écriture du fichier de données :", error);
@@ -49,7 +50,7 @@ function saveData() {
 }
 
 // Initialisation des données depuis le disque persistant
-let { projects, devTextures } = loadData();
+let { projects, devTextures, developers } = loadData();
 
 // Route pour récupérer tous les projets
 app.get('/api/projects', (req, res) => {
@@ -126,6 +127,24 @@ app.delete('/api/development/:id', (req, res) => {
     devTextures = devTextures.filter(d => d.id !== id);
     saveData();
     res.json({ success: true });
+});
+
+// Route pour récupérer la liste des développeurs
+app.get('/api/developers', (req, res) => {
+    res.json(developers);
+});
+
+// Route pour ajouter un nouveau développeur
+app.post('/api/developers', (req, res) => {
+    const name = (req.body.name || '').trim();
+    if (!name) {
+        return res.status(400).json({ success: false, error: 'Name is required' });
+    }
+    if (!developers.includes(name)) {
+        developers.push(name);
+        saveData();
+    }
+    res.json({ success: true, developers });
 });
 
 app.listen(PORT, () => {
