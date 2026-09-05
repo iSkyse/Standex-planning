@@ -680,6 +680,18 @@
             loadDevTextures();
             loadDevelopers();
 
+            // Rafraîchissement automatique pour que tout le monde voie les mises à jour des autres,
+            // sans écraser le travail de quelqu'un en train de remplir un formulaire.
+            setInterval(() => {
+                const projectModalOpen = !document.getElementById('project-modal').classList.contains('hidden');
+                const devModalOpen = !document.getElementById('dev-modal').classList.contains('hidden');
+                if (projectModalOpen || devModalOpen) return;
+
+                loadProjects();
+                loadDevTextures();
+                loadDevelopers();
+            }, 15000);
+
             const pasteDropZone = document.getElementById('paste-drop-zone');
             if (pasteDropZone) pasteDropZone.addEventListener('paste', handleImagePaste);
             const projectModal = document.getElementById('project-modal');
