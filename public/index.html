@@ -6,6 +6,7 @@
     <title>Standex Engraving - Master Schedule & Development</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/exceljs@4.4.0/dist/exceljs.min.js"></script>
     <style>
         #view-grid::-webkit-scrollbar, #view-table::-webkit-scrollbar, #view-stats::-webkit-scrollbar, .modal-scroll::-webkit-scrollbar, #view-dev-indev::-webkit-scrollbar, #view-dev-approved::-webkit-scrollbar, #view-dev-stats::-webkit-scrollbar { height: 8px; width: 8px; }
         #view-grid::-webkit-scrollbar-track, #view-table::-webkit-scrollbar-track, #view-stats::-webkit-scrollbar-track, .modal-scroll::-webkit-scrollbar-track, #view-dev-indev::-webkit-scrollbar-track, #view-dev-approved::-webkit-scrollbar-track, #view-dev-stats::-webkit-scrollbar-track { background: #1e2229; }
@@ -1495,9 +1496,10 @@
             container.innerHTML = html + `</tbody></table>`;
         }
 
-        function exportToExcel() {
+        async function exportToExcel() {
             try {
-                if (typeof XLSX === 'undefined') { alert("Excel library missing."); return; }
+                if (typeof ExcelJS === 'undefined') { alert("Excel library missing."); return; }
+
                 const search = document.getElementById('table-search').value.toLowerCase();
                 const clientFilter = document.getElementById('table-client-filter').value;
                 const priorityFilter = document.getElementById('table-priority-filter').value;
@@ -1509,23 +1511,49 @@
                     return matchesSearch && matchesClient && matchesPriority;
                 });
 
-                const dataToExport = filtered.map(p => ({
-                    "PO": p.po || '-', "Project Name": p.project_name || '-', "Grain": p.grain || '-',
-                    "Client": p.client || '-', "Machine": p.machine || '-',
-                    "Priority": p.priority === 'red' ? 'CRITICAL' : (p.priority === 'green' ? 'LOW' : 'STANDARD'),
-                    "Mapping Done": p.mapping_done || 'no', "Mapping Confirmed": p.mapping_confirmed || 'no',
-                    "Status": p.date_reelle ? 'FINISHED' : 'IN PROGRESS',
-                    "Reception": p.date_reception || '-', "Est. End": p.date_estimee || '-', "Real End": p.date_reelle || '-',
-                    "Remarks": p.remarques || '-'
-                }));
+                // Charge le modèle Excel (template.xlsx dans le dossier public/) pour garder sa mise en forme
+                const templateResponse = await fetch('/template.xlsx');
+                if (!templateResponse.ok) {
+                    throw new Error("Could not load template.xlsx from the server.");
+                }
+                const templateBuffer = await templateResponse.arrayBuffer();
 
-                const worksheet = XLSX.utils.json_to_sheet(dataToExport);
-                const workbook = XLSX.utils.book_new();
-                XLSX.utils.book_append_sheet(workbook, worksheet, "Master Schedule");
-                XLSX.writeFile(workbook, `Standex_Master_Schedule_${new Date().toISOString().split('T')[0]}.xlsx`);
+                const workbook = new ExcelJS.Workbook();
+                await workbook.xlsx.load(templateBuffer);
+                const worksheet = workbook.getWorksheet('Planning') || workbook.worksheets[0];
+
+                // Les données commencent à la ligne 5 (ligne 4 = en-têtes)
+                const startRow = 5;
+                filtered.forEach((p, index) => {
+                    const row = worksheet.getRow(startRow + index);
+                    row.getCell(1).value = p.po || '-';
+                    row.getCell(2).value = p.project_name || '-';
+                    row.getCell(3).value = p.grain || '-';
+                    row.getCell(4).value = p.client || '-';
+                    row.getCell(5).value = p.machine || '-';
+                    row.getCell(6).value = p.priority === 'red' ? 'CRITICAL' : (p.priority === 'green' ? 'LOW' : 'STANDARD');
+                    row.getCell(7).value = p.mapping_done || 'no';
+                    row.getCell(8).value = p.mapping_confirmed || 'no';
+                    row.getCell(9).value = p.date_reelle ? 'FINISHED' : 'IN PROGRESS';
+                    row.getCell(10).value = p.date_reception || '-';
+                    row.getCell(11).value = p.date_estimee || '-';
+                    row.getCell(12).value = p.date_reelle || '-';
+                    row.commit();
+                });
+
+                const outBuffer = await workbook.xlsx.writeBuffer();
+                const blob = new Blob([outBuffer], { type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet' });
+                const url = URL.createObjectURL(blob);
+                const a = document.createElement('a');
+                a.href = url;
+                a.download = `Standex_Master_Schedule_${new Date().toISOString().split('T')[0]}.xlsx`;
+                document.body.appendChild(a);
+                a.click();
+                document.body.removeChild(a);
+                URL.revokeObjectURL(url);
             } catch (error) {
                 console.error(error);
-                alert("Error exporting Excel.");
+                alert("Error exporting Excel: " + error.message);
             }
         }
 
