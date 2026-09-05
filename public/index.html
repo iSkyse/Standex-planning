@@ -529,7 +529,12 @@
                 <div class="grid grid-cols-2 gap-4">
                     <div>
                         <label class="block text-xs font-bold text-gray-400 uppercase">Developer (Who)</label>
-                        <input type="text" id="dev_developer" required placeholder="Name..." class="w-full mt-1 p-2.5 bg-slate-950 border border-slate-700 rounded text-white">
+                        <div class="flex gap-2 mt-1">
+                            <select id="dev_developer" required class="w-full p-2.5 bg-slate-950 border border-slate-700 rounded text-white">
+                                <option value="">Select developer...</option>
+                            </select>
+                            <button type="button" onclick="addNewDeveloper()" title="Add new developer" class="shrink-0 px-3 bg-slate-800 hover:bg-slate-700 border border-slate-700 rounded text-white font-bold">+</button>
+                        </div>
                     </div>
                     <div>
                         <label class="block text-xs font-bold text-gray-400 uppercase">Current Machine</label>
@@ -673,6 +678,7 @@
             updateMonthYearSelectors();
             loadProjects();
             loadDevTextures();
+            loadDevelopers();
 
             const pasteDropZone = document.getElementById('paste-drop-zone');
             if (pasteDropZone) pasteDropZone.addEventListener('paste', handleImagePaste);
@@ -757,6 +763,7 @@
 
         let projects = [];
         let devTextures = [];
+        let developersList = [];
         let currentDate = new Date();
         let tempPastedPhotoUrl = '';
         let tempDevEmailFile = null;
@@ -774,6 +781,52 @@
                 renderStats();
             } catch (err) {
                 console.error("Error loading projects", err);
+            }
+        }
+
+        async function loadDevelopers() {
+            try {
+                const res = await fetch('/api/developers');
+                if (res.ok) {
+                    developersList = await res.json();
+                } else {
+                    developersList = [];
+                }
+                populateDeveloperSelect();
+            } catch (err) {
+                console.error("Error loading developers", err);
+            }
+        }
+
+        function populateDeveloperSelect(selectedValue) {
+            const select = document.getElementById('dev_developer');
+            if (!select) return;
+            const current = selectedValue !== undefined ? selectedValue : select.value;
+            let names = [...developersList];
+            if (current && !names.includes(current)) names.push(current);
+            select.innerHTML = '<option value="">Select developer...</option>' + names.map(n => `<option value="${n}">${n}</option>`).join('');
+            select.value = current || '';
+        }
+
+        async function addNewDeveloper() {
+            const name = prompt("Enter the new developer's name:");
+            if (!name || !name.trim()) return;
+            const trimmedName = name.trim();
+            try {
+                const res = await fetch('/api/developers', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ name: trimmedName })
+                });
+                if (!res.ok) {
+                    throw new Error(`Server returned status ${res.status}`);
+                }
+                const result = await res.json();
+                developersList = result.developers || developersList;
+                populateDeveloperSelect(trimmedName);
+            } catch (err) {
+                console.error("Error adding developer", err);
+                alert("Could not add the new developer. Check that the server is running.\n\n" + err.message);
             }
         }
 
@@ -1128,7 +1181,7 @@
             document.getElementById('dev-delete-btn').classList.toggle('hidden', !item);
 
             if (item) {
-                ['dev_name', 'dev_client', 'dev_priority', 'dev_state', 'dev_op', 'dev_op_status', 'dev_type', 'dev_folder', 'dev_email', 'dev_developer', 'dev_machine', 'dev_approved', 'dev_date_reception', 'dev_date_approval', 'dev_order'].forEach(field => {
+                ['dev_name', 'dev_client', 'dev_priority', 'dev_state', 'dev_op', 'dev_op_status', 'dev_type', 'dev_folder', 'dev_email', 'dev_machine', 'dev_approved', 'dev_date_reception', 'dev_date_approval', 'dev_order'].forEach(field => {
                     const elId = field.replace('dev_', '');
                     const element = document.getElementById(field);
                     if (element) {
@@ -1136,6 +1189,7 @@
                     }
                 });
                 setMachineTrialSelection(item.history || '');
+                populateDeveloperSelect(item.developer || '');
                 if(!item.date_reception && item.date) {
                     document.getElementById('dev_date_reception').value = item.date;
                 }
@@ -1148,6 +1202,7 @@
                 document.getElementById('dev_type').value = 'NANO';
                 document.getElementById('dev_op_status').value = 'OPEN';
                 setMachineTrialSelection('');
+                populateDeveloperSelect('');
             }
 
             if (item && item.email_file && item.email_file_name) {
