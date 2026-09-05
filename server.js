@@ -59,7 +59,7 @@ app.get('/api/projects', (req, res) => {
 // Route pour ajouter ou modifier un projet
 app.post('/api/projects', (req, res) => {
     const projectData = req.body;
-    
+
     if (!projectData.id) {
         projectData.id = Date.now();
     }
@@ -76,10 +76,56 @@ app.post('/api/projects', (req, res) => {
         projects.push(projectData);
     }
 
-    // Sauvegarde automatique sur le disque persistant
     saveData();
 
     res.json({ success: true, project: projects[index !== -1 ? index : projects.length - 1] });
+});
+
+// Route pour supprimer un projet
+app.delete('/api/projects/:id', (req, res) => {
+    const id = Number(req.params.id);
+    projects = projects.filter(p => p.id !== id);
+    saveData();
+    res.json({ success: true });
+});
+
+// Route pour récupérer tous les développements de texture
+app.get('/api/development', (req, res) => {
+    res.json(devTextures);
+});
+
+// Route pour ajouter ou modifier un développement de texture
+app.post('/api/development', (req, res) => {
+    const devData = req.body;
+
+    if (!devData.id) {
+        devData.id = Date.now();
+    }
+
+    // Assurer des valeurs par défaut valides
+    devData.priority = devData.priority || 'CRITICAL';
+    devData.state = devData.state || 'IN PROGRESS';
+    devData.approved = devData.approved || 'no';
+    devData.date_approval = devData.date_approval || '';
+
+    const index = devTextures.findIndex(d => d.id === Number(devData.id));
+    if (index !== -1) {
+        devTextures[index] = { ...devTextures[index], ...devData };
+    } else {
+        devTextures.push(devData);
+    }
+
+    saveData();
+
+    res.json({ success: true, development: devTextures[index !== -1 ? index : devTextures.length - 1] });
+});
+
+// Route pour supprimer un développement de texture
+app.delete('/api/development/:id', (req, res) => {
+    const id = Number(req.params.id);
+    devTextures = devTextures.filter(d => d.id !== id);
+    saveData();
+    res.json({ success: true });
 });
 
 app.listen(PORT, () => {
